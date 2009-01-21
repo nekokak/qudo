@@ -12,12 +12,11 @@ sub work_safely {
     eval {
         $res = $class->work($job);
     };
-
     if ($@) {
-        $client->failed($@);
+        $job->failed($@);
     }
-    unless ($job->complete) {
-        $client->failed('Job did not explicitly complete, fail, or get replaced');
+    if (!$job->is_completed) {
+        $job->failed('Job did not explicitly complete, fail, or get replaced');
     }
 }
 

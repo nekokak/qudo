@@ -32,7 +32,7 @@ sub run_tests_mysql {
 
     SKIP: {
         local $ENV{USE_MYSQL} = 1;
-        my $dbh = eval { mysql_dbh() };
+        my $dbh = eval { mysql_dbh() }; ## no critic
         skip "MySQL not accessible as root on localhost", $n if $@;
         skip "InnoDB not available on localhost's MySQL", $n if $innodb && ! has_innodb($dbh);
         $code->();
@@ -43,7 +43,7 @@ sub run_tests_sqlite {
     my ($n, $code) = @_;
 
     SKIP: {
-        my $rv = eval "use DBD::SQLite; 1";
+        my $rv = eval "use DBD::SQLite; 1"; ## no critic
         $rv = 0 if $ENV{SKIP_SQLITE};
         skip "SQLite not installed", $n if !$rv;
         $code->();
@@ -177,6 +177,7 @@ sqlite:
         arg             MEDIUMBLOB,
         uniqkey         VARCHAR(255) NULL,
         enqueue_time    INTEGER UNSIGNED,
+        is_complete     INTEGER UNSIGNED,
         UNIQUE(func_id,uniqkey)
     )
   - |-
@@ -202,6 +203,7 @@ mysql:
         arg             MEDIUMBLOB,
         uniqkey         VARCHAR(255) NULL,
         enqueue_time    INTEGER UNSIGNED,
+        is_complete       INTEGER UNSIGNED,
         UNIQUE(func_id, uniqkey)
     )
   - |-

@@ -1,0 +1,8 @@
+[TestingAndDebugging::ProhibitNoStrict]
+allow=refs
+
+[TestingAndDebugging::RequireUseStrict]
+equivalent_modules = DBIx::Skinny DBIx::Skinny::Schema
+
+[-Subroutines::ProhibitSubroutinePrototypes]
+

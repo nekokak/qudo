@@ -8,6 +8,7 @@ use Qudo::Model;
 use Carp;
 
 our $RETRY_SECONDS = 30;
+our $FIND_JOB_LIMIT_SIZE = 30;
 
 sub new {
     my ($class, %args) = @_;
@@ -19,32 +20,37 @@ sub new {
     my $database = delete $args{database};
 
     $self->{retry_seconds} = delete $args{retry_seconds} || $RETRY_SECONDS;
+    $self->{find_job_limit_size} = delete $args{find_job_limit_size} || $FIND_JOB_LIMIT_SIZE;
 
     Qudo::Model->connect_info($database);
 
     return $self;
 }
 
+=pod
 sub lookup_job {}
 sub list_jobs {}
+=cut
 
 sub enqueue {
     my ($self, $funcname, $arg, $uniqkey) = @_;
 
     # hook
-    my $func_id = Qudo::Model->find_or_create('func',{ name => $funcname });
+    my $func = Qudo::Model->find_or_create('func',{ name => $funcname });
     # hook
     my $job = Qudo::Model->insert('job',
         {
-            func_id => $func_id,
+            func_id => $func->id,
             arg     => $arg,
             uniqkey => $uniqkey,
         }
     );
+
     # hook
     return $job;
 }
 
+=pod
 sub dequeue {
     my ($self, $job_id) = @_;
 
@@ -52,9 +58,41 @@ sub dequeue {
     return $job;
 }
 
-sub can_work {}
-sub work {}
-sub work_once {}
+sub can_work {
+    my ($self, $funcname) = @_;
+    $self->{current_abilities}->{$funcname}=1;
+}
+
+sub work {
+    my ($self, $delay) = @_;
+    $delay ||= 5;
+    while (1) {
+        sleep $delay unless $self->work_once;
+    }
+}
+=cut
+
+sub work_once {
+    my $self = shift;
+
+    my $job = $self->find_job;
+    return unless $job;
+    my $worker_class = $job->funcname;
+    return unless $worker_class;
+    $worker_class->work_safely($self, $job);
+}
+
+sub find_job {
+    my $self = shift;
+
+    my $jobs = Qudo::Model->search('job',{},{limit => $self->{find_job_limit_size}});
+    return $self->_grab_a_job($jobs);
+}
+
+sub _grab_a_job {
+    my ($job, $jobs) = @_;
+    $jobs->first;
+}
 
 =head1 NAME
 

@@ -32,6 +32,8 @@ sub import {
         schema          => $schema,
         profiler        => DBIx::Skinny::Profiler->new,
         profile         => $ENV{SKINNY_PROFILE}||0,
+        klass           => $caller,
+        row_class_map   => +{},
     };
 
     {
@@ -44,7 +46,7 @@ sub import {
             call_schema_trigger
             do resultset search single search_by_sql count
             data2itr find_or_new
-                _get_sth_iterator _mk_row_class
+                _get_sth_iterator _mk_row_class _camelize
             insert bulk_insert create update delete find_or_create find_or_insert
                 _add_where
             _execute _close_sth
@@ -203,7 +205,7 @@ sub _get_sth_iterator {
     return DBIx::Skinny::Iterator->new(
         skinny         => $class,
         sth            => $sth,
-        row_class      => $class->_mk_row_class($sql),
+        row_class      => $class->_mk_row_class($sql, $opt_table_info),
         opt_table_info => $opt_table_info
     );
 }
@@ -214,21 +216,40 @@ sub data2itr {
     return DBIx::Skinny::Iterator->new(
         skinny         => $class,
         data           => $data,
-        row_class      => $class->_mk_row_class($table.$data),
+        row_class      => $class->_mk_row_class($table.$data, $table),
         opt_table_info => $table,
     );
 }
 
 sub _mk_row_class {
-    my ($class, $key) = @_;
+    my ($class, $key, $table) = @_;
 
     my $row_class = 'DBIx::Skinny::Row::C';
     for my $i (0..(int(length($key) / 8))) {
         $row_class .= crypt(substr($key,($i*8),8), 'mk');
     }
-    { no strict 'refs'; @{"$row_class\::ISA"} = ('DBIx::Skinny::Row'); }
+
+    my $base_row_class = $class->attribute->{row_class_map}->{$table||''};
+    if (!$base_row_class && $table) {
+        my $tmp_base_row_class = join '::', $class->attribute->{klass}, 'Row', _camelize($table);
+        eval "use $tmp_base_row_class"; ## no critic
+        if ($@) {
+            $base_row_class = $class->attribute->{row_class_map}->{$table} = 'DBIx::Skinny::Row';
+        } else {
+            $base_row_class = $class->attribute->{row_class_map}->{$table} = $tmp_base_row_class;
+        }
+    } elsif(!$base_row_class) {
+        $base_row_class = 'DBIx::Skinny::Row';
+    }
+
+    { no strict 'refs'; @{"$row_class\::ISA"} = ($base_row_class); }
 
     return $row_class;
+}
+
+sub _camelize {
+    my $s = shift;
+    join('', map{ ucfirst $_ } split(/(?<=[A-Za-z])_(?=[A-Za-z])|\b/, $s));
 }
 
 *create = \*insert;
