@@ -6,7 +6,7 @@ use Exporter 'import';
 our @EXPORT = qw/
     run_tests
      run_tests_mysql run_tests_sqlite
-    test_client teardown_db
+    test_master teardown_db
 /;
 
 use Carp qw(croak);
@@ -50,7 +50,7 @@ sub run_tests_sqlite {
     }
 }
 
-sub test_client {
+sub test_master {
     my %opts = @_;
     my $dbname = delete $opts{dbname};
     my $init     = delete $opts{init};
