@@ -6,17 +6,17 @@ sub max_retries { 0 }
 sub retry_delay { 0 }
 
 sub work_safely {
-    my ($class, $client, $job) = @_;
+    my ($class, $manager, $job) = @_;
     my $res;
 
     eval {
         $res = $class->work($job);
     };
-    if ($@) {
-        $job->failed($@);
+    if (my $e = $@) {
+        $manager->job_failed($job, $e);
     }
     if (!$job->is_completed) {
-        $job->failed('Job did not explicitly complete, fail, or get replaced');
+        $manager->job_failed($job, 'Job did not explicitly complete, fail, or get replaced');
     }
 }
 

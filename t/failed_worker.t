@@ -6,12 +6,14 @@ use Test::More tests => 6;
 use Test::Output;
 
 run_tests(3, sub {
-    my $client = test_client(
+    my $master = test_client(
         dbname   => 'tq1',
     );
 
-    my $job = $client->enqueue("Worker::Test", 'arg', 'uniqkey');
-    $client->work_once;
+    my $manager = $master->manager;
+    my $job = $manager->enqueue("Worker::Test", 'arg', 'uniqkey');
+    $manager->work_once;
+
     my $exception = Qudo::Model->single('exception_log');
     like $exception->message, qr/failed worker/;
     is $exception->func_id, 1;

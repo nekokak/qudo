@@ -5,6 +5,7 @@ use warnings;
 our $VERSION = '0.01';
 
 use Qudo::Model;
+use Qudo::Manager;
 use Carp;
 
 our $RETRY_SECONDS = 30;
@@ -27,72 +28,14 @@ sub new {
     return $self;
 }
 
-=pod
-sub lookup_job {}
-sub list_jobs {}
-=cut
-
-sub enqueue {
-    my ($self, $funcname, $arg, $uniqkey) = @_;
-
-    # hook
-    my $func = Qudo::Model->find_or_create('func',{ name => $funcname });
-    # hook
-    my $job = Qudo::Model->insert('job',
-        {
-            func_id => $func->id,
-            arg     => $arg,
-            uniqkey => $uniqkey,
-        }
+sub manager {
+    my $self = shift;
+    Qudo::Manager->new(
+        master => $self,
     );
-
-    # hook
-    return $job;
 }
 
-=pod
-sub dequeue {
-    my ($self, $job_id) = @_;
-
-    my $job = Qudo::Model->single('job',{id => $job_id});
-    return $job;
-}
-
-sub can_work {
-    my ($self, $funcname) = @_;
-    $self->{current_abilities}->{$funcname}=1;
-}
-
-sub work {
-    my ($self, $delay) = @_;
-    $delay ||= 5;
-    while (1) {
-        sleep $delay unless $self->work_once;
-    }
-}
-=cut
-
-sub work_once {
-    my $self = shift;
-
-    my $job = $self->find_job;
-    return unless $job;
-    my $worker_class = $job->funcname;
-    return unless $worker_class;
-    $worker_class->work_safely($self, $job);
-}
-
-sub find_job {
-    my $self = shift;
-
-    my $jobs = Qudo::Model->search('job',{},{limit => $self->{find_job_limit_size}});
-    return $self->_grab_a_job($jobs);
-}
-
-sub _grab_a_job {
-    my ($job, $jobs) = @_;
-    $jobs->first;
-}
+sub driver { 'Qudo::Model' }
 
 =head1 NAME
 
