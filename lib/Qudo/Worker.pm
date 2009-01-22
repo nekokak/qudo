@@ -4,6 +4,7 @@ use warnings;
 
 sub max_retries { 0 }
 sub retry_delay { 0 }
+sub grab_for    { 0 }
 
 sub work_safely {
     my ($class, $manager, $job) = @_;

@@ -53,8 +53,9 @@ sub lookup_job {
 
     my $job_itr = $self->driver->search_by_sql(q{
         SELECT
-            job.id,  job.arg, job.uniqkey, job.func_id,
-            func.id, func.name
+            job.id, job.arg, job.uniqkey, job.func_id,
+            job.grabbed_until,
+            func.name AS funcname
         FROM
             job, func
         WHERE
@@ -72,7 +73,8 @@ sub find_job {
     my $job_itr = $self->driver->search_by_sql(q{
         SELECT
             job.id,  job.arg, job.uniqkey, job.func_id,
-            func.id, func.name
+            job.grabbed_until,
+            func.name AS funcname
         FROM
             job, func
         WHERE
@@ -86,14 +88,40 @@ sub find_job {
 sub _grab_a_job {
     my ($self, $job_itr) = @_;
 
-    while (my $job_data = $job_itr->next) {
+    while (my $row = $job_itr->next) {
+
+        my $old_grabbed_until = $row->grabbed_until;
+        my $server_time = $self->get_server_time
+            or die "expected a server time";
+
+        my $worker_class = $row->funcname;
+        my $grab_job = $self->driver->update('job',
+            {
+                grabbed_until => ($server_time + ($worker_class->grab_for || 1))
+            },
+            {
+                id => $row->id,
+                grabbed_until => $old_grabbed_until,
+            }
+        );
+
+        unless ($grab_job) {
+            next;
+        }
+
         my $job = Qudo::Job->new(
             manager  => $self,
-            job_data => $job_data,
+            job_data => $row,
         );
         return $job;
     }
     return;
+}
+
+sub get_server_time {
+    my $self = shift;
+    my $unixtime_sql = $self->driver->dbd->sql_for_unixtime;
+    return $self->driver->dbh->selectrow_array("SELECT $unixtime_sql");
 }
 
 sub job_failed {

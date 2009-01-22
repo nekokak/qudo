@@ -42,7 +42,7 @@ sub import {
 
         my @functions = qw/
             schema profiler
-            dbh _connect connect_info _dbd_type
+            dbh dbd _connect connect_info _dbd_type
             call_schema_trigger
             do resultset search single search_by_sql count
             data2itr find_or_new
@@ -94,6 +94,7 @@ sub _connect {
     $class->attribute->{dbh};
 }
 
+sub dbd { shift->attribute->{dbd} }
 sub dbh { shift->_connect }
 
 sub _dbd_type {
@@ -315,17 +316,12 @@ sub update {
     my $sql = "UPDATE $table SET " . join(', ', @set) . ' ' . $stmt->as_sql_where;
 
     $class->profiler($sql, \@bind);
-    $class->_execute($sql, \@bind);
+    my $sth = $class->dbh->prepare($sql);
+    my $rows = $sth->execute(@bind);
 
-    for my $col (@{$class->schema->schema_info->{$table}->{columns}}) {
-        $stmt->add_select($col);
-    }
-    $stmt->from([$table]);
-    my $row = $stmt->retrieve->first;
+    $class->call_schema_trigger('post_update', $table, $rows);
 
-    $class->call_schema_trigger('post_update', $table, $row);
-
-    return $row;
+    return $rows;
 }
 
 sub delete {

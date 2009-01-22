@@ -7,11 +7,12 @@ sub new {
     bless {%args}, $class;
 }
 
-sub id       { shift->{job_data}->id      }
-sub arg      { shift->{job_data}->arg     }
-sub uniqkey  { shift->{job_data}->uniqkey }
-sub func_id  { shift->{job_data}->func_id }
-sub funcname { shift->{job_data}->name    }
+sub id       { shift->{job_data}->id       }
+sub arg      { shift->{job_data}->arg      }
+sub uniqkey  { shift->{job_data}->uniqkey  }
+sub func_id  { shift->{job_data}->func_id  }
+sub funcname { shift->{job_data}->funcname }
+sub grabbed_until { shift->{job_data}->grabbed_until }
 
 sub completed {
     my $self = shift;

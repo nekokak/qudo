@@ -17,3 +17,5 @@ run_tests(3, sub {
     teardown_db('tq1');
 });
 
+package Worker::Test;
+use base 'Qudo::Worker';
