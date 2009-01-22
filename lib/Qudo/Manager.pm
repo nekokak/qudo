@@ -104,10 +104,7 @@ sub _grab_a_job {
                 grabbed_until => $old_grabbed_until,
             }
         );
-
-        unless ($grab_job) {
-            next;
-        }
+        next unless $grab_job;
 
         my $job = Qudo::Job->new(
             manager  => $self,
