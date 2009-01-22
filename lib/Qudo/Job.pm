@@ -16,6 +16,7 @@ sub funcname { shift->{job_data}->name    }
 sub completed {
     my $self = shift;
     $self->{_complete} = 1;
+    $self->manager->dequeue_job($self);
 }
 
 sub is_completed {

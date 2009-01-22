@@ -18,6 +18,8 @@ sub work_safely {
     if (!$job->is_completed) {
         $manager->job_failed($job, 'Job did not explicitly complete, fail, or get replaced');
     }
+
+    return $res;
 }
 
 1;

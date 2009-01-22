@@ -5,8 +5,9 @@ use warnings;
 use Exporter 'import';
 our @EXPORT = qw/
     run_tests
-     run_tests_mysql run_tests_sqlite
-    test_master teardown_db
+      run_tests_mysql run_tests_sqlite
+    test_master
+    teardown_db
 /;
 
 use Carp qw(croak);

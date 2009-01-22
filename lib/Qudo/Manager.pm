@@ -32,6 +32,11 @@ sub enqueue {
     return $self->lookup_job($job->id);
 }
 
+sub dequeue {
+    my ($self, $job) = @_;
+    $self->driver->delete('job',{id => $job->id});
+}
+
 sub work_once {
     my $self = shift;
 

@@ -26,22 +26,5 @@ install_table exception_log => schema {
     };
 };
 
-=pod
-install_inflate_rule '^.+_time$' => callback {
-    inflate {
-        my $value = shift;
-        my $dt = DateTime::Format::Strptime->new(
-            pattern   => '%Y-%m-%d %H:%M:%S',
-            time_zone => $timezone,
-        )->parse_datetime($value);
-        return DateTime->from_object( object => $dt );
-    };
-    deflate {
-        my $value = shift;
-        return DateTime::Format::MySQL->format_datetime($value);
-    };
-};
-=cut
-
 1;
 

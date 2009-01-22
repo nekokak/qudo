@@ -39,20 +39,15 @@ sub driver { 'Qudo::Model' }
 
 =head1 NAME
 
-Qudo - Module abstract (<= 44 characters) goes here
+Qudo - simple job queue manager
 
 =head1 SYNOPSIS
 
   use Qudo;
-  blah blah blah
 
 =head1 DESCRIPTION
 
-Stub documentation for this module was created by ExtUtils::ModuleMaker.
-It looks like the author of the extension was negligent enough
-to leave the stub unedited.
-
-Blah blah blah.
+simple job queue manager.
 
 =head1 AUTHOR
 
