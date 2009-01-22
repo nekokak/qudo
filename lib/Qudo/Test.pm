@@ -178,7 +178,7 @@ sqlite:
         arg             MEDIUMBLOB,
         uniqkey         VARCHAR(255) NULL,
         enqueue_time    INTEGER UNSIGNED,
-        is_complete     INTEGER UNSIGNED,
+        grabbed_until   INTEGER UNSIGNED NOT NULL,
         UNIQUE(func_id,uniqkey)
     )
   - |-
@@ -204,7 +204,7 @@ mysql:
         arg             MEDIUMBLOB,
         uniqkey         VARCHAR(255) NULL,
         enqueue_time    INTEGER UNSIGNED,
-        is_complete       INTEGER UNSIGNED,
+        grabbed_until   INTEGER UNSIGNED NOT NULL,
         UNIQUE(func_id, uniqkey)
     )
   - |-

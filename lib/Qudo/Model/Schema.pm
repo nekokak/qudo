@@ -3,11 +3,12 @@ use DBIx::Skinny::Schema;
 
 install_table job => schema {
     pk 'id';
-    columns qw/id func_id arg uniqkey enqueue_time is_complete/;
+    columns qw/id func_id arg uniqkey enqueue_time grabbed_until/;
 
     trigger pre_insert => callback {
         my ($class, $args) = @_;
         $args->{enqueue_time} = time;
+        $args->{grabbed_until} ||= 0;
     };
 };
 
