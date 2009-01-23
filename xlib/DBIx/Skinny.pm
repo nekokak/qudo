@@ -44,7 +44,7 @@ sub import {
             schema profiler
             dbh dbd _connect connect_info _dbd_type
             call_schema_trigger
-            do resultset search single search_by_sql count
+            do resultset search single search_by_sql search_named count
             data2itr find_or_new
                 _get_sth_iterator _mk_row_class _camelize
             insert bulk_insert create update delete find_or_create find_or_insert
@@ -181,6 +181,20 @@ sub single {
     my ($class, $table, $where, $opt) = @_;
     $opt->{limit} = 1;
     $class->search($table, $where, $opt)->first;
+}
+
+sub search_named {
+    my ($class, $sql, $args, $opt_table_info) = @_;
+
+    my %named_bind = %{$args};
+    my @bind;
+    $sql =~ s{:([A-Za-z_][A-Za-z0-9_]*)}{
+        die "$1 is not exists in hash" if !exists $named_bind{$1};
+        push @bind, $named_bind{$1};
+        '?'
+    }ge;
+
+    $class->search_by_sql($sql, \@bind, $opt_table_info);
 }
 
 sub search_by_sql {
