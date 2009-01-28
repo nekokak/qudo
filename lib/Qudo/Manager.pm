@@ -14,19 +14,25 @@ sub driver {
     $self->{master}->driver;
 }
 
+sub call_hook {
+    my ($self, $hook_point, $args) = @_;
+    $self->{master}->call_hook($hook_point, $args);
+}
+
 sub enqueue {
     my ($self, $funcname, $arg, $uniqkey) = @_;
 
     # hook
     my $func = $self->driver->find_or_create('func',{ name => $funcname });
-    # hook
-    my $job = $self->driver->insert('job',
-        {
-            func_id => $func->id,
-            arg     => $arg,
-            uniqkey => $uniqkey,
-        }
-    );
+
+    my $args = +{
+        func_id => $func->id,
+        arg     => $arg,
+        uniqkey => $uniqkey,
+    };
+    $self->call_hook('pre_enqueue', $args);
+
+    my $job = $self->driver->insert('job', $args);
 
     # hook
     return $self->lookup_job($job->id);
