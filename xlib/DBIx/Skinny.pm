@@ -42,7 +42,7 @@ sub import {
 
         my @functions = qw/
             schema profiler
-            dbh dbd _connect connect_info _dbd_type
+            dbh dbd _connect connect_info _dbd_type reconnect
             call_schema_trigger
             do resultset search single search_by_sql search_named count
             data2itr find_or_new
@@ -85,6 +85,7 @@ sub connect_info {
 
 sub _connect {
     my $class = shift;
+    $class->attribute->{dbh} = undef if $_[0]->{flush};
     $class->attribute->{dbh} ||= DBI->connect(
         $class->attribute->{dsn},
         $class->attribute->{username},
@@ -92,6 +93,12 @@ sub _connect {
         { RaiseError => 1, PrintError => 0, AutoCommit => 1, %{ $class->attribute->{connect_options} || {} } }
     );
     $class->attribute->{dbh};
+}
+
+sub reconnect {
+    my $class = shift;
+    $class->connect_info(@_);
+    $class->_connect({flush => 1});
 }
 
 sub dbd { shift->attribute->{dbd} }
