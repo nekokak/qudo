@@ -25,7 +25,7 @@ sub new {
     $self->{find_job_limit_size} = delete $args{find_job_limit_size} || $FIND_JOB_LIMIT_SIZE;
     $self->{hooks} = +{};
 
-    Qudo::Model->connect_info($database);
+    Qudo::Model->reconnect($database);
 
     return $self;
 }
