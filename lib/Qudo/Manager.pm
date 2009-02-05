@@ -8,7 +8,6 @@ sub new {
     bless {%args}, $class;
 }
 
-# FIXME: driverて名前やめたいんだよなぁ
 sub driver {
     my $self = shift;
     $self->{master}->driver;
