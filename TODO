@@ -1,0 +1,10 @@
+---
+todo:
+  - databaseを複数個指定できるように
+  - Manager.pmのlookup_job/find_jobなどのSQL発行箇所をDriver側に持っていく
+  - hookの管理はManagerのがいいんじゃまいか
+  -- Manager -> Masterと飛ぶ箇所が増えちゃう
+  - hookの実装こんなんでいいんかいな
+  - JOBの処理の移譲とかいるか？
+  - JOBのリトライ処理を分かりやすく実装する
+  - DebugLog的なものを取るやつ
