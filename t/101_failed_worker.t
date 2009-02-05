@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Qudo::Test;
-use Qudo::Model;
 use Test::More tests => 6;
 use Test::Output;
 
@@ -14,7 +13,7 @@ run_tests(3, sub {
     my $job = $manager->enqueue("Worker::Test", 'arg', 'uniqkey');
     $manager->work_once;
 
-    my $exception = Qudo::Model->single('exception_log');
+    my $exception = $master->driver->single('exception_log');
     like $exception->message, qr/failed worker/;
     is $exception->func_id, 1;
     is $exception->job_id, 1;

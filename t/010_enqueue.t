@@ -6,6 +6,7 @@ use Test::More tests => 6;
 run_tests(3, sub {
     my $master = test_master(
         dbname   => 'tq1',
+        driver   => 'Skinny',
     );
 
     my $job = $master->manager->enqueue("Worker::Test", 'arg', 'uniqkey');

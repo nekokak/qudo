@@ -1,4 +1,4 @@
-package Qudo::Model::Schema;
+package Qudo::Driver::Skinny::Schema;
 use DBIx::Skinny::Schema;
 
 install_table job => schema {

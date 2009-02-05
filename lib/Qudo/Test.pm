@@ -54,7 +54,8 @@ sub run_tests_sqlite {
 sub test_master {
     my %opts = @_;
     my $dbname = delete $opts{dbname};
-    my $init     = delete $opts{init};
+    my $init   = delete $opts{init};
+    my $driver = delete $opts{driver}||'';
     croak "unknown opts" if %opts;
     $init = 1 unless defined $init;
 
@@ -63,6 +64,7 @@ sub test_master {
     }
 
     return Qudo->new(
+        driver   => $driver,
         database => +{
             dsn      => dsn_for($dbname),
             username => 'root',

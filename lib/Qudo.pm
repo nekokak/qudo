@@ -4,13 +4,13 @@ use warnings;
 
 our $VERSION = '0.01';
 
-use Qudo::Model;
 use Qudo::Manager;
 use Carp;
 use UNIVERSAL::require;
 
 our $RETRY_SECONDS = 30;
 our $FIND_JOB_LIMIT_SIZE = 30;
+our $DEFAULT_DRIVER = 'Skinny';
 
 sub new {
     my ($class, %args) = @_;
@@ -19,15 +19,23 @@ sub new {
 
     croak "database must be an hashref if specified"
         unless !exists $args{database} || ref $args{database} eq 'HASH';
-    my $database = delete $args{database};
 
+    $self->{database} = delete $args{database};
     $self->{retry_seconds} = delete $args{retry_seconds} || $RETRY_SECONDS;
     $self->{find_job_limit_size} = delete $args{find_job_limit_size} || $FIND_JOB_LIMIT_SIZE;
     $self->{hooks} = +{};
 
-    Qudo::Model->reconnect($database);
+    $self->setup_driver(delete $args{driver} || $DEFAULT_DRIVER);
 
     return $self;
+}
+
+sub setup_driver {
+    my ($self, $driver_s) = @_;
+
+    my $driver = 'Qudo::Driver::' . $driver_s;
+    $driver->use or die $@;
+    $self->{driver} = $driver->init_driver($self);
 }
 
 sub manager {
@@ -37,7 +45,7 @@ sub manager {
     );
 }
 
-sub driver { 'Qudo::Model' }
+sub driver { shift->{driver} }
 
 sub call_hook {
     my ($self, $hook_point, $args) = @_;
