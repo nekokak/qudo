@@ -2,6 +2,7 @@ package Qudo::Manager;
 use strict;
 use warnings;
 use Qudo::Job;
+use Carp;
 
 sub new {
     my ($class, %args) = @_;
@@ -21,25 +22,27 @@ sub call_hook {
 sub enqueue {
     my ($self, $funcname, $arg, $uniqkey) = @_;
 
-    # hook
-    my $func = $self->driver->find_or_create('func',{ name => $funcname });
+    my $func_id = $self->driver->get_func_id( $funcname );
+
+    unless ($func_id) {
+        croak "$funcname can't get";
+    }
 
     my $args = +{
-        func_id => $func->id,
+        func_id => $func_id,
         arg     => $arg,
         uniqkey => $uniqkey,
     };
     $self->call_hook('pre_enqueue', $args);
 
-    my $job = $self->driver->insert('job', $args);
+    my $job_id = $self->driver->enqueue($args);
 
-    # hook
-    return $self->lookup_job($job->id);
+    return $self->lookup_job($job_id);
 }
 
 sub dequeue {
     my ($self, $job) = @_;
-    $self->driver->delete('job',{id => $job->id});
+    $self->driver->dequeue({id => $job->id});
 }
 
 sub work_once {
@@ -96,7 +99,7 @@ sub _grab_a_job {
     while (my $row = $job_itr->next) {
 
         my $old_grabbed_until = $row->grabbed_until;
-        my $server_time = $self->get_server_time
+        my $server_time = $self->driver->get_server_time
             or die "expected a server time";
 
         my $worker_class = $row->funcname;
@@ -120,16 +123,10 @@ sub _grab_a_job {
     return;
 }
 
-sub get_server_time {
-    my $self = shift;
-    my $unixtime_sql = $self->driver->dbd->sql_for_unixtime;
-    return $self->driver->dbh->selectrow_array("SELECT $unixtime_sql");
-}
-
 sub job_failed {
     my ($self, $job, $message) = @_;
 
-    $self->driver->insert('exception_log',
+    $self->driver->logging_exception(
         {
             job_id  => $job->id,
             func_id => $job->func_id,
