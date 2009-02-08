@@ -59,64 +59,42 @@ sub work_once {
 sub lookup_job {
     my ($self, $job_id) = @_;
 
-    my $job_itr = $self->driver->search_by_sql(q{
-        SELECT
-            job.id, job.arg, job.uniqkey, job.func_id,
-            job.grabbed_until,
-            func.name AS funcname
-        FROM
-            job, func
-        WHERE
-            job.func_id = func.id AND
-            job.id      = ?
-        LIMIT 1
-    },[$job_id]);
+    my $callback = $self->driver->lookup_job($job_id);
 
-    return $self->_grab_a_job($job_itr);
+    return $self->_grab_a_job($callback);
 }
 
 sub find_job {
     my $self = shift;
 
-    my $job_itr = $self->driver->search_by_sql(q{
-        SELECT
-            job.id,  job.arg, job.uniqkey, job.func_id,
-            job.grabbed_until,
-            func.name AS funcname
-        FROM
-            job, func
-        WHERE
-            job.func_id = func.id
-        LIMIT 10
-    });
+    my $callback = $self->driver->find_job;
 
-    return $self->_grab_a_job($job_itr);
+    return $self->_grab_a_job($callback);
 }
 
 sub _grab_a_job {
-    my ($self, $job_itr) = @_;
+    my ($self, $callback) = @_;
 
-    while (my $row = $job_itr->next) {
+    while (1) {
+        my $job_data = $callback->();
+        last unless $job_data;
 
-        my $old_grabbed_until = $row->grabbed_until;
+        my $old_grabbed_until = $job_data->{grabbed_until};
         my $server_time = $self->driver->get_server_time
             or die "expected a server time";
 
-        my $worker_class = $row->funcname;
-        my $grab_job = $self->driver->update('job',
-            {
-                grabbed_until => ($server_time + ($worker_class->grab_for || 1))
-            },
-            {
-                id => $row->id,
-                grabbed_until => $old_grabbed_until,
-            }
+
+        my $worker_class = $job_data->{func_name};
+        my $grab_job = $self->driver->grab_a_job(
+            grabbed_until     => ($server_time + ($worker_class->grab_for || 1)),
+            job_id            => $job_data->{job_id},
+            old_grabbed_until => $old_grabbed_until,
         );
         next unless $grab_job;
 
         my $job = Qudo::Job->new(
             manager  => $self,
-            job_data => $row,
+            job_data => $job_data,
         );
         return $job;
     }

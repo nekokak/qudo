@@ -11,6 +11,73 @@ sub init_driver {
     return $class;
 }
 
+sub lookup_job {
+    my ($class, $job_id) = @_;
+
+    my $job_itr = $class->search_by_sql(q{
+        SELECT
+            job.id, job.arg, job.uniqkey, job.func_id,
+            job.grabbed_until,
+            func.name AS funcname
+        FROM
+            job, func
+        WHERE
+            job.func_id = func.id AND
+            job.id      = ?
+        LIMIT 1
+    },[$job_id]);
+
+    return $class->_get_job_data($job_itr);
+}
+
+sub find_job {
+    my $class = shift;
+
+    my $job_itr = $class->search_by_sql(q{
+        SELECT
+            job.id,  job.arg, job.uniqkey, job.func_id,
+            job.grabbed_until,
+            func.name AS funcname
+        FROM
+            job, func
+        WHERE
+            job.func_id = func.id
+        LIMIT 10
+    });
+
+    return $class->_get_job_data($job_itr);
+}
+
+sub _get_job_data {
+    my ($class, $itr) = @_;
+    sub {
+        my $job = $itr->next;
+        return +{
+            job_id            => $job->id,
+            job_arg           => $job->arg,
+            job_uniqkey       => $job->uniqkey,
+            job_grabbed_until => $job->grabbed_until,
+            func_id           => $job->func_id,
+            func_name         => $job->funcname,
+        };
+    };
+}
+
+sub grab_a_job {
+    my ($class, %args) = @_;
+
+    return $class->update('job',
+        {
+            grabbed_until => $args{grabbed_until},
+        },
+        {
+            id            => $args{job_id},
+            grabbed_until => $args{old_grabbed_until},
+        }
+    );
+
+}
+
 sub logging_exception {
     my ($class, $args) = @_;
 
