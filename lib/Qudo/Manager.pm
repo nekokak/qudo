@@ -9,10 +9,7 @@ sub new {
     bless {%args}, $class;
 }
 
-sub driver {
-    my $self = shift;
-    $self->{master}->driver;
-}
+sub driver { shift->{driver} }
 
 sub call_hook {
     my ($self, $hook_point, $args) = @_;
