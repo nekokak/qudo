@@ -1,7 +1,6 @@
 ---
 todo:
   - databaseを複数個指定できるように
-  - Manager.pmのlookup_job/find_jobなどのSQL発行箇所をDriver側に持っていく
   - hookの管理はManagerのがいいんじゃまいか
   -- Manager -> Masterと飛ぶ箇所が増えちゃう
   - hookの実装こんなんでいいんかいな
@@ -10,4 +9,3 @@ todo:
   - DebugLog的なものを取るやつ
   - Driver::DBI
   - ManagerはMasterを持つ必要あるかなぁ権限委譲されてるとおもえばいいんじゃまいか
-  - おなかいたい
