@@ -161,7 +161,9 @@ sub search {
         }
     );
 
-    $class->_add_where($rs, $where);
+    if ( $where ) {
+        $class->_add_where($rs, $where);
+    }
 
     $rs->limit(   $opt->{limit}   ) if $opt->{limit};
     $rs->offset(  $opt->{offset}  ) if $opt->{offset};
