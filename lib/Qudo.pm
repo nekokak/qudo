@@ -13,19 +13,17 @@ our $FIND_JOB_LIMIT_SIZE = 30;
 our $DEFAULT_DRIVER = 'Skinny';
 
 sub new {
-    my ($class, %args) = @_;
+    my $class = shift;
 
-    my $self = bless {}, $class;
+    my $self = bless {
+        retry_seconds       => $RETRY_SECONDS,
+        find_job_limit_size => $FIND_JOB_LIMIT_SIZE,
+        driver_class        => $DEFAULT_DRIVER,
+        hooks               => +{},
+        @_,
+    }, $class;
 
-    croak "database must be an hashref if specified"
-        unless !exists $args{database} || ref $args{database} eq 'HASH';
-
-    $self->{database} = delete $args{database};
-    $self->{retry_seconds} = delete $args{retry_seconds} || $RETRY_SECONDS;
-    $self->{find_job_limit_size} = delete $args{find_job_limit_size} || $FIND_JOB_LIMIT_SIZE;
-    $self->{hooks} = +{};
-
-    $self->setup_driver(delete $args{driver} || $DEFAULT_DRIVER);
+    $self->setup_driver;
 
     return $self;
 }
@@ -33,7 +31,7 @@ sub new {
 sub setup_driver {
     my ($self, $driver_s) = @_;
 
-    my $driver = 'Qudo::Driver::' . $driver_s;
+    my $driver = 'Qudo::Driver::' . $self->{driver_class};
     $driver->use or die $@;
     $self->{driver} = $driver->init_driver($self);
 }
