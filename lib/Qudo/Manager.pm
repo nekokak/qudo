@@ -50,7 +50,12 @@ sub work_once {
 
     my $worker_class = $job->funcname;
     return unless $worker_class;
+
+    $self->call_hook('pre_work', $job);
+
     $worker_class->work_safely($self, $job);
+
+    $self->call_hook('post_work', $job);
 }
 
 sub lookup_job {
