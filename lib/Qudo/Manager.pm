@@ -81,10 +81,9 @@ sub _grab_a_job {
         my $job_data = $callback->();
         last unless $job_data;
 
-        my $old_grabbed_until = $job_data->{grabbed_until};
+        my $old_grabbed_until = $job_data->{job_grabbed_until};
         my $server_time = $self->driver->get_server_time
             or die "expected a server time";
-
 
         my $worker_class = $job_data->{func_name};
         my $grab_job = $self->driver->grab_a_job(

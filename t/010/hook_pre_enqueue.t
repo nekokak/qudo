@@ -7,6 +7,7 @@ use lib './t';
 run_tests(6, sub {
     my $master = test_master(
         dbname   => 'tq1',
+        driver   => 'Skinny',
     );
 
     $master->register_hook(qw/Mock::Hook::Enqueue/);

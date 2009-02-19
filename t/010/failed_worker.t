@@ -7,6 +7,7 @@ use Test::Output;
 run_tests(3, sub {
     my $master = test_master(
         dbname   => 'tq1',
+        driver   => 'Skinny',
     );
 
     my $manager = $master->manager;

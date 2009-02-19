@@ -29,7 +29,7 @@ sub new {
 }
 
 sub setup_driver {
-    my ($self, $driver_s) = @_;
+    my $self = shift;
 
     my $driver = 'Qudo::Driver::' . $self->{driver_class};
     $driver->use or die $@;

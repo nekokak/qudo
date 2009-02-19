@@ -64,7 +64,7 @@ sub test_master {
     }
 
     return Qudo->new(
-        driver   => $driver,
+        driver_class => $driver,
         database => +{
             dsn      => dsn_for($dbname),
             username => 'root',
