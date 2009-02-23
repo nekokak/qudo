@@ -206,7 +206,7 @@ sub enqueue {
     $args->{enqueue_time} = time;
     $args->{grabbed_until} ||= 0;
 
-    my @colum = sort keys %{$args};
+    my @colum = keys %{$args};
     my $sql  = 'INSERT INTO job ( ';
        $sql .= join ' ,' , @colum;
        $sql .= ' ) VALUES ( ';
