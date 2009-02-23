@@ -192,31 +192,39 @@ sub get_server_time {
     my $unixtime_sql =  "UNIX_TIMESTAMP()";
 # SQLIite
 #    my $unixtime_sql =  time();
-    return $class->dbh->selectrow_array("SELECT $unixtime_sql");
+    my $time;
+    eval {
+        $time = $class->dbh->selectrow_array("SELECT $unixtime_sql");
+    };
+    if ($@) { $time = time }
+    return $time;
 }
 
 sub enqueue {
     my ($class, $args) = @_;
 
-    my @colum = sort keys %{$args};
-    my $hoge = sprintf( q/
-        INSERT INTO job ( / . join( " ," , @colum ) . q/ ) VALUES ( / 
-        . join(', ', ('?') x @colum) . ')'   );
+    $args->{enqueue_time} = time;
+    $args->{grabbed_until} ||= 0;
 
-    my $ins = $class->dbh->prepare( $hoge );
+    my @colum = sort keys %{$args};
+    my $sql  = 'INSERT INTO job ( ';
+       $sql .= join ' ,' , @colum;
+       $sql .= ' ) VALUES ( ';
+       $sql .= join(', ', ('?') x @colum);
+       $sql .=  ')';
+
+    my $ins = $class->dbh->prepare( $sql );
+    my @bind = map {$args->{$_}} @colum;
     eval{
-        my @ary;
-        map{ push @ary , $args->{$_}; } @colum;
-        $ins->execute( @ary );
+        $ins->execute( @bind );
     };
-    if( my $e = $@ ){
-        croak 'enqueue ERROR'.$e;
+    if( $@ ){
+        croak 'enqueue ERROR'.$@;
     }
 
     my $id = $class->last_insert_id($ins);
-
-    my $sel = $class->dbh->prepare( q/
-        SELECT * FROM job WHERE id = ? /
+    my $sel = $class->dbh->prepare(
+        q{SELECT * FROM job WHERE id = ?}
     );
 
     $sel->execute( $id );
@@ -225,13 +233,11 @@ sub enqueue {
 }
 
 sub last_insert_id{
-    my $class = shift;
-    my $sth   = shift;
+    my ($class, $sth) = @_;
 
-    my $last_id;
-    #mysql
-    $last_id = $sth->{mysql_insertid} || $sth->{insertid} ;
-    #sqlite
+    # FIXME: tekitou
+    #mysql                                                      # sqlite
+    my $last_id = $sth->{mysql_insertid} || $sth->{insertid} || $class->dbh->func('last_insert_rowid');
 
     return $last_id;
 }
@@ -256,32 +262,21 @@ sub dequeue {
 sub get_func_id {
     my ($class, $funcname) = @_;
     
-    my $sel = $class->dbh->prepare( q/
-        SELECT * FROM func WHERE name = ? /);
-        
-    $sel->execute( $funcname );
-    
-    if ( $sel->rows ){
-        my %ret_hashref = $sel->fetchrow_hashref();
-        return $ret_hashref->{id};
-    }
-    else{
-        my $ins = $class->dbh->prepare( q/
-            INSERT INTO func ( name ) VALUES ( ? ) /);
-        eval{
-             $ins->execute( $funcname );
-        };
-        if( my $e = $@ ){
-            croak $e;
-        }
-        $sel->execute( $funcname );
+    my $sth = $class->dbh->prepare(
+        q{SELECT * FROM func WHERE name = ?}
+    );
 
-        if ( $sel->rows ){
-            my %ret_hashref = $sel->fetchrow_hashref();
-            return $ret_hashref->{id};
-        }
-    }
-    return ;
+    $sth->execute( $funcname );
+    my $row = $sth->fetchrow_hashref();
+    my $func_id = $row ? $row->{id} : do{
+        my $ins_sth = $class->dbh->prepare(
+            q{INSERT INTO func ( name ) VALUES ( ? )}
+        );
+        $ins_sth->execute( $funcname );
+        $sth->execute( $funcname );
+        $sth->fetchrow_hashref->{id};
+    };
+    return $func_id;
 }
 
 =put
