@@ -4,9 +4,9 @@ use DBIx::Skinny setup => +{
 };
 
 sub init_driver {
-    my ($class, $qudo) = @_;
+    my ($class, $master) = @_;
 
-    $class->reconnect($qudo->{database});
+    $class->reconnect($master->{database});
 
     return $class;
 }
