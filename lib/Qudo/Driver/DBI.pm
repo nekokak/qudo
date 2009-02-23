@@ -1,73 +1,42 @@
 package Qudo::Driver::DBI;
 
+use strict;
+use warnings;
 use DBI;
 use Carp qw/croak/;
 
 use Data::Dumper;
 
-
 sub init_driver {
-    my ($class, $qudo) = @_;
+    my ($class, $master) = @_;
 
-    $class->reconnect($qudo->{database});
+    my $self = bless {
+        database => $master->{database} ,
+        dbh      => '',
+    }, $class;
+    $self->_connect();
 
-    return $class;
-}
-
-=test
-sub connect_info {
-    my ($class, $connect_info) = @_;
-
-    $class->attribute->{dsn} = $connect_info->{dsn};
-    $class->attribute->{username} = $connect_info->{username};
-    $class->attribute->{password} = $connect_info->{password};
-    $class->attribute->{connect_options} = $connect_info->{connect_options};
-
-    my $dbd_type = _dbd_type($connect_info);
-    $class->attribute->{dbd} = DBIx::Skinny::DBD->new($dbd_type);
-}
-=cut
-
-my $DBH;
-sub dbh{
-    my $self = shift;
-    
-    if( @_ ){
-        $DBH = shift @_;
-    }
-    return $DBH;
+    return $self;
 }
 
 sub _connect {
-    my ($class , $qudo )  = @_;
+    my $class = shift;
     
-    $DBH = undef  if $qudo->{flush};
-    if( ! $class->dbh ){
-        my $dbh = DBI->connect(
-            $qudo->{dsn},
-            $qudo->{username},
-            $qudo->{password},
-            { RaiseError => 1, PrintError => 0, AutoCommit => 1, %{ $qudo->{connect_options} || {} } }
-        );
-
-        $class->dbh( $dbh );
-    }
-    return $class->dbh;
-}
-
-sub reconnect {
-    my $class    = shift;
-    my $database = shift;
+    $class->{dbh} =  DBI->connect(
+        $class->{database}->{dsn},
+        $class->{database}->{username},
+        $class->{database}->{password},
+        { RaiseError => 1, PrintError => 0, AutoCommit => 1, %{ $class->{database}->{connect_options} || {} } }
+    );
     
-    $database->{flush} = 1;
-#    $class->connect_info(@_);
-    $class->_connect( $database );
+    return $class;
 }
 
 sub lookup_job {
     my ($class, $job_id) = @_;
 
-    my $sel = $class->dbh->prepare( q/
+    my $sth = $class->{dbh}->prepare(
+        q{
         SELECT
             job.id AS id,
             job.arg AS arg,
@@ -80,23 +49,24 @@ sub lookup_job {
         WHERE
             job.func_id = func.id AND
             job.id      = ?
-        LIMIT 1
-    /);
+        LIMIT 1 }
+    );
 
     eval{
-        $sel->execute( $job_id );
+        $sth->execute( $job_id );
     };
     if( my $e =  $@ ){
         croak 'lookup_job ERROR'.$e;
     }
 
-    return $class->_get_job_data( $sel->fetchrow_hashref() );
+    return $class->_get_job_data( $sth->fetchrow_hashref() );
 }
 
 sub find_job {
     my $class = shift;
 
-    my $sel = $class->dbh->prepare( q/
+    my $sth = $class->{dbh}->prepare(
+        q{
         SELECT
             job.id AS id,
             job.arg AS arg,
@@ -108,17 +78,17 @@ sub find_job {
             job, func
         WHERE
             job.func_id = func.id
-        LIMIT 10
-    /);
+        LIMIT 10 }
+    );
 
     eval{
-        $sel->execute( );
+        $sth->execute( );
     };
     if( my $e =  $@ ){
         croak 'find_job ERROR'.$e;
     }
 
-    return $class->_get_job_data($sel->fetchrow_hashref);
+    return $class->_get_job_data($sth->fetchrow_hashref);
 }
 
 sub _get_job_data {
@@ -138,7 +108,8 @@ sub _get_job_data {
 sub grab_a_job {
     my ($class, %args) = @_;
 
-    my $upd = $class->dbh->prepare( q/
+    my $sth = $class->{dbh}->prepare(
+        q{
         UPDATE
             job
         SET
@@ -146,11 +117,11 @@ sub grab_a_job {
         WHERE
             id = ?
         AND
-            grabbed_until = ?
-    /);
+            grabbed_until = ? }
+    );
 
     eval{
-        $upd->execute(
+        $sth->execute(
             $args{grabbed_until},
             $args{job_id},
             $args{old_grabbed_until},
@@ -158,21 +129,23 @@ sub grab_a_job {
     };
     if( my $e =  $@ ){
         croak 'grab_a_job ERROR'.$e;
+        return;
     }
 
-    return $upd->rows();
+    return 1;
 }
 
 sub logging_exception {
     my ($class, $args) = @_;
 
-    my $ins = $class->dbh->prepare( q/
-        INSERT INTO exception_log  ( job_id , func_id , message , exception_time ) / 
-        . q/ VALUES ( ? , ? , ? , ?)/ 
+    my $sth = $class->{dbh}->prepare(
+        q{ INSERT INTO
+            exception_log  ( job_id , func_id , message , exception_time ) }
+        . q{ VALUES ( ? , ? , ? , ?) }
     );
 
     eval{
-        $ins->execute( 
+        $sth->execute(
             $args->{job_id} , 
             $args->{func_id} , 
             $args->{message} , 
@@ -181,9 +154,10 @@ sub logging_exception {
     };
     if( my $e =  $@ ){
         croak 'logging_exception ERROR'.$e;
+        return;
     }
 
-    return $ins->rows();
+    return 1;
 }
 
 sub get_server_time {
@@ -194,7 +168,7 @@ sub get_server_time {
 #    my $unixtime_sql =  time();
     my $time;
     eval {
-        $time = $class->dbh->selectrow_array("SELECT $unixtime_sql");
+        $time = $class->{dbh}->selectrow_array("SELECT $unixtime_sql");
     };
     if ($@) { $time = time }
     return $time;
@@ -206,30 +180,30 @@ sub enqueue {
     $args->{enqueue_time} = time;
     $args->{grabbed_until} ||= 0;
 
-    my @colum = keys %{$args};
+    my @column = keys %{$args};
     my $sql  = 'INSERT INTO job ( ';
-       $sql .= join ' ,' , @colum;
+       $sql .= join ' ,' , @column;
        $sql .= ' ) VALUES ( ';
-       $sql .= join(', ', ('?') x @colum);
+       $sql .= join(', ', ('?') x @column);
        $sql .=  ')';
 
-    my $ins = $class->dbh->prepare( $sql );
-    my @bind = map {$args->{$_}} @colum;
+    my $sth_ins = $class->{dbh}->prepare( $sql );
+    my @bind = map {$args->{$_}} @column;
     eval{
-        $ins->execute( @bind );
+        $sth_ins->execute( @bind );
     };
     if( $@ ){
         croak 'enqueue ERROR'.$@;
     }
 
-    my $id = $class->last_insert_id($ins);
-    my $sel = $class->dbh->prepare(
+    my $id = $class->last_insert_id($sth_ins);
+    my $sth_sel = $class->{dbh}->prepare(
         q{SELECT * FROM job WHERE id = ?}
     );
 
-    $sel->execute( $id );
-    my $sel_ret = $sel->fetchrow_hashref();
-    return $sel_ret ? $sel_ret->{id} : undef;
+    $sth_sel->execute( $id );
+    my $ret_sel = $sth_sel->fetchrow_hashref();
+    return $ret_sel ? $ret_sel->{id} : undef;
 }
 
 sub last_insert_id{
@@ -237,19 +211,19 @@ sub last_insert_id{
 
     # FIXME: tekitou
     #mysql                                                      # sqlite
-    my $last_id = $sth->{mysql_insertid} || $sth->{insertid} || $class->dbh->func('last_insert_rowid');
+    my $last_id = $sth->{mysql_insertid} || $sth->{insertid} || $class->{dbh}->func('last_insert_rowid');
 
     return $last_id;
 }
 
 sub dequeue {
     my ($class, $args) = @_;
-    my $del = $class->dbh->prepare( q/
-        DELETE FROM  job WHERE id = ? /
+    my $sth = $class->{dbh}->prepare(
+        q{ DELETE FROM  job WHERE id = ? }
     );
 
     eval{
-        $del->execute( $args->{id} );
+        $sth->execute( $args->{id} );
     };
     if( my $e = $@ ){
         croak 'dequeue ERROR'.$e;
@@ -262,65 +236,35 @@ sub dequeue {
 sub get_func_id {
     my ($class, $funcname) = @_;
     
-    my $sth = $class->dbh->prepare(
+    my $sth_sel = $class->{dbh}->prepare(
         q{SELECT * FROM func WHERE name = ?}
     );
 
-    $sth->execute( $funcname );
-    my $row = $sth->fetchrow_hashref();
-    my $func_id = $row ? $row->{id} : do{
-        my $ins_sth = $class->dbh->prepare(
-            q{INSERT INTO func ( name ) VALUES ( ? )}
-        );
-        $ins_sth->execute( $funcname );
-        $sth->execute( $funcname );
-        $sth->fetchrow_hashref->{id};
-    };
-    return $func_id;
-}
-
-=put
-sub get_func_id {
-    my ($class, $funcname) = @_;
-
-    my $func = $class->find_or_create(
-        'table' => 'func',
-        'colum' => 'name',
-        'value' => $funcname
-    );
-    return $func ? $func->{id} : undef;
-}
-
-sub find_or_create{
-    my ($class , %content) = @_;
-
-    my $sel = $class->dbh->prepare( qq/
-        SELECT * FROM $content{table} WHERE $content{colum}  = ? /);
-        
-    $sel->execute( $content{value} );
-    
-    if ( $sel->rows ){
-        return $sel->fetchrow_hashref();
+    $sth_sel->execute( $funcname );
+    my $func_id;
+    my $ret_hashref = $sth_sel->fetchrow_hashref();
+    if ( $ret_hashref ){
+        $func_id =  $ret_hashref->{id};
     }
     else{
-        my $ins = $class->dbh->prepare( qq/
-            INSERT INTO $content{table} ( $content{colum}) VALUES (  ?) /);
+        my $sth_ins = $class->{dbh}->prepare(
+            q{INSERT INTO func ( name ) VALUES ( ? )}
+        );
         eval{
-             $ins->execute( $content{value} );
+            $sth_ins->execute( $funcname );
         };
         if( my $e = $@ ){
             croak $e;
         }
-        $sel->execute( $content{value} );
-
-        if ( $sel->rows ){
-            return $sel->fetchrow_hashref();
+        $sth_sel->execute( $funcname );
+        my $ret_hashref = $sth_sel->fetchrow_hashref();
+        if ( $ret_hashref ){
+            $func_id =  $ret_hashref->{id};
         }
     }
-    return ;
 
+    return $func_id;
 }
-=cut
 
 
 sub single{
@@ -337,15 +281,16 @@ sub single{
     my $q_opt =  join( "and" , map { "$_  $opt->{$_}" } keys %{$opt} );
     map { push @exe_ary , $opt->{$_} } sort keys %{$opt};
         
-    my $sel = $class->dbh->prepare( qq/
-        SELECT * FROM $table / .
-        ($q_where ? qq/ WHERE $q_where / : q// ).
-        qq/ $q_opt / );
+    my $sth = $class->{dbh}->prepare( qq{
+        SELECT * FROM $table } .
+        ($q_where ? qq{ WHERE $q_where } : q{} ).
+        qq{ $q_opt } );
 
-    $sel->execute();
+    $sth->execute();
     
-    if ( $sel->rows ){
-        my $ret_class = bless $sel->fetchrow_hashref , 'Ret::Class';
+    my $ret_hashref = $sth->fetchrow_hashref();
+    if ( $ret_hashref ){
+        my $ret_class = bless $ret_hashref , 'Ret::Class';
         my @ary;
         push @ary , keys %{$ret_class};
         'Ret::Class'->mk_accessors ( @ary );
