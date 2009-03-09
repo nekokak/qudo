@@ -10,15 +10,16 @@ run_tests(6, sub {
         driver   => 'DBI',
     );
 
-    $master->register_hook(qw/Mock::Hook::Enqueue/);
+    my $manager = $master->manager;
+    $manager->register_hooks(qw/Mock::Hook::Enqueue/);
 
-    my $job = $master->manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
+    my $job = $manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
 
     is $job->id, 1;
     is $job->arg, 'hooook';
     is $job->uniqkey, 'uniqkey1';
 
-    $master->unregister_hook(qw/Mock::Hook::Enqueue/);
+    $manager->unregister_hooks(qw/Mock::Hook::Enqueue/);
 
     $job = $master->manager->enqueue("Worker::Test", 'arg', 'uniqkey2');
 

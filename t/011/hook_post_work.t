@@ -10,9 +10,9 @@ run_tests(1, sub {
         driver => 'DBI',
     );
 
-    $master->register_hook(qw/Mock::Hook::PostWork/);
-
     my $manager = $master->manager;
+    $manager->register_hooks(qw/Mock::Hook::PostWork/);
+
     $manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
     stdout_is( sub { $manager->work_once } , "Worker::Test: post worked!\n");
 

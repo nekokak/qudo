@@ -3,17 +3,53 @@ use strict;
 use warnings;
 use Qudo::Job;
 use Carp;
+use UNIVERSAL::require;
 
 sub new {
-    my ($class, %args) = @_;
-    bless {%args}, $class;
+    my $class = shift;
+
+    my $self = bless {
+        driver              => '',
+        find_job_limit_size => '',
+        retry_seconds       => '',
+        default_hooks       => [],
+        hooks               => +{},
+        @_
+    }, $class;
+
+    $self->register_hooks(@{$self->{default_hooks}});
+
+    return $self;
 }
 
 sub driver { shift->{driver} }
 
 sub call_hook {
     my ($self, $hook_point, $args) = @_;
-    $self->{master}->call_hook($hook_point, $args);
+
+    for my $module (keys %{$self->{hooks}->{$hook_point}}) {
+        my $code = $self->{hooks}->{$hook_point}->{$module};
+        $code->($args);
+    }
+}
+
+sub register_hooks {
+    my ($self, @hook_modules) = @_;
+
+    for my $module (@hook_modules) {
+        $module->require or Carp::croak $@;
+        my ($hook_point, $code) = $module->load();
+        $self->{hooks}->{$hook_point}->{$module} = $code;
+    }
+}
+
+sub unregister_hooks {
+    my ($self, @hook_modules) = @_;
+
+    for my $module (@hook_modules) {
+        my $hook_point = $module->unload();
+        delete $self->{hooks}->{$hook_point}->{$module};
+    }
 }
 
 sub enqueue {

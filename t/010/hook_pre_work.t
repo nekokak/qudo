@@ -10,9 +10,9 @@ run_tests(1, sub {
         driver => 'Skinny',
     );
 
-    $master->register_hook(qw/Mock::Hook::PreWork/);
-
     my $manager = $master->manager;
+    $manager->register_hooks(qw/Mock::Hook::PreWork/);
+
     $manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
     stdout_is( sub { $manager->work_once } , "Worker::Test: pre worked!\n");
 
