@@ -19,6 +19,7 @@ use Test::More;
 sub run_tests {
     my ($n, $code) = @_;
 
+    plan tests => $n*2;
     run_tests_mysql($n, $code);
     run_tests_sqlite($n, $code);
 }

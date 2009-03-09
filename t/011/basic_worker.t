@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Qudo::Test;
-use Test::More tests => 2;
 use Test::Output;
 
 run_tests(1, sub {

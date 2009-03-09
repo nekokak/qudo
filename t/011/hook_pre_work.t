@@ -1,9 +1,8 @@
 use strict;
 use warnings;
 use Qudo::Test;
-use Test::More tests => 2;
-use lib './t';
 use Test::Output;
+use lib './t';
 
 run_tests(1, sub {
     my $master = test_master(
