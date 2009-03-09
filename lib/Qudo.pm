@@ -38,7 +38,6 @@ sub setup_driver {
 sub manager {
     my $self = shift;
     Qudo::Manager->new(
-        master              => $self,
         driver              => $self->{driver},
         find_job_limit_size => $self->{find_job_limit_size},
         retry_seconds       => $self->{retry_seconds},
