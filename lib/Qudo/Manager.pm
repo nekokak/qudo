@@ -69,7 +69,7 @@ sub lookup_job {
 sub find_job {
     my $self = shift;
 
-    my $callback = $self->driver->find_job;
+    my $callback = $self->driver->find_job($self->{find_job_limit_size});
 
     return $self->_grab_a_job($callback);
 }

@@ -14,7 +14,7 @@ sub init_driver {
 sub lookup_job {
     my ($class, $job_id) = @_;
 
-    my $job_itr = $class->search_by_sql(q{
+    my $job_itr = $class->search_named(q{
         SELECT
             job.id, job.arg, job.uniqkey, job.func_id,
             job.grabbed_until,
@@ -23,17 +23,17 @@ sub lookup_job {
             job, func
         WHERE
             job.func_id = func.id AND
-            job.id      = ?
+            job.id      = :job_id
         LIMIT 1
-    },[$job_id]);
+    },{job_id => $job_id});
 
     return $class->_get_job_data($job_itr);
 }
 
 sub find_job {
-    my $class = shift;
+    my ($class, $limit) = @_;
 
-    my $job_itr = $class->search_by_sql(q{
+    my $job_itr = $class->search_named(q{
         SELECT
             job.id,  job.arg, job.uniqkey, job.func_id,
             job.grabbed_until,
@@ -43,7 +43,7 @@ sub find_job {
         WHERE
             job.func_id = func.id
         LIMIT 10
-    });
+    },{},[$limit]);
 
     return $class->_get_job_data($job_itr);
 }
