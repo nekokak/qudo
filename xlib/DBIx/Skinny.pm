@@ -193,8 +193,9 @@ sub single {
 }
 
 sub search_named {
-    my ($class, $sql, $args, $opt_table_info) = @_;
+    my ($class, $sql, $args, $opts, $opt_table_info) = @_;
 
+    $sql = sprintf($sql, @{$opts||[]});
     my %named_bind = %{$args};
     my @bind;
     $sql =~ s{:([A-Za-z_][A-Za-z0-9_]*)}{
