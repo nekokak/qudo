@@ -31,8 +31,9 @@ sub lookup_job {
 }
 
 sub find_job {
-    my ($class, $limit) = @_;
+    my ($class, $limit, $func_map) = @_;
 
+    my ($sql_part, $ids) = $class->_func_map_ids($func_map);
     my $job_itr = $class->search_named(q{
         SELECT
             job.id,  job.arg, job.uniqkey, job.func_id,
@@ -41,11 +42,30 @@ sub find_job {
         FROM
             job, func
         WHERE
-            job.func_id = func.id
+            job.func_id = func.id AND
+            func.id in (%s)
         LIMIT %d 
-    },{},[$limit]);
+    },{%$ids},[$sql_part, $limit]);
 
     return $class->_get_job_data($job_itr);
+}
+
+sub _func_map_ids {
+    my ($class, $func_map) = @_;
+
+    my (%ids, @parts);
+    for my $funcname (keys %$func_map) {
+        my $func = $class->single('func',{name => $funcname});
+        next unless $func;
+
+        (my $part = $funcname) =~ s/:/_/g;
+        push @parts, $part;
+
+        $ids{$part} = $func->id;
+    }
+
+    my $sql_part = join ',', map { ':'.$_ } @parts;
+    return $sql_part, \%ids;
 }
 
 sub _get_job_data {

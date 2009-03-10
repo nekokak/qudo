@@ -10,7 +10,9 @@ run_tests(3, sub {
         driver => $driver,
     );
 
-    my $job = $master->manager->enqueue("Worker::Test", 'arg', 'uniqkey');
+    my $manager = $master->manager;
+    $manager->can_do('Worker::Test');
+    my $job = $manager->enqueue("Worker::Test", 'arg', 'uniqkey');
 
     is $job->id, 1;
     is $job->arg, 'arg';

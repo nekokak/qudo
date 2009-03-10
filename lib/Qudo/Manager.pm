@@ -12,6 +12,7 @@ sub new {
         driver              => '',
         find_job_limit_size => '',
         retry_seconds       => '',
+        fanc_map            => +{},
         default_hooks       => [],
         hooks               => +{},
         @_
@@ -50,6 +51,11 @@ sub unregister_hooks {
         my $hook_point = $module->unload();
         delete $self->{hooks}->{$hook_point}->{$module};
     }
+}
+
+sub can_do {
+    my ($self, $funcname) = @_;
+    $self->{func_map}->{$funcname} = 1;
 }
 
 sub enqueue {
@@ -105,7 +111,8 @@ sub lookup_job {
 sub find_job {
     my $self = shift;
 
-    my $callback = $self->driver->find_job($self->{find_job_limit_size});
+    return unless keys %{$self->{func_map}};
+    my $callback = $self->driver->find_job($self->{find_job_limit_size}, $self->{func_map});
 
     return $self->_grab_a_job($callback);
 }

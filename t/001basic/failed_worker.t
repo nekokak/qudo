@@ -12,6 +12,7 @@ run_tests(3, sub {
     );
 
     my $manager = $master->manager;
+    $manager->can_do('Worker::Test');
     my $job = $manager->enqueue("Worker::Test", 'arg', 'uniqkey');
     $manager->work_once;
 

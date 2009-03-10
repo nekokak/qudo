@@ -12,6 +12,7 @@ run_tests(6, sub {
     );
 
     my $manager = $master->manager;
+    $manager->can_do('Worker::Test');
     $manager->register_hooks(qw/Mock::Hook::Enqueue/);
 
     my $job = $manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
