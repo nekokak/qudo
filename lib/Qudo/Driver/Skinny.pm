@@ -42,7 +42,7 @@ sub find_job {
             job, func
         WHERE
             job.func_id = func.id
-        LIMIT 10
+        LIMIT %d 
     },{},[$limit]);
 
     return $class->_get_job_data($job_itr);
