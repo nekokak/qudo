@@ -5,16 +5,17 @@ use Test::Output;
 use lib './t';
 
 run_tests(1, sub {
+    my $driver = shift;
     my $master = test_master(
         dbname => 'tq1',
-        driver   => 'Skinny',
+        driver => $driver,
     );
 
     my $manager = $master->manager;
-    $manager->register_hooks(qw/Mock::Hook::PostWork/);
+    $manager->register_hooks(qw/Mock::Hook::PreWork/);
 
     $manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
-    stdout_is( sub { $manager->work_once } , "Worker::Test: post worked!\n");
+    stdout_is( sub { $manager->work_once } , "Worker::Test: pre worked!\n");
 
     teardown_db('tq1');
 });

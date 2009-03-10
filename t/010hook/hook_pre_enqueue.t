@@ -5,9 +5,10 @@ use Test::More;
 use lib './t';
 
 run_tests(6, sub {
+    my $driver = shift;
     my $master = test_master(
-        dbname   => 'tq1',
-        driver   => 'DBI',
+        dbname => 'tq1',
+        driver => $driver,
     );
 
     my $manager = $master->manager;

@@ -5,9 +5,10 @@ use Test::More;
 use Test::Output;
 
 run_tests(3, sub {
+    my $driver = shift;
     my $master = test_master(
-        dbname   => 'tq1',
-        driver   => 'Skinny',
+        dbname => 'tq1',
+        driver => $driver,
     );
 
     my $manager = $master->manager;

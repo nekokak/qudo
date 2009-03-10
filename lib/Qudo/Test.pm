@@ -16,12 +16,18 @@ use YAML;
 use DBI;
 use Test::More;
 
+our @SUPPORT_DRIVER = qw/Skinny DBI/;
+
 sub run_tests {
     my ($n, $code) = @_;
 
-    plan tests => $n*2;
-    run_tests_mysql($n, $code);
-    run_tests_sqlite($n, $code);
+    plan tests => $n*3*scalar(@SUPPORT_DRIVER);
+
+    for my $driver (@SUPPORT_DRIVER) {
+        run_tests_mysql( $n, $driver, $code);
+        run_tests_innodb($n, $driver, $code);
+        run_tests_sqlite($n, $driver, $code);
+    }
 }
 
 sub run_tests_innodb {
@@ -30,25 +36,25 @@ sub run_tests_innodb {
 }
 
 sub run_tests_mysql {
-    my ($n, $code, $innodb) = @_;
+    my ($n, $driver, $code, $innodb) = @_;
 
     SKIP: {
         local $ENV{USE_MYSQL} = 1;
         my $dbh = eval { mysql_dbh() }; ## no critic
         skip "MySQL not accessible as root on localhost", $n if $@;
         skip "InnoDB not available on localhost's MySQL", $n if $innodb && ! has_innodb($dbh);
-        $code->();
+        $code->($driver);
     }
 }
 
 sub run_tests_sqlite {
-    my ($n, $code) = @_;
+    my ($n, $driver, $code) = @_;
 
     SKIP: {
         my $rv = eval "use DBD::SQLite; 1"; ## no critic
         $rv = 0 if $ENV{SKIP_SQLITE};
         skip "SQLite not installed", $n if !$rv;
-        $code->();
+        $code->($driver);
     }
 }
 

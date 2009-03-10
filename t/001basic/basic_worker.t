@@ -4,9 +4,10 @@ use Qudo::Test;
 use Test::Output;
 
 run_tests(1, sub {
+    my $driver = shift;
     my $master = test_master(
         dbname   => 'tq1',
-        driver   => 'Skinny',
+        driver   => $driver,
     );
 
     my $manager = $master->manager;

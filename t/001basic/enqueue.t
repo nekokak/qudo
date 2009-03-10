@@ -4,9 +4,10 @@ use Qudo::Test;
 use Test::More;
 
 run_tests(3, sub {
+    my $driver = shift;
     my $master = test_master(
-        dbname   => 'tq1',
-        driver   => 'DBI',
+        dbname => 'tq1',
+        driver => $driver,
     );
 
     my $job = $master->manager->enqueue("Worker::Test", 'arg', 'uniqkey');
