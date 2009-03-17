@@ -177,8 +177,9 @@ sub get_server_time {
 sub enqueue {
     my ($class, $args) = @_;
 
-    $args->{enqueue_time} = time;
+    $args->{enqueue_time}  ||= time;
     $args->{grabbed_until} ||= 0;
+    $args->{retry_cnt}     ||= 0;
 
     my @column = keys %{$args};
     my $sql  = 'INSERT INTO job ( ';

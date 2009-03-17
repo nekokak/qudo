@@ -188,6 +188,7 @@ sqlite:
         uniqkey         VARCHAR(255) NULL,
         enqueue_time    INTEGER UNSIGNED,
         grabbed_until   INTEGER UNSIGNED NOT NULL,
+        retry_cnt       INTEGER UNSIGNED NOT NULL,
         UNIQUE(func_id,uniqkey)
     )
   - |-
@@ -214,6 +215,7 @@ mysql:
         uniqkey         VARCHAR(255) NULL,
         enqueue_time    INTEGER UNSIGNED,
         grabbed_until   INTEGER UNSIGNED NOT NULL,
+        retry_cnt       INTEGER UNSIGNED NOT NULL DEFAULT 0,
         UNIQUE(func_id, uniqkey)
     )
   - |-
