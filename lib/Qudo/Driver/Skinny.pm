@@ -17,7 +17,7 @@ sub lookup_job {
     my $job_itr = $class->search_named(q{
         SELECT
             job.id, job.arg, job.uniqkey, job.func_id,
-            job.grabbed_until,
+            job.grabbed_until, job.retry_cnt,
             func.name AS funcname
         FROM
             job, func
@@ -37,7 +37,7 @@ sub find_job {
     my $job_itr = $class->search_named(q{
         SELECT
             job.id,  job.arg, job.uniqkey, job.func_id,
-            job.grabbed_until,
+            job.grabbed_until, job.retry_cnt,
             func.name AS funcname
         FROM
             job, func
@@ -77,6 +77,7 @@ sub _get_job_data {
             job_arg           => $job->arg,
             job_uniqkey       => $job->uniqkey,
             job_grabbed_until => $job->grabbed_until,
+            job_retry_cnt     => $job->retry_cnt,
             func_id           => $job->func_id,
             func_name         => $job->funcname,
         };

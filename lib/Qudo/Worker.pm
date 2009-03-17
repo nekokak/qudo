@@ -13,11 +13,16 @@ sub work_safely {
     eval {
         $res = $class->work($job);
     };
-    if (my $e = $@) {
-        $manager->job_failed($job, $e);
+    if ($@) {
+        $manager->job_failed($job, $@);
     }
     if (!$job->is_completed) {
-        $manager->job_failed($job, 'Job did not explicitly complete, fail, or get replaced');
+
+        if ( $job->retry_cnt < $class->max_retries ) {
+            $job->reenqueue;
+        } else {
+            $manager->job_failed($job, 'Job did not explicitly complete, fail, or get replaced');
+        }
     }
 
     return $res;

@@ -43,6 +43,7 @@ sub lookup_job {
             job.uniqkey AS uniqkey,
             job.func_id AS func_id,
             job.grabbed_until,
+            job.retry_cnt,
             func.name AS funcname
         FROM
             job, func
@@ -73,6 +74,7 @@ sub find_job {
             job.uniqkey AS uniqkey,
             job.func_id AS func_id,
             job.grabbed_until,
+            job.retry_cnt,
             func.name AS funcname
         FROM
             job, func
@@ -99,6 +101,7 @@ sub _get_job_data {
             job_arg           => $hash_ref->{arg},
             job_uniqkey       => $hash_ref->{uniqkey},
             job_grabbed_until => $hash_ref->{grabbed_until},
+            job_retry_cnt     => $hash_ref->{retry_cnt},
             func_id           => $hash_ref->{func_id},
             func_name         => $hash_ref->{funcname},
         };
