@@ -14,12 +14,10 @@ sub hook_point {
 }
 
 sub load {
-    my $class = shift;
     warn 'this method is abstract';
 }
 
 sub unload {
-    my $class = shift;
     warn 'this method is abstract';
 }
 

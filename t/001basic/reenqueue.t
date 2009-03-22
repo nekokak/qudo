@@ -6,7 +6,7 @@ use Test::Output;
 
 @Qudo::Test::SUPPORT_DRIVER = qw/Skinny/;
 
-run_tests(3, sub {
+run_tests(5, sub {
     my $driver = shift;
     my $master = test_master(
         dbname => 'tq1',

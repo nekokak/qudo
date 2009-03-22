@@ -1,9 +1,9 @@
-package Mock::Plugin::Output;
+package Mock::Plugin::Coderef;
 use strict;
 use warnings;
 use base 'Qudo::Plugin';
 
-sub plugin_name { 'output' }
+sub plugin_name { 'coderef' }
 
 sub load {
     my $class = shift;

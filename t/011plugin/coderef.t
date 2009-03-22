@@ -13,7 +13,7 @@ run_tests(1, sub {
 
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
-    $manager->register_plugins(qw/Mock::Plugin::Output/);
+    $manager->register_plugins(qw/Mock::Plugin::Coderef/);
 
     $manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
     stdout_is( sub { $manager->work_once } , "arg");
@@ -26,5 +26,5 @@ use base 'Qudo::Worker';
 
 sub work {
     my ($class, $job, $manager) = @_;
-    $manager->plugin->{output}->($job->arg);
+    $manager->plugin->{coderef}->($job->arg);
 }
