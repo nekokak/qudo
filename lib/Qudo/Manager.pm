@@ -14,16 +14,20 @@ sub new {
         retry_seconds       => '',
         fanc_map            => +{},
         default_hooks       => [],
+        default_plugins     => [],
         hooks               => +{},
+        plugin              => +{},
         @_
     }, $class;
 
     $self->register_hooks(@{$self->{default_hooks}});
+    $self->register_plugins(@{$self->{default_plugins}});
 
     return $self;
 }
 
 sub driver { shift->{driver} }
+sub plugin { shift->{plugin} }
 
 sub call_hook {
     my ($self, $hook_point, $args) = @_;
@@ -31,6 +35,16 @@ sub call_hook {
     for my $module (keys %{$self->{hooks}->{$hook_point}}) {
         my $code = $self->{hooks}->{$hook_point}->{$module};
         $code->($args);
+    }
+}
+
+sub register_plugins {
+    my ($self, @plugins) = @_;
+
+    for my $plugin (@plugins) {
+        $plugin->require or Carp::croak $@;
+        my ($plugin_name, $code) = $plugin->load();
+        $self->{plugin}->{$plugin_name} = $code;
     }
 }
 

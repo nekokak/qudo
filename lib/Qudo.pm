@@ -19,6 +19,7 @@ sub new {
         find_job_limit_size => $FIND_JOB_LIMIT_SIZE,
         driver_class        => $DEFAULT_DRIVER,
         default_hooks       => [],
+        default_plugins     => [],
         @_,
     }, $class;
 
@@ -42,6 +43,7 @@ sub manager {
         find_job_limit_size => $self->{find_job_limit_size},
         retry_seconds       => $self->{retry_seconds},
         default_hooks       => $self->{default_hooks},
+        default_plugins     => $self->{default_plugins},
     );
 }
 
