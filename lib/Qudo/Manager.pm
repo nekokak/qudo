@@ -79,6 +79,14 @@ sub enqueue {
     return $self->lookup_job($job_id);
 }
 
+sub reenqueue {
+    my ($self, $job, $args) = @_;
+
+    $self->driver->reenqueue($job->id, $args);
+
+    return $self->lookup_job($job->id);
+}
+
 sub dequeue {
     my ($self, $job) = @_;
     $self->driver->dequeue({id => $job->id});

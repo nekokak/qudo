@@ -117,6 +117,12 @@ sub enqueue {
     return $job ? $job->id : undef;
 }
 
+sub reenqueue {
+    my ($class, $job_id, $args) = @_;
+
+    $class->update('job', $args, {id => $job_id});
+}
+
 sub dequeue {
     my ($class, $args) = @_;
     $class->delete->('job', $args);

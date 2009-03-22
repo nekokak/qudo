@@ -18,7 +18,7 @@ sub grabbed_until { shift->{job_data}->{job_grabbed_until} }
 sub completed {
     my $self = shift;
     $self->{_complete} = 1;
-    $self->manager->dequeue_job($self);
+    $self->{manager}->dequeue_job($self);
 }
 
 sub is_completed {
@@ -27,7 +27,8 @@ sub is_completed {
 }
 
 sub reenqueue {
-    my $self = shift;
+    my ($self, $args) = @_;
+    $self->{manager}->reenqueue($self, $args);
 }
 
 1;

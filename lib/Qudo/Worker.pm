@@ -19,10 +19,14 @@ sub work_safely {
     if (!$job->is_completed) {
 
         if ( $job->retry_cnt < $class->max_retries ) {
-            $job->reenqueue;
-        } else {
-            $manager->job_failed($job, 'Job did not explicitly complete, fail, or get replaced');
+            $job->reenqueue(
+                {
+                    retry_cnt   => $job->retry_cnt + 1,
+                    retry_delay => $class->retry_delay,
+                }
+            );
         }
+        $manager->job_failed($job, 'Job did not explicitly complete, fail, or get replaced');
     }
 
     return $res;

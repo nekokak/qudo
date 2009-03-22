@@ -11,6 +11,11 @@ install_table job => schema {
         $args->{grabbed_until} ||= 0;
         $args->{retry_cnt}     ||= 0;
     };
+
+    trigger pre_update => callback {
+        my ($class, $args) = @_;
+        $args->{enqueue_time} = time + (delete $args->{retry_delay}||0);
+    };
 };
 
 install_table func => schema {
