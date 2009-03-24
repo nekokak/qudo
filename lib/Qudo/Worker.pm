@@ -16,8 +16,9 @@ sub work_safely {
     if ($@) {
         $manager->job_failed($job, $@);
     }
-    if (!$job->is_completed) {
-
+    if ( $job->is_completed ) {
+        $manager->dequeue($job);
+    } else {
         if ( $job->retry_cnt < $class->max_retries ) {
             $job->reenqueue(
                 {

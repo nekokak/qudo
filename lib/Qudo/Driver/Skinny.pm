@@ -125,7 +125,7 @@ sub reenqueue {
 
 sub dequeue {
     my ($class, $args) = @_;
-    $class->delete->('job', $args);
+    $class->delete('job', $args);
 }
 
 sub get_func_id {

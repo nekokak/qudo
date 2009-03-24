@@ -19,13 +19,9 @@ sub manager  { shift->{manager} }
 sub completed {
     my $self = shift;
     $self->{_complete} = 1;
-    $self->manager->dequeue_job($self);
 }
 
-sub is_completed {
-    my $self = shift;
-    $self->{_complete};
-}
+sub is_completed { shift->{_complete} }
 
 sub reenqueue {
     my ($self, $args) = @_;
