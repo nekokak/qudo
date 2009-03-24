@@ -20,6 +20,8 @@ sub new {
         driver_class        => $DEFAULT_DRIVER,
         default_hooks       => [],
         default_plugins     => [],
+        manager             => '',
+        manager_abilities   => [],
         @_,
     }, $class;
 
@@ -38,13 +40,29 @@ sub setup_driver {
 
 sub manager {
     my $self = shift;
-    Qudo::Manager->new(
+
+    $self->{manager} ||= Qudo::Manager->new(
         driver              => $self->{driver},
         find_job_limit_size => $self->{find_job_limit_size},
         retry_seconds       => $self->{retry_seconds},
         default_hooks       => $self->{default_hooks},
         default_plugins     => $self->{default_plugins},
+        abilities           => $self->{manager_abilities},
     );
+}
+
+sub work {
+    my ($self, $work_delay) = @_;
+    $work_delay ||= 5;
+
+    my $manager = $self->manager;
+    unless ($manager->has_abilities) {
+        Carp::croak 'manager dose not have abilities.';
+    }
+
+    while (1) {
+        sleep $work_delay unless $self->manager->work_once;
+    }
 }
 
 =head1 NAME
@@ -53,7 +71,31 @@ Qudo - simple job queue manager
 
 =head1 SYNOPSIS
 
-  use Qudo;
+    # enqueue job:
+    use Qudo;
+    my $qudo = Qudo->new(
+        driver_class => 'Skinny',
+        database => +{
+            dsn      => 'dbi:sqlite:/tmp/qudo.db',
+            username => '',
+            password => '',
+        }
+    );
+    $qudo->manager->enqueue("Worker::Test", 'arg', 'uniqkey');
+    
+    # do work:
+    use Qudo;
+    my $qudo = Qudo->new(
+        driver_class => 'Skinny',
+        database => +{
+            dsn      => 'dbi:sqlite:/tmp/qudo.db',
+            username => '',
+            password => '',
+        }
+        manager_abilities => [qw/Worker::Test/],
+    );
+    $qudo->work(); # boot manager
+    # work work work!
 
 =head1 DESCRIPTION
 

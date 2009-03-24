@@ -17,11 +17,13 @@ sub new {
         default_plugins     => [],
         hooks               => +{},
         plugin              => +{},
+        abilities           => [],
         @_
     }, $class;
 
     $self->register_hooks(@{$self->{default_hooks}});
     $self->register_plugins(@{$self->{default_plugins}});
+    $self->register_abilities(@{$self->{abilities}});
 
     return $self;
 }
@@ -29,13 +31,16 @@ sub new {
 sub driver { shift->{driver} }
 sub plugin { shift->{plugin} }
 
-sub call_hook {
-    my ($self, $hook_point, $args) = @_;
+sub register_abilities {
+    my ($self, @abilities) = @_;
 
-    for my $module (keys %{$self->{hooks}->{$hook_point}}) {
-        my $code = $self->{hooks}->{$hook_point}->{$module};
-        $code->($args);
+    for my $ability (@abilities) {
+        $self->can_do($ability);
     }
+}
+
+sub has_abilities {
+    keys %{shift->{func_map}};
 }
 
 sub register_plugins {
@@ -45,6 +50,15 @@ sub register_plugins {
         $plugin->require or Carp::croak $@;
         my ($plugin_name, $code) = $plugin->load();
         $self->{plugin}->{$plugin_name} = $code;
+    }
+}
+
+sub call_hook {
+    my ($self, $hook_point, $args) = @_;
+
+    for my $module (keys %{$self->{hooks}->{$hook_point}}) {
+        my $code = $self->{hooks}->{$hook_point}->{$module};
+        $code->($args);
     }
 }
 
