@@ -25,6 +25,6 @@ package Worker::Test;
 use base 'Qudo::Worker';
 
 sub work {
-    my ($class, $job, $manager) = @_;
-    $manager->plugin->{coderef}->($job->arg);
+    my ($class, $job) = @_;
+    $job->manager->plugin->{coderef}->($job->arg);
 }

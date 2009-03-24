@@ -11,7 +11,7 @@ sub work_safely {
     my $res;
 
     eval {
-        $res = $class->work($job, $manager);
+        $res = $class->work($job);
     };
     if ($@) {
         $manager->job_failed($job, $@);
