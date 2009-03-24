@@ -51,6 +51,11 @@ sub manager {
     );
 }
 
+sub enqueue {
+    my $self = shift;
+    $self->manager->enqueue(@_);
+}
+
 sub work {
     my ($self, $work_delay) = @_;
     $work_delay ||= 5;
@@ -81,7 +86,7 @@ Qudo - simple job queue manager
             password => '',
         }
     );
-    $qudo->manager->enqueue("Worker::Test", 'arg', 'uniqkey');
+    $qudo->enqueue("Worker::Test", 'arg', 'uniqkey');
     
     # do work:
     use Qudo;

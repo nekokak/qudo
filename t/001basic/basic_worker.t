@@ -12,7 +12,7 @@ run_tests(1, sub {
 
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
-    my $job = $manager->enqueue("Worker::Test", 'arg', 'uniqkey');
+    my $job = $master->enqueue("Worker::Test", 'arg', 'uniqkey');
     stdout_is( sub { $manager->work_once } , "arg");
 
     teardown_db('tq1');
