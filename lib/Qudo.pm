@@ -61,7 +61,7 @@ sub work {
     }
 
     while (1) {
-        sleep $work_delay unless $self->manager->work_once;
+        sleep $work_delay unless $manager->work_once;
     }
 }
 
