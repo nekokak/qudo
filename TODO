@@ -5,10 +5,8 @@ todo:
   - JOBのリトライ処理を分かりやすく実装する
   - DebugLog的なものを取るやつ
   - databaseを複数個指定する場合はDBの死活監視もやっぱり入れるべきかね
-  - funcとかある程度DB引かなくていいようにインスタンスにキャッシュしたいかも
   - masterがmanagerを起動するときに自動でforkさせてもよいかも
-  - Driver::Skinnyの_func_map_idsが微妙すぎるので直す
-  -- 結局JOINするのであれば、funcnameをそのまま条件にいれればいい
+  -- pallarel_workみたいに？
   - lookup_jobした時にgrabしてしまうのはどうなんだろう
   -- enqueueした時に内部ではlookup_jobしているのでgrabされてしまう
   - job.argsのStorable

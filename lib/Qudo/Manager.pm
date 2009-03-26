@@ -89,7 +89,7 @@ sub can_do {
 sub enqueue {
     my ($self, $funcname, $arg, $uniqkey) = @_;
 
-    my $func_id = $self->driver->get_func_id( $funcname );
+    my $func_id = $self->{_func_id_cache}->{$funcname} ||= $self->driver->get_func_id( $funcname );
 
     unless ($func_id) {
         croak "$funcname can't get";
