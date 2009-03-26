@@ -14,7 +14,7 @@ sub init_driver {
 sub job_list {
     my ($class, $limit, $funcs) = @_;
 
-    my $rs = $class->_search_job_rs($limit);
+    my $rs = $class->_search_job_rs(limit => $limit);
     if ($funcs) {
         $rs->add_where('func.name' => $funcs)
     }
@@ -34,7 +34,7 @@ sub job_list {
 sub lookup_job {
     my ($class, $job_id) = @_;
 
-    my $rs = $class->_search_job_rs(1);
+    my $rs = $class->_search_job_rs(limit => 1);
     $rs->add_where('job.id' => $job_id);
     my $itr = $rs->retrieve;
 
@@ -44,7 +44,7 @@ sub lookup_job {
 sub find_job {
     my ($class, $limit, $func_map) = @_;
 
-    my $rs = $class->_search_job_rs($limit);
+    my $rs = $class->_search_job_rs(limit => $limit);
     $rs->add_where('func.name' => [keys %$func_map]);
     my $itr = $rs->retrieve;
 
@@ -52,12 +52,12 @@ sub find_job {
 }
 
 sub _search_job_rs {
-    my ($class, $limit) = @_;
+    my ($class, %args) = @_;
 
     my $rs = $class->resultset(
         {
             select => [qw/job.id job.arg job.uniqkey job.func_id job.grabbed_until job.retry_cnt/],
-            limit  => $limit,
+            limit  => $args{limit},
         }
     );
     $rs->add_select('func.name' => 'funcname');
