@@ -11,6 +11,40 @@ sub init_driver {
     return $class;
 }
 
+sub job_list {
+    my ($class, $limit, $funcs) = @_;
+
+    my $rs = $class->resultset(
+        {
+            select => [qw/job.id job.arg job.uniqkey job.func_id job.grabbed_until job.retry_cnt/],
+            limit  => $limit,
+        }
+    );
+    $rs->add_select('func.name' => 'funcname');
+    $rs->add_join(
+        job => {
+            type      => 'inner',
+            table     => 'func',
+            condition => 'job.func_id = func.id',
+        }
+    );
+
+    if ($funcs) {
+        $rs->add_where('func.name' => $funcs)
+    }
+
+    my $itr = $rs->retrieve;
+    my $code = $class->_get_job_data($itr);
+
+    my @jobs;
+    while (1) {
+        my $row = $code->();
+        last unless $row;
+        push @jobs, $row;
+    }
+    return \@jobs;
+}
+
 sub lookup_job {
     my ($class, $job_id) = @_;
 
@@ -33,7 +67,7 @@ sub lookup_job {
 sub find_job {
     my ($class, $limit, $func_map) = @_;
 
-    my ($sql_part, $names) = $class->_func_map_names($func_map);
+    my ($sql_part, $names) = $class->_func_map_names([keys %$func_map]);
     my $job_itr = $class->search_named(q{
         SELECT
             job.id,  job.arg, job.uniqkey, job.func_id,
@@ -51,10 +85,10 @@ sub find_job {
 }
 
 sub _func_map_names {
-    my ($class, $func_map) = @_;
+    my ($class, $funcs) = @_;
 
     my (%names, @parts);
-    for my $funcname (keys %$func_map) {
+    for my $funcname (@$funcs) {
         (my $part = $funcname) =~ s/:/_/g;
         push @parts, $part;
         $names{$part} = $funcname;
@@ -67,7 +101,7 @@ sub _func_map_names {
 sub _get_job_data {
     my ($class, $itr) = @_;
     sub {
-        my $job = $itr->next;
+        my $job = $itr->next or return;
         return +{
             job_id            => $job->id,
             job_arg           => $job->arg,

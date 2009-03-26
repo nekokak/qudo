@@ -11,6 +11,5 @@ todo:
   -- enqueueした時に内部ではlookup_jobしているのでgrabされてしまう
   - job.argsのStorable
   -- jsonでもいいとおもってるのでその辺りはデフォルトの設定とHookで任意に切り替えたい
-  - jobのListが見たい
   - jobの件数がみたい
   -- 全体/func毎
