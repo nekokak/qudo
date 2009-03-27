@@ -11,6 +11,31 @@ sub init_driver {
     return $class;
 }
 
+sub job_count {
+    my ($class, $funcs) = @_;
+
+    my $rs = $class->resultset(
+        {
+            from => [qw/job/],
+        }
+    );
+    $rs->add_select('COUNT(job.id)' => 'count');
+
+    if ($funcs) {
+        $rs->from([]);
+        $rs->add_join(
+            job => {
+                type      => 'inner',
+                table     => 'func',
+                condition => 'job.func_id = func.id',
+            }
+        );
+        $rs->add_where('func.name' => $funcs);
+    }
+
+    return $rs->retrieve->first->count;
+}
+
 sub job_list {
     my ($class, $limit, $funcs) = @_;
 

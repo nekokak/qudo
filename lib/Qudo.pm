@@ -76,6 +76,12 @@ sub job_list {
     return $self->{driver}->job_list($self->{find_job_limit_size}, $funcs);
 }
 
+sub job_count {
+    my ($self, $funcs) = @_;
+
+    return $self->{driver}->job_count($funcs);
+}
+
 =head1 NAME
 
 Qudo - simple job queue manager
