@@ -5,6 +5,8 @@ use warnings;
 use DBI;
 use Carp qw/croak/;
 
+use Qudo::Driver::DBI::DBD;
+
 use Data::Dumper;
 
 sub init_driver {
@@ -13,9 +15,13 @@ sub init_driver {
     my $self = bless {
         database => $master->{database} ,
         dbh      => '',
+        dbd      => '',
     }, $class;
     $self->_connect();
 
+    my $dbd_type = $self->{dbh}->{Driver}->{Name};
+    $self->{dbd} = Qudo::Driver::DBI::DBD->new($dbd_type) or die;
+    
     return $self;
 }
 
@@ -165,10 +171,8 @@ sub logging_exception {
 
 sub get_server_time {
     my $class = shift;
-#    my $unixtime_sql = $class->dbd->sql_for_unixtime;
-    my $unixtime_sql =  "UNIX_TIMESTAMP()";
-# SQLIite
-#    my $unixtime_sql =  time();
+
+    my $unixtime_sql = $class->{dbd}->sql_for_unixtime;
     my $time;
     eval {
         $time = $class->{dbh}->selectrow_array("SELECT $unixtime_sql");

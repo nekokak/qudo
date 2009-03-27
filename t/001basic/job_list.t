@@ -6,8 +6,8 @@ use Test::More;
 run_tests(2, sub {
     my $driver = shift;
     my $master = test_master(
-        dbname   => 'tq1',
-        driver   => $driver,
+        dbname       => 'tq1',
+        driver_class => $driver,
     );
 
     $master->enqueue("Worker::Test1", 'arg1', 'uniqkey1');

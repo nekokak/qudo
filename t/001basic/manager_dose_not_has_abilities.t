@@ -7,8 +7,8 @@ use Test::Output;
 run_tests(1, sub {
     my $driver = shift;
     my $master = test_master(
-        dbname   => 'tq1',
-        driver   => $driver,
+        dbname       => 'tq1',
+        driver_class => $driver,
     );
 
     ok ! $master->manager->has_abilities;

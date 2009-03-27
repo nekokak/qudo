@@ -9,8 +9,8 @@ use Test::Output;
 run_tests(5, sub {
     my $driver = shift;
     my $master = test_master(
-        dbname => 'tq1',
-        driver => $driver,
+        dbname       => 'tq1',
+        driver_class => $driver,
     );
 
     my $manager = $master->manager;
