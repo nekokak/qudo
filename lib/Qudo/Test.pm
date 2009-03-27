@@ -31,8 +31,8 @@ sub run_tests {
 }
 
 sub run_tests_innodb {
-    my ($n, $code) = @_;
-    run_tests_mysql($n, $code, 1);
+    my ($n, $driver, $code) = @_;
+    run_tests_mysql($n, $driver, $code, 1);
 }
 
 sub run_tests_mysql {
