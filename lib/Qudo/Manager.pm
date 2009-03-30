@@ -28,8 +28,8 @@ sub new {
     return $self;
 }
 
-sub driver { shift->{driver} }
-sub plugin { shift->{plugin} }
+sub driver { $_[0]->{driver} }
+sub plugin { $_[0]->{plugin} }
 
 sub register_abilities {
     my ($self, @abilities) = @_;
@@ -40,7 +40,7 @@ sub register_abilities {
 }
 
 sub has_abilities {
-    keys %{shift->{func_map}};
+    keys %{$_[0]->{func_map}};
 }
 
 sub register_plugins {

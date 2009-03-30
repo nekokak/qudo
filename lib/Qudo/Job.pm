@@ -7,21 +7,19 @@ sub new {
     bless {%args}, $class;
 }
 
-sub id       { shift->{job_data}->{job_id}       }
-sub arg      { shift->{job_data}->{job_arg}      }
-sub uniqkey  { shift->{job_data}->{job_uniqkey}  }
-sub func_id  { shift->{job_data}->{func_id}      }
-sub funcname { shift->{job_data}->{func_name}    }
-sub retry_cnt     { shift->{job_data}->{job_retry_cnt}     }
-sub grabbed_until { shift->{job_data}->{job_grabbed_until} }
-sub manager  { shift->{manager} }
+sub id       { $_[0]->{job_data}->{job_id}       }
+sub arg      { $_[0]->{job_data}->{job_arg}      }
+sub uniqkey  { $_[0]->{job_data}->{job_uniqkey}  }
+sub func_id  { $_[0]->{job_data}->{func_id}      }
+sub funcname { $_[0]->{job_data}->{func_name}    }
+sub retry_cnt     { $_[0]->{job_data}->{job_retry_cnt}     }
+sub grabbed_until { $_[0]->{job_data}->{job_grabbed_until} }
 
-sub completed {
-    my $self = shift;
-    $self->{_complete} = 1;
-}
+sub manager  { $_[0]->{manager} }
 
-sub is_completed { shift->{_complete} }
+sub completed { $_[0]->{_complete} = 1 }
+
+sub is_completed { $_[0]->{_complete} }
 
 sub reenqueue {
     my ($self, $args) = @_;
