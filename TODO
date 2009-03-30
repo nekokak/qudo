@@ -7,8 +7,5 @@ todo:
   - databaseを複数個指定する場合はDBの死活監視もやっぱり入れるべきかね
   - masterがmanagerを起動するときに自動でforkさせてもよいかも
   -- pallarel_workみたいに？
-  - lookup_jobした時にgrabしてしまうのはどうなんだろう
-  -- enqueueした時に内部ではlookup_jobしているのでgrabされてしまう
   - job.argsのStorable
   -- jsonでもいいとおもってるのでその辺りはデフォルトの設定とHookで任意に切り替えたい
-  - masartzの機嫌をなおす

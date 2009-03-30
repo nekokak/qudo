@@ -102,9 +102,7 @@ sub enqueue {
     };
     $self->call_hook('pre_enqueue', $args);
 
-    my $job_id = $self->driver->enqueue($args);
-
-    return $self->lookup_job($job_id);
+    return $self->driver->enqueue($args);
 }
 
 sub reenqueue {
