@@ -8,4 +8,3 @@ todo:
   - masterがmanagerを起動するときに自動でforkさせてもよいかも
   -- pallarel_workみたいに？
   - job.argsのStorable
-  -- jsonでもいいとおもってるのでその辺りはデフォルトの設定とHookで任意に切り替えたい

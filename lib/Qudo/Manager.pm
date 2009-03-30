@@ -67,8 +67,7 @@ sub register_hooks {
 
     for my $module (@hook_modules) {
         $module->require or Carp::croak $@;
-        my ($hook_point, $code) = $module->load();
-        $self->{hooks}->{$hook_point}->{$module} = $code;
+        $module->load($self);
     }
 }
 
@@ -76,8 +75,7 @@ sub unregister_hooks {
     my ($self, @hook_modules) = @_;
 
     for my $module (@hook_modules) {
-        my $hook_point = $module->unload();
-        delete $self->{hooks}->{$hook_point}->{$module};
+        $module->unload($self);
     }
 }
 
@@ -129,9 +127,11 @@ sub work_once {
 
     $self->call_hook('pre_work', $job);
 
-    $worker_class->work_safely($self, $job);
+    my $res = $worker_class->work_safely($self, $job);
 
     $self->call_hook('post_work', $job);
+
+    return $res;
 }
 
 sub lookup_job {

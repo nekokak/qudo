@@ -6,16 +6,20 @@ use base 'Qudo::Hook';
 sub hook_point { 'pre_work' }
 
 sub load {
-    my $class = shift;
-    $class->register(
-        sub {
-            my $args = shift;
-            print STDOUT "Worker::Test: pre worked!\n";
-        }
-    );
+    my ($class, $manager) = @_;
+
+    $manager->{hooks}->{pre_work}->{stdout} = sub {
+        my $args = shift;
+        print STDOUT "Worker::Test: pre worked!\n";
+    };
 }
 
-sub unload { hook_point() }
+sub unload {
+    my ($class, $manager) = @_;
+
+    delete $manager->{hooks}->{pre_work}->{stdout};
+
+}
 
 1;
 
