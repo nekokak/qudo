@@ -22,8 +22,8 @@ sub exception_list {
                           exception_log.message
                       /],
             from   => [qw/exception_log/],
-            limit  => $args{limit} || 10,
-            offset => $args{offset} || 0,
+            limit  => $args{limit},
+            offset => $args{offset},
         }
     );
 

@@ -10,6 +10,8 @@ use Carp;
 our $RETRY_SECONDS = 30;
 our $FIND_JOB_LIMIT_SIZE = 30;
 our $DEFAULT_DRIVER = 'Skinny';
+our $EXCEPTION_LIMIT_SIZE = 10;
+our $EXCEPTION_OFFSET_SIZE = 0;
 
 sub new {
     my $class = shift;
@@ -85,6 +87,8 @@ sub job_count {
 sub exception_list {
     my ($self, %args) = @_;
 
+    $args{limit}  ||= $EXCEPTION_LIMIT_SIZE;
+    $args{offset} ||= $EXCEPTION_OFFSET_SIZE;
     return $self->{driver}->exception_list(%args);
 }
 
