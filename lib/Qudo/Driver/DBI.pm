@@ -97,8 +97,10 @@ sub exception_list{
     }
 
     # limit
-    $sql .= q{ LIMIT ? };
-    push @bind , $limit;
+    if( $limit ){
+        $sql .= q{ LIMIT ? };
+        push @bind , $limit;
+    }
 
     #offset
     if( $offset ){
