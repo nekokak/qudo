@@ -64,6 +64,62 @@ sub job_count{
     return $ret->{count};
 }
 
+sub exception_list{
+    my ($class, %args) = @_;
+
+    my @bind   = ();
+    my $limit  = $args{limit};
+    my $offset = $args{offset};
+    my $funcs  = $args{funcs} || '';
+    my $sql = q{
+        SELECT
+            exception_log.id,
+            exception_log.job_id,
+            exception_log.exception_time,
+            exception_log.message
+        FROM
+            exception_log
+    };
+
+    # funcs
+    if ($funcs) {
+        $sql .= sprintf(
+            q{
+                INNER JOIN
+                    func
+                ON
+                    exception_log.func_id = func.id
+                WHERE
+                    ( func.name IN(%s) )
+            },join(',', map { '?' } @{$funcs} )
+        );
+        push @bind , @{$funcs};
+    }
+
+    # limit
+    $sql .= q{ LIMIT ? };
+    push @bind , $limit;
+
+    #offset
+    if( $offset ){
+        $sql .= q{OFFSET ?};
+        push @bind , $offset;
+    }
+
+    my $sth = $class->{dbh}->prepare( $sql );
+    eval{
+        $sth->execute( @bind );
+    };
+    if( my $e =  $@ ){
+        croak 'exception_list ERROR'.$e;
+    }
+    my @exception_list;
+    while (my $row = $sth->fetchrow_hashref) {
+        push @exception_list, $row;
+    }
+    return \@exception_list;
+}
+
 
 sub lookup_job {
     my ($class, $job_id) = @_;
@@ -190,10 +246,8 @@ sub logging_exception {
     };
     if( my $e =  $@ ){
         croak 'logging_exception ERROR'.$e;
-        return;
     }
-
-    return 1;
+    return;
 }
 
 sub get_server_time {

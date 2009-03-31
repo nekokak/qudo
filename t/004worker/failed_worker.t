@@ -4,8 +4,6 @@ use Qudo::Test;
 use Test::More;
 use Test::Output;
 
-@Qudo::Test::SUPPORT_DRIVER = qw/Skinny/;
-
 run_tests(1, sub {
     my $driver = shift;
     my $master = test_master(
@@ -19,7 +17,7 @@ run_tests(1, sub {
     $manager->work_once;
 
     my $exception = $master->exception_list;
-    like $exception->[0]->{message}, qr/failed worker/;
+    like $exception->[0]->{message}, qr/^failed worker/;
 
     teardown_db('tq1');
 });
