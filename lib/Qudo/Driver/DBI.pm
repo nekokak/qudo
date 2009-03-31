@@ -38,6 +38,33 @@ sub _connect {
     return $class;
 }
 
+sub job_count{
+    my ($class , $funcs) = @_;
+
+    my $sql = q{
+        SELECT
+            COUNT(job.id) AS count
+        FROM
+            job, func
+        WHERE
+            job.func_id = func.id };
+    if( $funcs ){
+        $sql .= sprintf( q{ AND func.name IN (%s) },join(',', map { '?' } @{$funcs} ) );
+    }
+
+    my $sth = $class->{dbh}->prepare( $sql );
+
+    eval{
+        $sth->execute( @{$funcs} );
+    };
+    if( my $e =  $@ ){
+        croak 'job_count ERROR'.$e;
+    }
+    my $ret = $sth->fetchrow_hashref();
+    return $ret->{count};
+}
+
+
 sub lookup_job {
     my ($class, $job_id) = @_;
 
@@ -204,7 +231,7 @@ sub enqueue {
         croak 'enqueue ERROR'.$@;
     }
 
-    my $id = $class->last_insert_id($sth_ins);
+    my $id = $class->{dbd}->last_insert_id($class->{dbh}, $sth_ins);
     my $sth_sel = $class->{dbh}->prepare(
         q{SELECT * FROM job WHERE id = ?}
     );
@@ -212,16 +239,6 @@ sub enqueue {
     $sth_sel->execute( $id );
     my $ret_sel = $sth_sel->fetchrow_hashref();
     return $ret_sel ? $ret_sel->{id} : undef;
-}
-
-sub last_insert_id{
-    my ($class, $sth) = @_;
-
-    # FIXME: tekitou
-    #mysql                                                      # sqlite
-    my $last_id = $sth->{mysql_insertid} || $sth->{insertid} || $class->{dbh}->func('last_insert_rowid');
-
-    return $last_id;
 }
 
 sub dequeue {
@@ -273,44 +290,6 @@ sub get_func_id {
 
     return $func_id;
 }
-
-
-sub single{
-    my ($class , $table , $where , $opt) = @_;
-
-    $opt->{limit} = 1;
-
-    my $q_where;
-    my @exe_ary;
-    if ( $where ){
-        $q_where = join( "and" , map { "$_ = ?" } sort keys %{$where} );
-        map { push @exe_ary , $where->{$_} } sort keys %{$where};
-    }
-    my $q_opt =  join( "and" , map { "$_  $opt->{$_}" } keys %{$opt} );
-    map { push @exe_ary , $opt->{$_} } sort keys %{$opt};
-        
-    my $sth = $class->{dbh}->prepare( qq{
-        SELECT * FROM $table } .
-        ($q_where ? qq{ WHERE $q_where } : q{} ).
-        qq{ $q_opt } );
-
-    $sth->execute();
-    
-    my $ret_hashref = $sth->fetchrow_hashref();
-    if ( $ret_hashref ){
-        my $ret_class = bless $ret_hashref , 'Ret::Class';
-        my @ary;
-        push @ary , keys %{$ret_class};
-        'Ret::Class'->mk_accessors ( @ary );
-
-        return $ret_class;
-    }
-
-    return ;
-}
-
-package Ret::Class;
-use base qw/ Class::Accessor::Fast /;
 
 1;
 

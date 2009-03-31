@@ -3,7 +3,7 @@ use warnings;
 use Qudo::Test;
 use Test::More;
 
-@Qudo::Test::SUPPORT_DRIVER = qw/Skinny/;
+#@Qudo::Test::SUPPORT_DRIVER = qw/Skinny/;
 
 run_tests(4, sub {
     my $driver = shift;
