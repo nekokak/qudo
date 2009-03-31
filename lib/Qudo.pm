@@ -82,6 +82,12 @@ sub job_count {
     return $self->{driver}->job_count($funcs);
 }
 
+sub exception_list {
+    my ($self, %args) = @_;
+
+    return $self->{driver}->exception_list(%args);
+}
+
 =head1 NAME
 
 Qudo - simple job queue manager

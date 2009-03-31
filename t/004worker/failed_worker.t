@@ -4,7 +4,9 @@ use Qudo::Test;
 use Test::More;
 use Test::Output;
 
-run_tests(3, sub {
+@Qudo::Test::SUPPORT_DRIVER = qw/Skinny/;
+
+run_tests(1, sub {
     my $driver = shift;
     my $master = test_master(
         dbname       => 'tq1',
@@ -16,10 +18,8 @@ run_tests(3, sub {
     $manager->enqueue("Worker::Test", 'arg', 'uniqkey');
     $manager->work_once;
 
-    my $exception = $manager->driver->single('exception_log');
-    like $exception->message, qr/failed worker/;
-    is $exception->func_id, 1;
-    is $exception->job_id, 1;
+    my $exception = $master->exception_list;
+    like $exception->[0]->{message}, qr/failed worker/;
 
     teardown_db('tq1');
 });

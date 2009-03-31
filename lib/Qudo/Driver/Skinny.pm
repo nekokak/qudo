@@ -11,6 +11,42 @@ sub init_driver {
     return $class;
 }
 
+sub exception_list {
+    my ($class, %args) = @_;
+
+    my $rs = $class->resultset(
+        {
+            select => [qw/exception_log.id
+                          exception_log.job_id
+                          exception_log.exception_time
+                          exception_log.message
+                      /],
+            from   => [qw/exception_log/],
+            limit  => $args{limit} || 10,
+            offset => $args{offset} || 0,
+        }
+    );
+
+    if ($args{funcs}) {
+        $rs->from([]);
+        $rs->add_join(
+            exception_log => {
+                type      => 'inner',
+                table     => 'func',
+                condition => 'exception_log.func_id = func.id',
+            }
+        );
+        $rs->add_where('func.name' => $args{funcs});
+    }
+    my $itr = $rs->retrieve;
+
+    my @exception_list;
+    while (my $row = $itr->next) {
+        push @exception_list, $row->get_columns;
+    }
+    return \@exception_list;
+}
+
 sub job_count {
     my ($class, $funcs) = @_;
 
@@ -131,6 +167,8 @@ sub logging_exception {
     my ($class, $args) = @_;
 
     $class->insert('exception_log', $args);
+
+    return;
 }
 
 sub get_server_time {
