@@ -17,7 +17,7 @@ sub exception_list {
     my $rs = $class->resultset(
         {
             select => [qw/exception_log.id
-                          exception_log.job_id
+                          exception_log.func_id
                           exception_log.exception_time
                           exception_log.message
                       /],

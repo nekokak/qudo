@@ -184,7 +184,6 @@ sub job_failed {
 
     $self->driver->logging_exception(
         {
-            job_id  => $job->id,
             func_id => $job->func_id,
             message => $message,
         }

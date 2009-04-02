@@ -74,7 +74,7 @@ sub exception_list{
     my $sql = q{
         SELECT
             exception_log.id,
-            exception_log.job_id,
+            exception_log.func_id,
             exception_log.exception_time,
             exception_log.message
         FROM
@@ -234,13 +234,12 @@ sub logging_exception {
 
     my $sth = $class->{dbh}->prepare(
         q{ INSERT INTO
-            exception_log  ( job_id , func_id , message , exception_time ) }
-        . q{ VALUES ( ? , ? , ? , ?) }
+            exception_log  ( func_id , message , exception_time ) }
+        . q{ VALUES ( ? , ? , ?) }
     );
 
     eval{
         $sth->execute(
-            $args->{job_id} , 
             $args->{func_id} , 
             $args->{message} , 
             time(),

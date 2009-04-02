@@ -195,7 +195,6 @@ sqlite:
     CREATE TABLE exception_log (
         id              INTEGER PRIMARY KEY AUTOINCREMENT,
         func_id         INTEGER UNSIGNED NOT NULL,
-        job_id          INTEGER UNSIGNED NOT NULL,
         exception_time  INTEGER UNSIGNED NOT NULL,
         message         MEDIUMBLOB NOT NULL
     )
@@ -222,11 +221,9 @@ mysql:
     CREATE TABLE exception_log (
         id              BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
         func_id         INT UNSIGNED NOT NULL DEFAULT 0,
-        job_id          BIGINT UNSIGNED NOT NULL,
         exception_time  INTEGER UNSIGNED NOT NULL,
         message         MEDIUMBLOB NOT NULL,
         INDEX (func_id),
-        INDEX (exception_time),
-        INDEX (job_id)
+        INDEX (exception_time)
     )
 
