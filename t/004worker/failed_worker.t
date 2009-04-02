@@ -4,7 +4,7 @@ use Qudo::Test;
 use Test::More;
 use Test::Output;
 
-run_tests(1, sub {
+run_tests(2, sub {
     my $driver = shift;
     my $master = test_master(
         dbname       => 'tq1',
@@ -18,6 +18,7 @@ run_tests(1, sub {
 
     my $exception = $master->exception_list;
     like $exception->[0]->{message}, qr/^failed worker/;
+    is scalar(@$exception), 1;
 
     teardown_db('tq1');
 });

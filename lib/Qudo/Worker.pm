@@ -13,12 +13,8 @@ sub work_safely {
     eval {
         $res = $class->work($job);
     };
-    if ($@) {
-        $manager->job_failed($job, $@);
-    }
-    if ( $job->is_completed ) {
-        $manager->dequeue($job);
-    } else {
+
+    if ( my $e = $@ || ! $job->is_completed ) {
         if ( $job->retry_cnt < $class->max_retries ) {
             $job->reenqueue(
                 {
@@ -26,8 +22,12 @@ sub work_safely {
                     retry_delay => $class->retry_delay,
                 }
             );
+        } else {
+            $manager->dequeue($job);
         }
-        $manager->job_failed($job, 'Job did not explicitly complete, fail, or get replaced');
+        $manager->job_failed($job, $e || 'Job did not explicitly complete or fail');
+    } else {
+        $manager->dequeue($job);
     }
 
     return $res;
