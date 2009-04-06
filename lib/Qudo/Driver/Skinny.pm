@@ -129,6 +129,8 @@ sub _search_job_rs {
             condition => 'job.func_id = func.id',
         }
     );
+    my $servertime = $class->get_server_time;
+    $rs->add_where('job.grabbed_until' => { op => '<=', value => $servertime});
     return $rs;
 }
 
