@@ -64,6 +64,35 @@ sub job_count{
     return $ret->{count};
 }
 
+sub job_list{
+    my ($class, $limit, $funcs) = @_;
+
+    my $sql = $class->_search_job_sql('func.name' => $funcs);
+
+    my @bind = $class->get_server_time;
+    push @bind , $limit;
+
+    my $sth = $class->{dbh}->prepare( $sql );
+
+    eval{
+        $sth->execute( @bind );
+    };
+    if( my $e =  $@ ){
+        croak 'job_list ERROR'.$e;
+    }
+
+    my $code =  $class->_get_job_data( $sth );
+
+    my @jobs;
+    while (1) {
+        my $row = $code->();
+        last unless $row;
+        push @jobs, $row;
+    }
+    return \@jobs;
+}
+
+
 sub exception_list{
     my ($class, %args) = @_;
 
@@ -184,18 +213,56 @@ sub find_job {
     return $class->_get_job_data($sth->fetchrow_hashref);
 }
 
+sub _search_job_sql{
+    my ($class, %where) = @_;
+
+    my $sql = q{
+        SELECT
+            job.id AS id,
+            job.arg AS arg,
+            job.uniqkey AS uniqkey,
+            job.func_id AS func_id,
+            job.grabbed_until,
+            job.retry_cnt,
+            func.name AS funcname
+        FROM job
+        INNER JOIN
+            func ON job.func_id = func.id
+        WHERE
+            (job.grabbed_until <= ?)
+    };
+
+    my @ary = keys %where;
+    my $key = shift @ary;
+
+    warn Dumper( \%where );
+    warn $key ;
+    warn Dumper( $where{$key} );
+#    if( ref $where{$key} eq 'ARRAY' ){
+    if( defined $where{$key} ){
+        $sql .= sprintf( qq{
+            AND ( $key IN (%s) )},join(',', map { '?' } @{$where{$key}} ) );
+    }
+    $sql .= q{ LIMIT ?};
+
+    return $sql;
+}
+
+
 sub _get_job_data {
-    my ($class, $hash_ref) = @_;
+    my ($class, $sth) = @_;
     sub{
-        return +{
-            job_id            => $hash_ref->{id},
-            job_arg           => $hash_ref->{arg},
-            job_uniqkey       => $hash_ref->{uniqkey},
-            job_grabbed_until => $hash_ref->{grabbed_until},
-            job_retry_cnt     => $hash_ref->{retry_cnt},
-            func_id           => $hash_ref->{func_id},
-            func_name         => $hash_ref->{funcname},
-        };
+        while (my $row = $sth->fetchrow_hashref) {
+            return +{
+                job_id            => $row->{id},
+                job_arg           => $row->{arg},
+                job_uniqkey       => $row->{uniqkey},
+                job_grabbed_until => $row->{grabbed_until},
+                job_retry_cnt     => $row->{retry_cnt},
+                func_id           => $row->{func_id},
+                func_name         => $row->{funcname},
+            };
+        }
     };
 }
 
