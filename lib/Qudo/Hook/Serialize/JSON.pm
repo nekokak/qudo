@@ -1,4 +1,4 @@
-package Qudo::Hook::JSONArg;
+package Qudo::Hook::Serialize::JSON;
 use strict;
 use warnings;
 use base 'Qudo::Hook';
@@ -7,12 +7,12 @@ use JSON::XS;
 sub load {
     my ($class, $manager) = @_;
 
-    $manager->{hooks}->{pre_enqueue}->{'encode_json.arg'} = sub {
+    $manager->{hooks}->{serialize}->{json} = sub {
         my $args = shift;
         $args->{arg} = encode_json($args->{arg});
     };
 
-    $manager->{hooks}->{pre_work}->{'decode_json.arg'} = sub {
+    $manager->{hooks}->{deserialize}->{json} = sub {
         my $job = shift;
         $job->arg = decode_json($job->arg);
     };
@@ -21,8 +21,8 @@ sub load {
 sub unload {
     my ($class, $manager) = @_;
 
-    delete $manager->{hooks}->{pre_enqueue}->{'encode_json.arg'};
-    delete $manager->{hooks}->{pre_work}->{'decode_json.arg'};
+    delete $manager->{hooks}->{serialize}->{json};
+    delete $manager->{hooks}->{deserialize}->{json};
 }
 
 

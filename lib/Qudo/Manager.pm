@@ -98,7 +98,9 @@ sub enqueue {
         arg     => $arg,
         uniqkey => $uniqkey,
     };
+
     $self->call_hook('pre_enqueue', $args);
+    $self->call_hook('serialize', $args);
 
     return $self->driver->enqueue($args);
 }
@@ -125,6 +127,7 @@ sub work_once {
     my $worker_class = $job->funcname;
     return unless $worker_class;
 
+    $self->call_hook('deserialize', $job);
     $self->call_hook('pre_work', $job);
 
     my $res = $worker_class->work_safely($self, $job);

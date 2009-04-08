@@ -14,8 +14,8 @@ run_tests(8, sub {
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
 
-    { # load Qudo::Hook::JSONArg
-        $manager->register_hooks(qw/Qudo::Hook::JSONArg/);
+    { # load Qudo::Hook::Serialize::JSON
+        $manager->register_hooks(qw/Qudo::Hook::Serialize::JSON/);
 
         my $job_id = $manager->enqueue("Worker::Test", {key => 'arg'}, 'uniqkey1');
         my $job = $manager->lookup_job($job_id);
@@ -30,8 +30,8 @@ run_tests(8, sub {
         is_deeply $res, {key => 'arg'};
     }
 
-    { # unload Qudo::Hook::JSONArg
-        $manager->unregister_hooks(qw/Qudo::Hook::JSONArg/);
+    { # unload Qudo::Hook::Serialize::JSON
+        $manager->unregister_hooks(qw/Qudo::Hook::Serialize::JSON/);
 
         my $job_id = $master->manager->enqueue("Worker::Test", 'arg', 'uniqkey2');
         my $job = $manager->lookup_job($job_id);
