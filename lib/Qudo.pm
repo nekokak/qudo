@@ -103,7 +103,7 @@ Qudo - simple job queue manager
     my $qudo = Qudo->new(
         driver_class => 'Skinny',
         database => +{
-            dsn      => 'dbi:sqlite:/tmp/qudo.db',
+            dsn      => 'dbi:SQLite:/tmp/qudo.db',
             username => '',
             password => '',
         },
@@ -115,7 +115,7 @@ Qudo - simple job queue manager
     my $qudo2 = Qudo->new(
         driver_class => 'Skinny',
         database => +{
-            dsn      => 'dbi:sqlite:/tmp/qudo.db',
+            dsn      => 'dbi:SQLite:/tmp/qudo.db',
             username => '',
             password => '',
         },
