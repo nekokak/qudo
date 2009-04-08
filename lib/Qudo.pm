@@ -106,7 +106,7 @@ Qudo - simple job queue manager
             dsn      => 'dbi:sqlite:/tmp/qudo.db',
             username => '',
             password => '',
-        }
+        },
     );
     $qudo->enqueue("Worker::Test", 'arg', 'uniqkey');
     
@@ -118,7 +118,7 @@ Qudo - simple job queue manager
             dsn      => 'dbi:sqlite:/tmp/qudo.db',
             username => '',
             password => '',
-        }
+        },
         manager_abilities => [qw/Worker::Test/],
     );
     $qudo->work(); # boot manager
