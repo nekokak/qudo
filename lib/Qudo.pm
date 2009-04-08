@@ -112,7 +112,7 @@ Qudo - simple job queue manager
     
     # do work:
     use Qudo;
-    my $qudo = Qudo->new(
+    my $qudo2 = Qudo->new(
         driver_class => 'Skinny',
         database => +{
             dsn      => 'dbi:sqlite:/tmp/qudo.db',
@@ -121,7 +121,7 @@ Qudo - simple job queue manager
         },
         manager_abilities => [qw/Worker::Test/],
     );
-    $qudo->work(); # boot manager
+    $qudo2->work(); # boot manager
     # work work work!
 
 =head1 DESCRIPTION
