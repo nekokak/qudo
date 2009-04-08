@@ -30,6 +30,7 @@ package Worker::Test;
 use base 'Qudo::Worker';
 
 sub max_retries { 1 }
+sub grab_for    { 0 }
 sub work {
     my ($class, $job) = @_;
 

@@ -164,7 +164,7 @@ sub _grab_a_job {
 
         my $worker_class = $job_data->{func_name};
         my $grab_job = $self->driver->grab_a_job(
-            grabbed_until     => ($server_time + ($worker_class->grab_for || 1)),
+            grabbed_until     => ($server_time + $worker_class->grab_for),
             job_id            => $job_data->{job_id},
             old_grabbed_until => $old_grabbed_until,
         );

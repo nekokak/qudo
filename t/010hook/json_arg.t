@@ -52,6 +52,7 @@ run_tests(8, sub {
 package Worker::Test;
 use base 'Qudo::Worker';
 
+sub grab_for { 0 }
 sub work {
     my ($class, $job) = @_;
     $job->completed;
