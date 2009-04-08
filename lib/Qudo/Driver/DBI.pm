@@ -67,10 +67,23 @@ sub job_count{
 sub job_list{
     my ($class, $limit, $funcs) = @_;
 
-    my $sql = $class->_search_job_sql('func.name' => $funcs);
-
+    my $sql = $class->_search_job_sql();
     my @bind = $class->get_server_time;
+
+    # func.name
+    if( $funcs ){
+        $sql .= sprintf( q{
+            AND
+                (func.name IN (%s))
+            },join(',', map { '?' } @{$funcs} )
+        );
+        push @bind , @{$funcs};
+    }
+
+    # limit
+    $sql .= q{LIMIT ?};
     push @bind , $limit;
+
 
     my $sth = $class->{dbh}->prepare( $sql );
 
@@ -155,66 +168,66 @@ sub exception_list{
 sub lookup_job {
     my ($class, $job_id) = @_;
 
-    my $sth = $class->{dbh}->prepare(
-        q{
-        SELECT
-            job.id AS id,
-            job.arg AS arg,
-            job.uniqkey AS uniqkey,
-            job.func_id AS func_id,
-            job.grabbed_until,
-            job.retry_cnt,
-            func.name AS funcname
-        FROM
-            job, func
-        WHERE
-            job.func_id = func.id AND
-            job.id      = ?
-        LIMIT 1 }
-    );
+    my $sql = $class->_search_job_sql();
+    my @bind = $class->get_server_time;
+
+    # func.name
+    if( $job_id ){
+        $sql .= q{ AND (job.id = ?)};
+        push @bind , $job_id;
+    }
+
+    # limit
+    $sql .= q{LIMIT ?};
+    push @bind , 1;
+
+    my $sth = $class->{dbh}->prepare( $sql );
 
     eval{
-        $sth->execute( $job_id );
+        $sth->execute( @bind );
     };
     if( my $e =  $@ ){
         croak 'lookup_job ERROR'.$e;
     }
 
-    return $class->_get_job_data( $sth->fetchrow_hashref() );
+    return $class->_get_job_data( $sth );
 }
 
 sub find_job {
-    my $class = shift;
+    my ($class, $limit, $func_map) = @_;
 
-    my $sth = $class->{dbh}->prepare(
-        q{
-        SELECT
-            job.id AS id,
-            job.arg AS arg,
-            job.uniqkey AS uniqkey,
-            job.func_id AS func_id,
-            job.grabbed_until,
-            job.retry_cnt,
-            func.name AS funcname
-        FROM
-            job, func
-        WHERE
-            job.func_id = func.id
-        LIMIT 10 }
-    );
+    my $sql = $class->_search_job_sql();
+    my @bind = $class->get_server_time;
+
+    # func.name
+    if( $func_map ){
+        my $keys = [keys %$func_map];
+        $sql .= sprintf( q{
+            AND
+                (func.name IN (%s))
+            },join(',', map { '?' } @{$keys} )
+        );
+        push @bind , @{$keys};
+    }
+
+    # limit
+    $sql .= q{LIMIT ?};
+    push @bind , $limit;
+
+    my $sth = $class->{dbh}->prepare( $sql );
 
     eval{
-        $sth->execute( );
+        $sth->execute( @bind );
     };
     if( my $e =  $@ ){
         croak 'find_job ERROR'.$e;
     }
 
-    return $class->_get_job_data($sth->fetchrow_hashref);
+    return $class->_get_job_data( $sth );
 }
 
 sub _search_job_sql{
-    my ($class, %where) = @_;
+    my $class = shift;
 
     my $sql = q{
         SELECT
@@ -231,20 +244,6 @@ sub _search_job_sql{
         WHERE
             (job.grabbed_until <= ?)
     };
-
-    my @ary = keys %where;
-    my $key = shift @ary;
-
-    warn Dumper( \%where );
-    warn $key ;
-    warn Dumper( $where{$key} );
-#    if( ref $where{$key} eq 'ARRAY' ){
-    if( defined $where{$key} ){
-        $sql .= sprintf( qq{
-            AND ( $key IN (%s) )},join(',', map { '?' } @{$where{$key}} ) );
-    }
-    $sql .= q{ LIMIT ?};
-
     return $sql;
 }
 
