@@ -24,6 +24,8 @@ run_tests(8, sub {
         is $job->arg, '{"key":"arg"}';
         is $job->uniqkey, 'uniqkey1';
 
+        sleep(1);
+
         my $res = $manager->work_once;
         is_deeply $res, {key => 'arg'};
     }
@@ -37,6 +39,8 @@ run_tests(8, sub {
         is $job->id, 2;
         is $job->arg, 'arg';
         is $job->uniqkey, 'uniqkey2';
+
+        sleep(1);
 
         my $res = $manager->work_once;
         is $res, 'arg';
