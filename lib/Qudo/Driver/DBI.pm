@@ -362,6 +362,36 @@ sub enqueue {
     return $ret_sel ? $ret_sel->{id} : undef;
 }
 
+sub reenqueue {
+    my ($class, $job_id, $args) = @_;
+
+    my $sth = $class->{dbh}->prepare(
+        q{
+        UPDATE
+            job
+        SET
+            enqueue_time = ?,
+            retry_cnt = ?
+        WHERE
+            id = ? }
+    );
+
+    eval{
+        $sth->execute(
+            (time + ($args->{retry_delay}||0) ),
+            $args->{retry_cnt},
+            $job_id,
+        );
+    };
+    if( my $e =  $@ ){
+        croak 'reenqueue ERROR'.$e;
+        return;
+    }
+
+    return 1;
+}
+
+
 sub dequeue {
     my ($class, $args) = @_;
     my $sth = $class->{dbh}->prepare(
