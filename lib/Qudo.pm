@@ -103,25 +103,25 @@ Qudo - simple job queue manager
     my $qudo = Qudo->new(
         driver_class => 'Skinny',
         database => +{
-            dsn      => 'dbi:sqlite:/tmp/qudo.db',
+            dsn      => 'dbi:SQLite:/tmp/qudo.db',
             username => '',
             password => '',
-        }
+        },
     );
     $qudo->enqueue("Worker::Test", 'arg', 'uniqkey');
     
     # do work:
     use Qudo;
-    my $qudo = Qudo->new(
+    my $qudo2 = Qudo->new(
         driver_class => 'Skinny',
         database => +{
-            dsn      => 'dbi:sqlite:/tmp/qudo.db',
+            dsn      => 'dbi:SQLite:/tmp/qudo.db',
             username => '',
             password => '',
-        }
+        },
         manager_abilities => [qw/Worker::Test/],
     );
-    $qudo->work(); # boot manager
+    $qudo2->work(); # boot manager
     # work work work!
 
 =head1 DESCRIPTION
