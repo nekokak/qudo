@@ -6,7 +6,6 @@ use Test::More;
 run_tests(8, sub {
     my $driver = shift;
     my $master = test_master(
-        dbname       => 'tq1',
         driver_class => $driver,
     );
 
@@ -39,7 +38,7 @@ run_tests(8, sub {
     $list = $master->exception_list(funcs => [qw/Worker::Test2/]);
     is scalar(@$list), 1;
 
-    teardown_db('tq1');
+    teardown_db;
 });
 
 package Worker::Test1;

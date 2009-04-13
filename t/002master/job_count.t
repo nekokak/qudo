@@ -6,7 +6,6 @@ use Test::More;
 run_tests(4, sub {
     my $driver = shift;
     my $master = test_master(
-        dbname       => 'tq1',
         driver_class => $driver,
     );
 
@@ -18,7 +17,7 @@ run_tests(4, sub {
     is $master->job_count([qw/Worker::Test2/]), 1;
     is $master->job_count([qw/Worker::Test1 Worker::Test2/]), 2;
 
-    teardown_db('tq1');
+    teardown_db;
 });
 
 package Worker::Test1;

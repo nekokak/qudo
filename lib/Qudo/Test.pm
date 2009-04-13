@@ -60,7 +60,7 @@ sub run_tests_sqlite {
 
 sub test_master {
     my %opts = @_;
-    my $dbname = delete $opts{dbname};
+    my $dbname = delete $opts{dbname} || 'default';
     my $init   = delete $opts{init};
     $init = 1 unless defined $init;
 
@@ -130,12 +130,12 @@ sub dsn_for {
 
 sub db_filename {
     my($dbname) = @_;
-    return 't_qudo_' . $dbname . '.db';
+    return 'test_qudo_' . $dbname . '.db';
 }
 
 sub mysql_dbname {
     my($dbname) = @_;
-    return 't_qudo_' . $dbname;
+    return 'test_qudo_' . $dbname;
 }
 
 sub create_mysql_db {
@@ -149,7 +149,7 @@ sub drop_mysql_db {
 }
 
 sub teardown_db {
-    my $dbname = shift;
+    my $dbname = shift || 'default';
     if ($ENV{USE_MYSQL}) {
         drop_mysql_db(mysql_dbname($dbname));
     } else {

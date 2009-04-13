@@ -6,14 +6,13 @@ use Test::More;
 run_tests(1, sub {
     my $driver = shift;
     my $master = test_master(
-        dbname       => 'tq1',
         driver_class => $driver,
     );
 
     my $job_id = $master->enqueue("Worker::Test", 'arg', 'uniqkey');
     is $job_id, 1;
 
-    teardown_db('tq1');
+    teardown_db;
 });
 
 package Worker::Test;

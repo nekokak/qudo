@@ -7,7 +7,6 @@ use lib './t';
 run_tests(1, sub {
     my $driver = shift;
     my $master = test_master(
-        dbname       => 'tq1',
         driver_class => $driver,
     );
 
@@ -18,7 +17,7 @@ run_tests(1, sub {
     $manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
     stdout_is( sub { $manager->work_once } , "Worker::Test: post worked!\n");
 
-    teardown_db('tq1');
+    teardown_db;
 });
 
 package Worker::Test;

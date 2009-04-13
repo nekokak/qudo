@@ -6,7 +6,6 @@ use Test::Output;
 run_tests(1, sub {
     my $driver = shift;
     my $master = test_master(
-        dbname       => 'tq1',
         driver_class => $driver,
     );
 
@@ -15,7 +14,7 @@ run_tests(1, sub {
     $master->enqueue("Worker::Test", 'arg', 'uniqkey');
     stdout_is( sub { $manager->work_once } , "arg");
 
-    teardown_db('tq1');
+    teardown_db;
 });
 
 package Worker::Test;
