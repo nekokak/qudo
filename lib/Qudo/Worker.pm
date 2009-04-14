@@ -4,7 +4,7 @@ use warnings;
 
 sub max_retries { 0 }
 sub retry_delay { 0 }
-sub grab_for    { 5 } # default setting
+sub grab_for    { 60*60 } # default setting 1 hour
 
 sub work_safely {
     my ($class, $manager, $job) = @_;
