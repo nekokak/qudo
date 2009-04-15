@@ -1,0 +1,3 @@
+[submodule "vendor/DBIx-Skinny"]
+	path = vendor/DBIx-Skinny
+	url = git://github.com/nekokak/p5-dbix-skinny.git
