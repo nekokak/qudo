@@ -197,6 +197,7 @@ sqlite:
         func_id         INTEGER UNSIGNED NOT NULL,
         exception_time  INTEGER UNSIGNED NOT NULL,
         message         MEDIUMBLOB NOT NULL,
+        uniqkey         VARCHAR(255) NULL,
         arg             MEDIUMBLOB
     )
 
@@ -224,6 +225,7 @@ mysql:
         func_id         INT UNSIGNED NOT NULL DEFAULT 0,
         exception_time  INTEGER UNSIGNED NOT NULL,
         message         MEDIUMBLOB NOT NULL,
+        uniqkey         VARCHAR(255) NULL,
         arg             MEDIUMBLOB,
         INDEX (func_id),
         INDEX (exception_time)

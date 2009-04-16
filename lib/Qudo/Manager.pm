@@ -189,9 +189,22 @@ sub job_failed {
         {
             func_id => $job->func_id,
             message => $message,
+            uniqkey => $job->uniqkey,
             arg     => $job->arg_org || $job->arg,
         }
     );
+}
+
+sub enqueue_failed_job {
+    my ($self, $exception_log) = @_;
+
+    my $args = +{
+        func_id => $exception_log->{func_id},
+        arg     => $exception_log->{arg},
+        uniqkey => $exception_log->{uniqkey},
+    };
+
+    return $self->driver->enqueue($args);
 }
 
 1;
