@@ -20,6 +20,7 @@ sub exception_list {
                           exception_log.func_id
                           exception_log.exception_time
                           exception_log.message
+                          exception_log.arg
                       /],
             from   => [qw/exception_log/],
             limit  => $args{limit},

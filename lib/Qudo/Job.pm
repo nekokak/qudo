@@ -14,6 +14,7 @@ sub funcname { $_[0]->{job_data}->{func_name}    }
 sub retry_cnt     { $_[0]->{job_data}->{job_retry_cnt}     }
 sub grabbed_until { $_[0]->{job_data}->{job_grabbed_until} }
 sub arg : lvalue  { $_[0]->{job_data}->{job_arg}           }
+sub arg_org : lvalue { $_[0]->{arg_org} }
 
 sub manager  { $_[0]->{manager} }
 

@@ -118,7 +118,8 @@ sub exception_list{
             exception_log.id,
             exception_log.func_id,
             exception_log.exception_time,
-            exception_log.message
+            exception_log.message,
+            exception_log.arg
         FROM
             exception_log
     };
@@ -300,14 +301,15 @@ sub logging_exception {
 
     my $sth = $class->{dbh}->prepare(
         q{ INSERT INTO
-            exception_log  ( func_id , message , exception_time ) }
-        . q{ VALUES ( ? , ? , ?) }
+            exception_log  ( func_id , message , arg, exception_time ) }
+        . q{ VALUES ( ? , ? , ?, ?) }
     );
 
     eval{
         $sth->execute(
             $args->{func_id} , 
             $args->{message} , 
+            $args->{arg} , 
             time(),
         );
     };

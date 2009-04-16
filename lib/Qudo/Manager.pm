@@ -189,6 +189,7 @@ sub job_failed {
         {
             func_id => $job->func_id,
             message => $message,
+            arg     => $job->arg_org || $job->arg,
         }
     );
 }

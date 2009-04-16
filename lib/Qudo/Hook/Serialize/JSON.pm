@@ -14,6 +14,7 @@ sub load {
 
     $manager->{hooks}->{deserialize}->{json} = sub {
         my $job = shift;
+        $job->arg_org = $job->arg;
         $job->arg = decode_json($job->arg);
     };
 }

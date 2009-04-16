@@ -4,7 +4,7 @@ use Qudo::Test;
 use Test::More;
 use Test::Output;
 
-run_tests(2, sub {
+run_tests(3, sub {
     my $driver = shift;
     my $master = test_master(
         driver_class => $driver,
@@ -13,10 +13,11 @@ run_tests(2, sub {
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
     $manager->enqueue("Worker::Test", 'arg', 'uniqkey');
-    $manager->work_once;
+    $manager->work_once; # failed worker
 
     my $exception = $master->exception_list;
     like $exception->[0]->{message}, qr/^failed worker/;
+    is $exception->[0]->{arg}, 'arg';
     is scalar(@$exception), 1;
 
     teardown_db;
