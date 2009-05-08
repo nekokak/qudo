@@ -82,7 +82,7 @@ sub unregister_hooks {
 sub can_do {
     my ($self, $funcname) = @_;
 
-    $funcname->use or die $@;
+    $funcname->use;
     $self->{func_map}->{$funcname} = 1;
 }
 
