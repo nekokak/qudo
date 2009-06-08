@@ -173,7 +173,7 @@ sub _grab_a_job {
             job_id            => $job_data->{job_id},
             old_grabbed_until => $old_grabbed_until,
         );
-        next unless $grab_job;
+        next if $grab_job < 1;
 
         my $job = Qudo::Job->new(
             manager  => $self,
