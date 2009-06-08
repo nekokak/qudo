@@ -282,8 +282,9 @@ sub grab_a_job {
             grabbed_until = ? }
     );
 
+    my $rows;
     eval{
-        $sth->execute(
+        $rows = $sth->execute(
             $args{grabbed_until},
             $args{job_id},
             $args{old_grabbed_until},
@@ -294,7 +295,7 @@ sub grab_a_job {
         return;
     }
 
-    return 1;
+    return $rows;
 }
 
 sub logging_exception {
