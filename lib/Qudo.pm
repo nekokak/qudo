@@ -6,6 +6,7 @@ our $VERSION = '0.01';
 
 use Qudo::Manager;
 use Carp;
+use UNIVERSAL::require;
 
 our $RETRY_SECONDS = 30;
 our $FIND_JOB_LIMIT_SIZE = 30;
