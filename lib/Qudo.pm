@@ -126,7 +126,19 @@ Qudo - simple job queue manager
 
 =head1 DESCRIPTION
 
-simple job queue manager.
+Qudo is simple job queue manager system.
+
+Your application can insert job into DB ,that is managed by Qudo.
+And Your application can get & execute job by Qudo worker.
+Qudo corresponds to deal with DB as Mysql and SQLite.
+
+If you add Hook Point around job's working method ,
+you can add it easily and many point of work milestone.
+Qudo is consided about adding Hook Point Flexibility.
+
+=head1 REPOS
+
+http://github.com/nekokak/qudo/tree/master
 
 =head1 AUTHOR
 
