@@ -237,8 +237,8 @@ sub _search_job_sql{
             job.arg AS arg,
             job.uniqkey AS uniqkey,
             job.func_id AS func_id,
-            job.grabbed_until,
-            job.retry_cnt,
+            job.grabbed_until AS grabbed_until,
+            job.retry_cnt AS retry_cnt,
             func.name AS funcname
         FROM job
         INNER JOIN
@@ -381,8 +381,9 @@ sub reenqueue {
             id = ? }
     );
 
+    my $row;
     eval{
-        $sth->execute(
+        $row = $sth->execute(
             (time + ($args->{retry_delay}||0) ),
             $args->{retry_cnt},
             $job_id,
@@ -393,7 +394,7 @@ sub reenqueue {
         return;
     }
 
-    return 1;
+    return $row;
 }
 
 
@@ -403,14 +404,15 @@ sub dequeue {
         q{ DELETE FROM  job WHERE id = ? }
     );
 
+    my $row;
     eval{
-        $sth->execute( $args->{id} );
+        $row = $sth->execute( $args->{id} );
     };
     if( my $e = $@ ){
         croak 'dequeue ERROR'.$e;
     }
 
-    return ;
+    return $row;
 }
 
 
