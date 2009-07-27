@@ -7,8 +7,6 @@ use Carp qw/croak/;
 
 use Qudo::Driver::DBI::DBD;
 
-use Data::Dumper;
-
 sub init_driver {
     my ($class, $master) = @_;
 
