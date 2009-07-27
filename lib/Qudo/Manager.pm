@@ -192,7 +192,7 @@ sub job_failed {
             func_id => $job->func_id,
             message => $message,
             uniqkey => $job->uniqkey,
-            arg     => $job->arg_org || $job->arg,
+            arg     => $job->arg_origin || $job->arg,
         }
     );
 }
