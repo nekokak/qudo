@@ -4,6 +4,11 @@ use Qudo::Test;
 use Test::More;
 use lib './t';
 
+BEGIN {
+  eval "use JSON::XS";
+  plan skip_all => 'needs JSON::XS for testing' if $@;
+}
+
 run_tests(12, sub {
     my $driver = shift;
     my $master = test_master(
