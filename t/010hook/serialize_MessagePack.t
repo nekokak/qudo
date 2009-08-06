@@ -2,8 +2,12 @@ use strict;
 use warnings;
 use Qudo::Test;
 use Test::More;
-use Data::MessagePack;
 use lib './t';
+
+BEGIN {
+  eval "use Data::MessagePack";
+  plan skip_all => 'needs Data::MessagePack for testing' if $@;
+}
 
 my %hash = ( key => 'arg' );
 run_tests(12, sub {
