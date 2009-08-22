@@ -1,0 +1,30 @@
+#!/bin/zsh
+PIDFILE=/tmp/qudo-worker.pid
+SSD=/sbin/start-stop-daemon
+SCRIPT=/path/to/qudo-worker.pl
+
+case "$1" in
+    start)
+        echo -n "Starting Qudo Worker: "
+
+        if $SSD --stop --quiet --pidfile $PIDFILE --signal 0
+        then
+            echo "already running"
+            exit
+        fi
+
+        echo $SSD --start --background --make-pidfile --pidfile $PIDFILE --exec $SCRIPT
+        $SSD --start --background --make-pidfile --pidfile $PIDFILE --exec $SCRIPT
+        echo "done."
+        ;;
+    stop)
+        echo -n "Stopping Qudo Worker: "
+        $SSD --stop --pidfile $PIDFILE
+        rm -f $PIDFILE
+        echo "done."
+        ;;
+    *)
+        echo "Usage: $0 (start|stop)"
+        ;;
+esac
+
