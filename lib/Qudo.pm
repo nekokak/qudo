@@ -145,6 +145,8 @@ http://github.com/nekokak/qudo/tree/master
 
 Atsushi Kobayashi <nekokak _at_ gmail dot com>
 
+Masaru Hoshino <masartz _at_ gmail dot com>
+
 =head1 COPYRIGHT
 
 This program is free software; you can redistribute
