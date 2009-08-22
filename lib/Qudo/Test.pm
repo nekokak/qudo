@@ -107,7 +107,18 @@ sub setup_db {
 
 my $schema_data;
 sub load_schema {
-    $schema_data ||= YAML::Load(join "", <DATA>);
+    $schema_data->{mysql}  = load_sql('doc/schema-mysql.sql');
+    $schema_data->{sqlite} = load_sql('doc/schema-sqlite.sql');
+    $schema_data;
+}
+
+sub load_sql {
+    my($file) = @_;
+    open my $fh, $file or die "Can't open $file: $!";
+    my $sql = do { local $/; <$fh> };
+    close $fh;
+    my @sql = split /;\s*/, $sql;
+    \@sql;
 }
 
 sub mysql_dbh {
@@ -172,62 +183,4 @@ sub has_innodb {
 }
 
 1;
-__DATA__
-sqlite:
-  - |-
-    CREATE TABLE func (
-        id         INTEGER PRIMARY KEY AUTOINCREMENT,
-        name       VARCHAR(255) NOT NULL,
-        UNIQUE(name)
-    )
-  - |-
-    CREATE TABLE job (
-        id              INTEGER PRIMARY KEY AUTOINCREMENT,
-        func_id         INTEGER UNSIGNED NOT NULL,
-        arg             MEDIUMBLOB,
-        uniqkey         VARCHAR(255) NULL,
-        enqueue_time    INTEGER UNSIGNED,
-        grabbed_until   INTEGER UNSIGNED NOT NULL,
-        retry_cnt       INTEGER UNSIGNED NOT NULL,
-        UNIQUE(func_id,uniqkey)
-    )
-  - |-
-    CREATE TABLE exception_log (
-        id              INTEGER PRIMARY KEY AUTOINCREMENT,
-        func_id         INTEGER UNSIGNED NOT NULL,
-        exception_time  INTEGER UNSIGNED NOT NULL,
-        message         MEDIUMBLOB NOT NULL,
-        uniqkey         VARCHAR(255) NULL,
-        arg             MEDIUMBLOB
-    )
-
-mysql:
-  - |-
-    CREATE TABLE func (
-        id         INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
-        name       VARCHAR(255) NOT NULL,
-        UNIQUE(name)
-    )
-  - |-
-    CREATE TABLE job (
-        id              BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
-        func_id         INT UNSIGNED NOT NULL,
-        arg             MEDIUMBLOB,
-        uniqkey         VARCHAR(255) NULL,
-        enqueue_time    INTEGER UNSIGNED,
-        grabbed_until   INTEGER UNSIGNED NOT NULL,
-        retry_cnt       INTEGER UNSIGNED NOT NULL DEFAULT 0,
-        UNIQUE(func_id, uniqkey)
-    )
-  - |-
-    CREATE TABLE exception_log (
-        id              BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
-        func_id         INT UNSIGNED NOT NULL DEFAULT 0,
-        exception_time  INTEGER UNSIGNED NOT NULL,
-        message         MEDIUMBLOB NOT NULL,
-        uniqkey         VARCHAR(255) NULL,
-        arg             MEDIUMBLOB,
-        INDEX (func_id),
-        INDEX (exception_time)
-    )
 
