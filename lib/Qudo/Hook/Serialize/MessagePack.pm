@@ -5,14 +5,14 @@ use base 'Qudo::Hook';
 use Data::MessagePack;
 
 sub load {
-    my ($class, $manager) = @_;
+    my ($class, $klass) = @_;
 
-    $manager->{hooks}->{serialize}->{messagepack} = sub {
+    $klass->hooks->{serialize}->{messagepack} = sub {
         my $args = shift;
         $args->{arg} = Data::MessagePack->pack($args->{arg});
     };
 
-    $manager->{hooks}->{deserialize}->{messagepack} = sub {
+    $klass->hooks->{deserialize}->{messagepack} = sub {
         my $job = shift;
         $job->arg_origin = $job->arg;
         $job->arg = Data::MessagePack->unpack($job->arg);
@@ -20,10 +20,10 @@ sub load {
 }
 
 sub unload {
-    my ($class, $manager) = @_;
+    my ($class, $klass) = @_;
 
-    delete $manager->{hooks}->{serialize}->{messagepack};
-    delete $manager->{hooks}->{deserialize}->{messagepack};
+    delete $klass->hooks->{serialize}->{messagepack};
+    delete $klass->hooks->{deserialize}->{messagepack};
 }
 
 

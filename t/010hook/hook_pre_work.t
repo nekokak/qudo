@@ -12,7 +12,7 @@ run_tests(1, sub {
 
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
-    $manager->register_hooks(qw/Mock::Hook::PreWork/);
+    $manager->global_register_hooks(qw/Mock::Hook::PreWork/);
 
     $manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
     stdout_is( sub { $manager->work_once } , "Worker::Test: pre worked!\n");

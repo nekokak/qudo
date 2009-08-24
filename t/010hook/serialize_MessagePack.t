@@ -21,7 +21,7 @@ run_tests(12, sub {
     $manager->can_do('Worker::Test2');
 
     { # load Qudo::Hook::Serialize::MessagePack
-        $manager->register_hooks(qw/Qudo::Hook::Serialize::MessagePack/);
+        $manager->global_register_hooks(qw/Qudo::Hook::Serialize::MessagePack/);
 
         my $job_id = $manager->enqueue("Worker::Test", \%hash , 'uniqkey1');
         my $job = $manager->lookup_job($job_id);
@@ -53,7 +53,7 @@ run_tests(12, sub {
     }
 
     { # unload Qudo::Hook::Serialize::MessagePack
-        $manager->unregister_hooks(qw/Qudo::Hook::Serialize::MessagePack/);
+        $manager->global_unregister_hooks(qw/Qudo::Hook::Serialize::MessagePack/);
 
         my $job_id = $master->manager->enqueue("Worker::Test", 'arg' , 'uniqkey2');
         my $job = $manager->lookup_job($job_id);

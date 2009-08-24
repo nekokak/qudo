@@ -4,6 +4,7 @@ use warnings;
 use Qudo::Job;
 use Carp;
 use UNIVERSAL::require;
+use Qudo::HookLoader;
 
 sub new {
     my $class = shift;
@@ -21,7 +22,7 @@ sub new {
         @_
     }, $class;
 
-    $self->register_hooks(@{$self->{default_hooks}});
+    $self->global_register_hooks(@{$self->{default_hooks}});
     $self->register_plugins(@{$self->{default_plugins}});
     $self->register_abilities(@{$self->{abilities}});
 
@@ -54,29 +55,31 @@ sub register_plugins {
 }
 
 sub call_hook {
-    my ($self, $hook_point, $args) = @_;
+    my ($self, $hook_point, $worker_class, $args) = @_;
 
-    for my $module (keys %{$self->{hooks}->{$hook_point}}) {
-        my $code = $self->{hooks}->{$hook_point}->{$module};
+    for my $module (keys %{$worker_class->hooks->{$hook_point}}) {
+        my $code = $worker_class->hooks->{$hook_point}->{$module};
+        $code->($args);
+    }
+
+    for my $module (keys %{$self->hooks->{$hook_point}}) {
+        my $code = $self->hooks->{$hook_point}->{$module};
         $code->($args);
     }
 }
 
-sub register_hooks {
+sub hooks { $_[0]->{hooks} }
+
+sub global_register_hooks {
     my ($self, @hook_modules) = @_;
 
-    for my $module (@hook_modules) {
-        $module->require or Carp::croak $@;
-        $module->load($self);
-    }
+    Qudo::HookLoader->register_hooks($self, \@hook_modules);
 }
 
-sub unregister_hooks {
+sub global_unregister_hooks {
     my ($self, @hook_modules) = @_;
 
-    for my $module (@hook_modules) {
-        $module->unload($self);
-    }
+    Qudo::HookLoader->unregister_hooks($self, \@hook_modules);
 }
 
 sub can_do {
@@ -101,8 +104,8 @@ sub enqueue {
         uniqkey => $uniqkey,
     };
 
-    $self->call_hook('pre_enqueue', $args);
-    $self->call_hook('serialize', $args);
+    $self->call_hook('pre_enqueue', $funcname, $args);
+    $self->call_hook('serialize',   $funcname, $args);
 
     return $self->driver->enqueue($args);
 }
@@ -129,12 +132,12 @@ sub work_once {
     my $worker_class = $job->funcname;
     return unless $worker_class;
 
-    $self->call_hook('deserialize', $job);
-    $self->call_hook('pre_work', $job);
+    $self->call_hook('deserialize', $worker_class, $job);
+    $self->call_hook('pre_work',    $worker_class, $job);
 
     my $res = $worker_class->work_safely($self, $job);
 
-    $self->call_hook('post_work', $job);
+    $self->call_hook('post_work', $worker_class, $job);
 
     return $res;
 }

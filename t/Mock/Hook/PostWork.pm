@@ -6,18 +6,18 @@ use base 'Qudo::Hook';
 sub hook_point { 'post_work' }
 
 sub load {
-    my ($class, $manager) = @_;
+    my ($class, $klass) = @_;
 
-    $manager->{hooks}->{post_work}->{'stdout'} = sub {
+    $klass->hooks->{post_work}->{'stdout'} = sub {
         my $args = shift;
         print STDOUT "Worker::Test: post worked!\n";
     };
 }
 
 sub unload {
-    my ($class, $manager) = @_;
+    my ($class, $klass) = @_;
 
-    delete $manager->{hooks}->{post_work}->{'stdout'};
+    delete $klass->hooks->{post_work}->{'stdout'};
 }
 
 1;

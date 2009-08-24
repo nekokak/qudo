@@ -1,10 +1,29 @@
 package Qudo::Worker;
 use strict;
 use warnings;
+use base 'Class::Data::Inheritable';
+use Qudo::HookLoader;
+
+__PACKAGE__->mk_classdata(qw/_hooks/);
 
 sub max_retries { 0 }
 sub retry_delay { 0 }
 sub grab_for    { 60*60 } # default setting 1 hour
+sub hooks {
+    my $class = shift;
+    $class->_hooks(+{}) unless $class->_hooks;
+    $class->_hooks;
+}
+
+sub register_hooks {
+    my ($class, @hook_modules) = @_;
+    Qudo::HookLoader->register_hooks($class, \@hook_modules);
+}
+
+sub unregister_hooks {
+    my ($class, @hook_modules) = @_;
+    Qudo::HookLoader->unregister_hooks($class, \@hook_modules);
+}
 
 sub work_safely {
     my ($class, $manager, $job) = @_;

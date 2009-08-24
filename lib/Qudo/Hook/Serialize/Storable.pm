@@ -5,14 +5,14 @@ use base 'Qudo::Hook';
 use Storable ();
 
 sub load {
-    my ($class, $manager) = @_;
+    my ($class, $klass) = @_;
 
-    $manager->{hooks}->{serialize}->{storable} = sub {
+    $klass->hooks->{serialize}->{storable} = sub {
         my $args = shift;
         $args->{arg} = Storable::nfreeze($args->{arg});
     };
 
-    $manager->{hooks}->{deserialize}->{storable} = sub {
+    $klass->hooks->{deserialize}->{storable} = sub {
         my $job = shift;
         $job->arg_origin = $job->arg;
         my $arg = $job->arg;
@@ -26,10 +26,10 @@ sub load {
 }
 
 sub unload {
-    my ($class, $manager) = @_;
+    my ($class, $klass) = @_;
 
-    delete $manager->{hooks}->{serialize}->{storable};
-    delete $manager->{hooks}->{deserialize}->{storable};
+    delete $klass->hooks->{serialize}->{storable};
+    delete $klass->hooks->{deserialize}->{storable};
 }
 
 

@@ -5,7 +5,7 @@ use Test::More;
 use lib './t';
 
 my %hash = ( key => 'arg' );
-run_tests(12, sub {
+run_tests(7, sub {
     my $driver = shift;
     my $master = test_master(
         driver_class => $driver,
@@ -16,7 +16,7 @@ run_tests(12, sub {
     $manager->can_do('Worker::Test2');
 
     { # load Qudo::Hook::Serialize::Storable
-        $manager->register_hooks(qw/Qudo::Hook::Serialize::Storable/);
+        $manager->global_register_hooks(qw/Qudo::Hook::Serialize::Storable/);
 
         my $job_id = $manager->enqueue("Worker::Test", \%hash , 'uniqkey1');
         my $job = $manager->lookup_job($job_id);
@@ -32,7 +32,7 @@ run_tests(12, sub {
     }
 
     { # unload Qudo::Hook::Serialize::Storable
-        $manager->unregister_hooks(qw/Qudo::Hook::Serialize::Storable/);
+        $manager->global_unregister_hooks(qw/Qudo::Hook::Serialize::Storable/);
 
         my $job_id = $master->manager->enqueue("Worker::Test", 'arg' , 'uniqkey2');
         my $job = $manager->lookup_job($job_id);

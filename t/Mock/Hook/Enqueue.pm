@@ -6,18 +6,18 @@ use base 'Qudo::Hook';
 sub hook_point { 'pre_enqueue' }
 
 sub load {
-    my ($class, $manager) = @_;
+    my ($class, $klass) = @_;
 
-    $manager->{hooks}->{pre_enqueue}->{'enqueue'} = sub {
+    $klass->hooks->{pre_enqueue}->{'enqueue'} = sub {
         my $args = shift;
         $args->{arg} = 'hooook';
     };
 }
 
 sub unload {
-    my ($class, $manager) = @_;
+    my ($class, $klass) = @_;
 
-    delete $manager->{hooks}->{pre_enqueue}->{'enqueue'};
+    delete $klass->hooks->{pre_enqueue}->{'enqueue'};
 }
 
 1;

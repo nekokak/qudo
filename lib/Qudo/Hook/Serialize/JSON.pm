@@ -5,14 +5,14 @@ use base 'Qudo::Hook';
 use JSON::XS;
 
 sub load {
-    my ($class, $manager) = @_;
+    my ($class, $klass) = @_;
 
-    $manager->{hooks}->{serialize}->{json} = sub {
+    $klass->hooks->{serialize}->{json} = sub {
         my $args = shift;
         $args->{arg} = encode_json($args->{arg});
     };
 
-    $manager->{hooks}->{deserialize}->{json} = sub {
+    $klass->hooks->{deserialize}->{json} = sub {
         my $job = shift;
         $job->arg_origin = $job->arg;
         $job->arg = decode_json($job->arg);
@@ -20,10 +20,10 @@ sub load {
 }
 
 sub unload {
-    my ($class, $manager) = @_;
+    my ($class, $klass) = @_;
 
-    delete $manager->{hooks}->{serialize}->{json};
-    delete $manager->{hooks}->{deserialize}->{json};
+    delete $klass->hooks->{serialize}->{json};
+    delete $klass->hooks->{deserialize}->{json};
 }
 
 

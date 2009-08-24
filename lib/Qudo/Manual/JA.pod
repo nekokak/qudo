@@ -160,11 +160,26 @@ Job を enqueueする時に引数をシリアライズしたりなどです。
 たとえば、enqueueする引数の情報をJSONでシリアライズしたい場合は
 
     my $client = Qudo->new(...);
-    $client->register_plugins('Qudo::Hook::Serialize::JSON');
+    $client->register_hooks('Qudo::Hook::Serialize::JSON');
     $client->enqueue('Test::Worker', {name => 'nekokak'}, 'uniq');
 
 このようにHookモジュールをregister_pluginsに渡す事で設定でき、
 設定した引数がJSONでシリアライズされて保存されます。
+
+上記の場合Hookは全てのWorkerクラスに対して適用されるグローバルな設定となります。
+
+特定のWorkerだけ特定のHookをかけたい場合は、WorkerクラスにHookの設定を別途行います。
+
+    package Worker::Test;
+    use base 'Qudo::Worker';
+    __PACKAGE__->register_hooks('Qudo::Hook::Serialize::JSON');
+    sub work {
+        my ($self, $job) = @_;
+        $job->completed();
+    }
+
+worker毎に異なるHookを設定したい場合は、global_register_hooksで設定せず、
+worker毎にregister_hooksメソッドで設定してください。
 
 Hookは利用者が好きに書く事ができるので、Qudoが持っていない機能も簡単に書く事ができます。
 
