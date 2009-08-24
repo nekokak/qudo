@@ -6,7 +6,7 @@ Qudo::Manual::JA - Qudo's document lang:ja
 
 =head1 DESCRIPTION
 
-QudoはバックエンドにRDBMSを利用したJob Queueing Management Systemです。
+QudoはバックエンドにRDBMSなどを利用したJob Queueing Management Systemです。
 
 PerlにはTheSchwartzというJob Queueing Management Systemがありますが、
 利用者が拡張しやすくなるように考えてつくりました。
@@ -150,4 +150,26 @@ JobがQueueingされる毎にWorkerクラスを呼び出して処理させてい
 基本的にはこれだけです。
 
 簡単でしょ:)
+
+=head1 Hook
+
+Qudoでは各所にHookポイントがあるので、Hookポイントをつかって各種処理を行う事ができます。
+
+Job を enqueueする時に引数をシリアライズしたりなどです。
+
+たとえば、enqueueする引数の情報をJSONでシリアライズしたい場合は
+
+    my $client = Qudo->new(...);
+    $client->register_plugins('Qudo::Hook::Serialize::JSON');
+    $client->enqueue('Test::Worker', {name => 'nekokak'}, 'uniq');
+
+このようにHookモジュールをregister_pluginsに渡す事で設定でき、
+設定した引数がJSONでシリアライズされて保存されます。
+
+Hookは利用者が好きに書く事ができるので、Qudoが持っていない機能も簡単に書く事ができます。
+
+
+
+
+
 
