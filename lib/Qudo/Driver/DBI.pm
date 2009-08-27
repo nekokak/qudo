@@ -449,3 +449,7 @@ sub get_func_id {
 
 1;
 
+=head1 AUTHOR
+
+Masaru Hoshino <masartz _at_ gmail dot com>
+
