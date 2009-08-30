@@ -18,7 +18,7 @@ sub init_driver {
     $self->_connect();
 
     my $dbd_type = $self->{dbh}->{Driver}->{Name};
-    $self->{dbd} = Qudo::Driver::DBI::DBD->new($dbd_type) or die;
+    $self->{dbd} = Qudo::Driver::DBI::DBD->new($dbd_type);
     
     return $self;
 }
@@ -47,7 +47,7 @@ sub job_count{
         WHERE
             job.func_id = func.id };
     if( $funcs ){
-        $sql .= sprintf( q{ AND func.name IN (%s) },join(',', map { '?' } @{$funcs} ) );
+        $sql .= q{ AND }. $class->_join_func_name($funcs);
     }
 
     my $sth = $class->{dbh}->prepare( $sql );
@@ -70,11 +70,7 @@ sub job_list{
 
     # func.name
     if( $funcs ){
-        $sql .= sprintf( q{
-            AND
-                (func.name IN (%s))
-            },join(',', map { '?' } @{$funcs} )
-        );
+        $sql .= q{ AND }. $class->_join_func_name($funcs);
         push @bind , @{$funcs};
     }
 
@@ -125,16 +121,14 @@ sub exception_list{
 
     # funcs
     if ($funcs) {
-        $sql .= sprintf(
-            q{
-                INNER JOIN
-                    func
-                ON
-                    exception_log.func_id = func.id
-                WHERE
-                    ( func.name IN(%s) )
-            },join(',', map { '?' } @{$funcs} )
-        );
+        $sql .= q{
+            INNER JOIN
+                func
+            ON
+                exception_log.func_id = func.id
+            WHERE
+        };
+        $sql .= $class->_join_func_name($funcs);
         push @bind , @{$funcs};
     }
 
@@ -178,8 +172,7 @@ sub lookup_job {
     }
 
     # limit
-    $sql .= q{LIMIT ?};
-    push @bind , 1;
+    $sql .= q{LIMIT 1};
 
     my $sth = $class->{dbh}->prepare( $sql );
 
@@ -202,11 +195,7 @@ sub find_job {
     # func.name
     if( $func_map ){
         my $keys = [keys %$func_map];
-        $sql .= sprintf( q{
-            AND
-                (func.name IN (%s))
-            },join(',', map { '?' } @{$keys} )
-        );
+        $sql .= q{ AND }. $class->_join_func_name($keys);
         push @bind , @{$keys};
     }
 
@@ -300,9 +289,12 @@ sub logging_exception {
     my ($class, $args) = @_;
 
     my $sth = $class->{dbh}->prepare(
-        q{ INSERT INTO
-            exception_log  ( func_id , message , uniqkey, arg, exception_time ) }
-        . q{ VALUES ( ? , ? , ?, ?, ?) }
+        q{
+            INSERT INTO
+                exception_log  ( func_id , message , uniqkey, arg, exception_time )
+            VALUES
+                ( ? , ? , ?, ?, ?)
+        }
     );
 
     eval{
@@ -445,6 +437,18 @@ sub get_func_id {
     }
 
     return $func_id;
+}
+
+
+sub _join_func_name{
+    my ($self , $funcs ) = @_;
+
+    my $func_name = sprintf(
+        q{ func.name IN (%s) } ,
+        join(',', map { '?' } @{$funcs} )
+    );
+
+    return $func_name;
 }
 
 1;
