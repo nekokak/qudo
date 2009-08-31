@@ -114,7 +114,7 @@ sub load_schema {
 
 sub load_sql {
     my($file) = @_;
-    open my $fh, $file or die "Can't open $file: $!";
+    open my $fh, '<', $file or die "Can't open $file: $!";
     my $sql = do { local $/; <$fh> };
     close $fh;
     my @sql = split /;\s*/, $sql;
