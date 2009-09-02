@@ -9,8 +9,8 @@ run_tests(4, sub {
         driver_class => $driver,
     );
 
-    $master->enqueue("Worker::Test1", 'arg1', 'uniqkey1');
-    $master->enqueue("Worker::Test2", 'arg2', 'uniqkey2');
+    $master->enqueue("Worker::Test1", {arg => 'arg1', uniqkey => 'uniqkey1'});
+    $master->enqueue("Worker::Test2", {arg => 'arg2', uniqkey => 'uniqkey2'});
 
     is $master->job_count, 2;
     is $master->job_count([qw/Worker::Test1/]), 1;

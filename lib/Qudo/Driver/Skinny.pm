@@ -133,6 +133,7 @@ sub _search_job_rs {
     );
     my $servertime = $class->get_server_time;
     $rs->add_where('job.grabbed_until' => { '<=', => $servertime});
+    $rs->add_where('job.run_after'     => { '<=', => $servertime});
     return $rs;
 }
 

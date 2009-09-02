@@ -22,7 +22,7 @@ run_tests(12, sub {
     { # load Qudo::Hook::Serialize::JSON
         $manager->global_register_hooks(qw/Qudo::Hook::Serialize::JSON/);
 
-        my $job_id = $manager->enqueue("Worker::Test", {key => 'arg'}, 'uniqkey1');
+        my $job_id = $manager->enqueue("Worker::Test", { arg => {key => 'arg'}, uniqkey => 'uniqkey1'});
         my $job = $manager->lookup_job($job_id);
 
         is $job->id, 1;
@@ -37,7 +37,7 @@ run_tests(12, sub {
     }
 
     { # failed worker by Qudo::Hook::Serialize::JSON
-        my $job_id = $manager->enqueue("Worker::Test2", {key => 'arg'}, 'uniqkey1');
+        my $job_id = $manager->enqueue("Worker::Test2", { arg => {key => 'arg'}, uniqkey => 'uniqkey1'});
         my $job = $manager->lookup_job($job_id);
 
         is $job->id, 2;
@@ -54,7 +54,7 @@ run_tests(12, sub {
     { # unload Qudo::Hook::Serialize::JSON
         $manager->global_unregister_hooks(qw/Qudo::Hook::Serialize::JSON/);
 
-        my $job_id = $master->manager->enqueue("Worker::Test", 'arg', 'uniqkey2');
+        my $job_id = $master->manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey2'});
         my $job = $manager->lookup_job($job_id);
 
         is $job->id, 3;

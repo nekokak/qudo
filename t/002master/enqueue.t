@@ -9,7 +9,7 @@ run_tests(1, sub {
         driver_class => $driver,
     );
 
-    my $job_id = $master->enqueue("Worker::Test", 'arg', 'uniqkey');
+    my $job_id = $master->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
     is $job_id, 1;
 
     teardown_db;

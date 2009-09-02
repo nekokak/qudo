@@ -23,11 +23,11 @@ run_tests(2, sub {
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
 
-    $manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
+    $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey1'});
     stdout_is( sub { $manager->work_once } , "Worker::Test: post worked!\n");
 
     $manager->can_do('Worker::Test2');
-    $manager->enqueue("Worker::Test2", 'arg', 'uniqkey1');
+    $manager->enqueue("Worker::Test2", { arg => 'arg', uniqkey => 'uniqkey1'});
     stdout_is( sub { $manager->work_once } , "arg\n");
 
     teardown_db;

@@ -12,7 +12,7 @@ run_tests(4, sub {
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
 
-    $manager->enqueue("Worker::Test", 'arg', 'uniqkey');
+    $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
     my $job = $manager->find_job;
 
     is $job->id, 1;

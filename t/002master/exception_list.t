@@ -9,7 +9,7 @@ run_tests(8, sub {
         driver_class => $driver,
     );
 
-    my $job_id = $master->enqueue("Worker::Test1", 'arg', 'uniqkey');
+    my $job_id = $master->enqueue("Worker::Test1", {arg => 'arg', uniqkey => 'uniqkey'});
     my $job = $master->manager->lookup_job($job_id);
     $master->manager->job_failed($job, 'exception1');
     $master->manager->job_failed($job, 'exception2');
@@ -28,7 +28,7 @@ run_tests(8, sub {
     is scalar(@$list), 1;
     is $list->[0]->{message}, 'exception2';
 
-    $job_id = $master->enqueue("Worker::Test2", 'arg', 'uniqkey');
+    $job_id = $master->enqueue("Worker::Test2", { arg => 'arg', uniqkey => 'uniqkey'});
     $job = $master->manager->lookup_job($job_id);
     $master->manager->job_failed($job, 'exception3');
 

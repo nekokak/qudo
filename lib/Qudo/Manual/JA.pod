@@ -81,7 +81,7 @@ QudoでJob Queueingを行うクライアントは以下のように書きます
     );
 
     # enqueue job
-    $client->enqueue("Your::Worker::Mail", $user->email, $user->login_id);
+    $client->enqueue("Your::Worker::Mail", { arg => $user->email, uniqkey => $user->login_id});
 
 まずQudoのオブジェクトを作成します。
 
@@ -95,13 +95,15 @@ enqueueメソッドの
 
 第二引数はWorkerが使う引数の情報
 
-第三引数はJob毎にユニークとなる値を設定します
-
 この例の場合、Jobを処理するクラスとしてYour::Worker::Mailを指定し、
 
 処理させる引数として$user->email（メールアドレス）を指定し、
 
 Jobのユニークキーとして$user->login_id（ログインID）を指定しています。
+
+第二引数のhashrefに
+
+run_afterに秒数を指定することで、現在から何秒後に処理を開始させるかを指定させることも出来ます。
 
 クライアントが行う処理はこれだけです。
 
@@ -174,7 +176,7 @@ Job を enqueueする時に引数をシリアライズしたりなどです。
 
     my $client = Qudo->new(...);
     $client->global_register_hooks('Qudo::Hook::Serialize::JSON');
-    $client->enqueue('Test::Worker', {name => 'nekokak'}, 'uniq');
+    $client->enqueue('Test::Worker', { arg => {name => 'nekokak'}, uniqkey => 'uniq'});
 
 このようにHookモジュールをregister_pluginsに渡す事で設定でき、
 設定した引数がJSONでシリアライズされて保存されます。

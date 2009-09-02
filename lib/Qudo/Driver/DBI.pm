@@ -67,6 +67,7 @@ sub job_list{
 
     my $sql = $class->_search_job_sql();
     my @bind = $class->get_server_time;
+    push @bind, $class->get_server_time;
 
     # func.name
     if( $funcs ){
@@ -164,6 +165,7 @@ sub lookup_job {
 
     my $sql = $class->_search_job_sql();
     my @bind = $class->get_server_time;
+    push @bind, $class->get_server_time;
 
     # func.name
     if( $job_id ){
@@ -191,6 +193,7 @@ sub find_job {
 
     my $sql = $class->_search_job_sql();
     my @bind = $class->get_server_time;
+    push @bind, $class->get_server_time;
 
     # func.name
     if( $func_map ){
@@ -231,7 +234,9 @@ sub _search_job_sql{
         INNER JOIN
             func ON job.func_id = func.id
         WHERE
-            (job.grabbed_until <= ?)
+            job.grabbed_until <= ? 
+            AND
+            job.run_after <= ?
     };
     return $sql;
 }
@@ -330,6 +335,7 @@ sub enqueue {
     $args->{enqueue_time}  ||= time;
     $args->{grabbed_until} ||= 0;
     $args->{retry_cnt}     ||= 0;
+    $args->{run_after}     = time + ($args->{run_after}||0);
 
     my @column = keys %{$args};
     my $sql  = 'INSERT INTO job ( ';
@@ -366,7 +372,8 @@ sub reenqueue {
             job
         SET
             enqueue_time = ?,
-            retry_cnt = ?
+            run_after    = ?,
+            retry_cnt    = ?
         WHERE
             id = ? }
     );
@@ -374,6 +381,7 @@ sub reenqueue {
     my $row;
     eval{
         $row = $sth->execute(
+            time,
             (time + ($args->{retry_delay}||0) ),
             $args->{retry_cnt},
             $job_id,

@@ -90,7 +90,7 @@ sub can_do {
 }
 
 sub enqueue {
-    my ($self, $funcname, $arg, $uniqkey) = @_;
+    my ($self, $funcname, $arg) = @_;
 
     my $func_id = $self->{_func_id_cache}->{$funcname} ||= $self->driver->get_func_id( $funcname );
 
@@ -99,9 +99,10 @@ sub enqueue {
     }
 
     my $args = +{
-        func_id => $func_id,
-        arg     => $arg,
-        uniqkey => $uniqkey,
+        func_id   => $func_id,
+        arg       => $arg->{arg},
+        uniqkey   => $arg->{uniqkey},
+        run_after => $arg->{run_after}||0,
     };
 
     $self->call_hook('pre_enqueue', $funcname, $args);

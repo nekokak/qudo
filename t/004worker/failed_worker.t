@@ -12,7 +12,7 @@ run_tests(3, sub {
 
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
-    $manager->enqueue("Worker::Test", 'arg', 'uniqkey');
+    $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
     $manager->work_once; # failed worker
 
     my $exception = $master->exception_list;

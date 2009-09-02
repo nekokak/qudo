@@ -14,7 +14,7 @@ run_tests(1, sub {
     $manager->can_do('Worker::Test');
     $manager->register_plugins(qw/Mock::Plugin::Coderef/);
 
-    $manager->enqueue("Worker::Test", 'arg', 'uniqkey1');
+    $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey1'});
     stdout_is( sub { $manager->work_once } , "arg");
 
     teardown_db;

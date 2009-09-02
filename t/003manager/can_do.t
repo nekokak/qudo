@@ -11,8 +11,8 @@ run_tests(1, sub {
     );
 
     my $manager = $master->manager;
-    $manager->enqueue("Worker::Test", 'arg', 'uniqkey');
-    $manager->enqueue("Worker::Test2", 'oops', 'uniqkey');
+    $manager->enqueue("Worker::Test",  { arg => 'arg',  uniqkey => 'uniqkey'});
+    $manager->enqueue("Worker::Test2", { arg => 'oops', uniqkey => 'uniqkey'});
     is $manager->work_once, undef;
 
     teardown_db;

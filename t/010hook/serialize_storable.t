@@ -18,7 +18,7 @@ run_tests(7, sub {
     { # load Qudo::Hook::Serialize::Storable
         $manager->global_register_hooks(qw/Qudo::Hook::Serialize::Storable/);
 
-        my $job_id = $manager->enqueue("Worker::Test", \%hash , 'uniqkey1');
+        my $job_id = $manager->enqueue("Worker::Test", { arg => \%hash , uniqkey => 'uniqkey1'});
         my $job = $manager->lookup_job($job_id);
 
         is $job->id, 1;
@@ -34,7 +34,7 @@ run_tests(7, sub {
     { # unload Qudo::Hook::Serialize::Storable
         $manager->global_unregister_hooks(qw/Qudo::Hook::Serialize::Storable/);
 
-        my $job_id = $master->manager->enqueue("Worker::Test", 'arg' , 'uniqkey2');
+        my $job_id = $master->manager->enqueue("Worker::Test", { arg => 'arg' , uniqkey => 'uniqkey2'});
         my $job = $manager->lookup_job($job_id);
 
         is $job->id, 2;

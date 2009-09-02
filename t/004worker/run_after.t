@@ -1,9 +1,10 @@
 use strict;
 use warnings;
 use Qudo::Test;
+use Test::More;
 use Test::Output;
 
-run_tests(1, sub {
+run_tests(2, sub {
     my $driver = shift;
     my $master = test_master(
         driver_class => $driver,
@@ -11,18 +12,21 @@ run_tests(1, sub {
 
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
-    $master->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
-    stdout_is( sub { $manager->work_once } , "arg");
+    $manager->enqueue("Worker::Test", { run_after => 5, arg => 'do job', uniqkey => 'uniqkey' });
+
+    ok not $manager->find_job;
+
+    sleep(5);
+    
+    stdout_is( sub {$manager->work_once}, 'do job' );
 
     teardown_db;
 });
 
 package Worker::Test;
 use base 'Qudo::Worker';
-
 sub work {
     my ($class, $job) = @_;
-    print STDOUT $job->arg;
-    $job->completed;
-}
 
+    print STDOUT $job->arg;
+}
