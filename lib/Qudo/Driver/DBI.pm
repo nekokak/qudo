@@ -24,20 +24,18 @@ sub init_driver {
 }
 
 sub _connect {
-    my $class = shift;
+    my $self = shift;
     
-    $class->{dbh} =  DBI->connect(
-        $class->{database}->{dsn},
-        $class->{database}->{username},
-        $class->{database}->{password},
-        { RaiseError => 1, PrintError => 0, AutoCommit => 1, %{ $class->{database}->{connect_options} || {} } }
+    $self->{dbh} = DBI->connect(
+        $self->{database}->{dsn},
+        $self->{database}->{username},
+        $self->{database}->{password},
+        { RaiseError => 1, PrintError => 0, AutoCommit => 1, %{ $self->{database}->{connect_options} || {} } }
     );
-    
-    return $class;
 }
 
-sub job_count{
-    my ($class , $funcs) = @_;
+sub job_count {
+    my ($self , $funcs) = @_;
 
     my $sql = q{
         SELECT
@@ -45,12 +43,13 @@ sub job_count{
         FROM
             job, func
         WHERE
-            job.func_id = func.id };
+            job.func_id = func.id
+    };
     if( $funcs ){
-        $sql .= q{ AND }. $class->_join_func_name($funcs);
+        $sql .= q{ AND }. $self->_join_func_name($funcs);
     }
 
-    my $sth = $class->{dbh}->prepare( $sql );
+    my $sth = $self->{dbh}->prepare( $sql );
 
     eval{
         $sth->execute( @{$funcs} );
@@ -62,22 +61,22 @@ sub job_count{
     return $ret->{count};
 }
 
-sub job_list{
-    my ($class, $limit, $funcs) = @_;
+sub job_list {
+    my ($self, $limit, $funcs) = @_;
 
-    my $sql = $class->_search_job_sql();
+    my $sql = $self->_search_job_sql();
     $sql .= q{
         WHERE
             job.grabbed_until <= ? 
           AND
             job.run_after <= ?
     };
-    my @bind = $class->get_server_time;
-    push @bind, $class->get_server_time;
+    my @bind = $self->get_server_time;
+    push @bind, $self->get_server_time;
 
     # func.name
     if( $funcs ){
-        $sql .= q{ AND }. $class->_join_func_name($funcs);
+        $sql .= q{ AND }. $self->_join_func_name($funcs);
         push @bind , @{$funcs};
     }
 
@@ -85,8 +84,7 @@ sub job_list{
     $sql .= q{LIMIT ?};
     push @bind , $limit;
 
-
-    my $sth = $class->{dbh}->prepare( $sql );
+    my $sth = $self->{dbh}->prepare( $sql );
 
     eval{
         $sth->execute( @bind );
@@ -95,7 +93,7 @@ sub job_list{
         croak 'job_list ERROR'.$e;
     }
 
-    my $code =  $class->_get_job_data( $sth );
+    my $code = $self->_get_job_data( $sth );
 
     my @jobs;
     while (1) {
@@ -106,9 +104,8 @@ sub job_list{
     return \@jobs;
 }
 
-
-sub exception_list{
-    my ($class, %args) = @_;
+sub exception_list {
+    my ($self, %args) = @_;
 
     my @bind   = ();
     my $limit  = $args{limit};
@@ -135,7 +132,7 @@ sub exception_list{
                 exception_log.func_id = func.id
             WHERE
         };
-        $sql .= $class->_join_func_name($funcs);
+        $sql .= $self->_join_func_name($funcs);
         push @bind , @{$funcs};
     }
 
@@ -151,7 +148,7 @@ sub exception_list{
         push @bind , $offset;
     }
 
-    my $sth = $class->{dbh}->prepare( $sql );
+    my $sth = $self->{dbh}->prepare( $sql );
     eval{
         $sth->execute( @bind );
     };
@@ -167,9 +164,9 @@ sub exception_list{
 
 
 sub lookup_job {
-    my ($class, $job_id) = @_;
+    my ($self, $job_id) = @_;
 
-    my $sql = $class->_search_job_sql();
+    my $sql = $self->_search_job_sql();
 
     my @bind;
     # func.name
@@ -181,7 +178,7 @@ sub lookup_job {
     # limit
     $sql .= q{LIMIT 1};
 
-    my $sth = $class->{dbh}->prepare( $sql );
+    my $sth = $self->{dbh}->prepare( $sql );
 
     eval{
         $sth->execute( @bind );
@@ -190,26 +187,26 @@ sub lookup_job {
         croak 'lookup_job ERROR'.$e;
     }
 
-    return $class->_get_job_data( $sth );
+    return $self->_get_job_data( $sth );
 }
 
 sub find_job {
-    my ($class, $limit, $func_map) = @_;
+    my ($self, $limit, $func_map) = @_;
 
-    my $sql = $class->_search_job_sql();
+    my $sql = $self->_search_job_sql();
     $sql .= q{
         WHERE
             job.grabbed_until <= ? 
           AND
             job.run_after <= ?
     };
-    my @bind = $class->get_server_time;
-    push @bind, $class->get_server_time;
+    my @bind = $self->get_server_time;
+    push @bind, $self->get_server_time;
 
     # func.name
     if( $func_map ){
         my $keys = [keys %$func_map];
-        $sql .= q{ AND }. $class->_join_func_name($keys);
+        $sql .= q{ AND }. $self->_join_func_name($keys);
         push @bind , @{$keys};
     }
 
@@ -217,7 +214,7 @@ sub find_job {
     $sql .= q{LIMIT ?};
     push @bind , $limit;
 
-    my $sth = $class->{dbh}->prepare( $sql );
+    my $sth = $self->{dbh}->prepare( $sql );
 
     eval{
         $sth->execute( @bind );
@@ -226,13 +223,11 @@ sub find_job {
         croak 'find_job ERROR'.$e;
     }
 
-    return $class->_get_job_data( $sth );
+    return $self->_get_job_data( $sth );
 }
 
-sub _search_job_sql{
-    my $class = shift;
-
-    my $sql = q{
+sub _search_job_sql {
+    q{
         SELECT
             job.id AS id,
             job.arg AS arg,
@@ -245,12 +240,10 @@ sub _search_job_sql{
         INNER JOIN
             func ON job.func_id = func.id
     };
-    return $sql;
 }
 
-
 sub _get_job_data {
-    my ($class, $sth) = @_;
+    my ($self, $sth) = @_;
     sub{
         while (my $row = $sth->fetchrow_hashref) {
             return +{
@@ -263,22 +256,24 @@ sub _get_job_data {
                 func_name         => $row->{funcname},
             };
         }
+        return;
     };
 }
 
 sub grab_a_job {
-    my ($class, %args) = @_;
+    my ($self, %args) = @_;
 
-    my $sth = $class->{dbh}->prepare(
+    my $sth = $self->{dbh}->prepare(
         q{
-        UPDATE
-            job
-        SET
-            grabbed_until = ?
-        WHERE
-            id = ?
-        AND
-            grabbed_until = ? }
+            UPDATE
+                job
+            SET
+                grabbed_until = ?
+            WHERE
+                id = ?
+            AND
+                grabbed_until = ?
+        }
     );
 
     my $rows;
@@ -298,12 +293,12 @@ sub grab_a_job {
 }
 
 sub logging_exception {
-    my ($class, $args) = @_;
+    my ($self, $args) = @_;
 
-    my $sth = $class->{dbh}->prepare(
+    my $sth = $self->{dbh}->prepare(
         q{
-            INSERT INTO
-                exception_log  ( func_id , message , uniqkey, arg, exception_time )
+            INSERT INTO exception_log
+                ( func_id , message , uniqkey, arg, exception_time )
             VALUES
                 ( ? , ? , ?, ?, ?)
         }
@@ -325,19 +320,19 @@ sub logging_exception {
 }
 
 sub get_server_time {
-    my $class = shift;
+    my $self = shift;
 
-    my $unixtime_sql = $class->{dbd}->sql_for_unixtime;
+    my $unixtime_sql = $self->{dbd}->sql_for_unixtime;
     my $time;
     eval {
-        $time = $class->{dbh}->selectrow_array("SELECT $unixtime_sql");
+        $time = $self->{dbh}->selectrow_array("SELECT $unixtime_sql");
     };
     if ($@) { $time = time }
     return $time;
 }
 
 sub enqueue {
-    my ($class, $args) = @_;
+    my ($self, $args) = @_;
 
     $args->{enqueue_time}  ||= time;
     $args->{grabbed_until} ||= 0;
@@ -351,7 +346,7 @@ sub enqueue {
        $sql .= join(', ', ('?') x @column);
        $sql .=  ')';
 
-    my $sth_ins = $class->{dbh}->prepare( $sql );
+    my $sth_ins = $self->{dbh}->prepare( $sql );
     my @bind = map {$args->{$_}} @column;
     eval{
         $sth_ins->execute( @bind );
@@ -360,8 +355,8 @@ sub enqueue {
         croak 'enqueue ERROR'.$@;
     }
 
-    my $id = $class->{dbd}->last_insert_id($class->{dbh}, $sth_ins);
-    my $sth_sel = $class->{dbh}->prepare(
+    my $id = $self->{dbd}->last_insert_id($self->{dbh}, $sth_ins);
+    my $sth_sel = $self->{dbh}->prepare(
         q{SELECT * FROM job WHERE id = ?}
     );
 
@@ -371,18 +366,19 @@ sub enqueue {
 }
 
 sub reenqueue {
-    my ($class, $job_id, $args) = @_;
+    my ($self, $job_id, $args) = @_;
 
-    my $sth = $class->{dbh}->prepare(
+    my $sth = $self->{dbh}->prepare(
         q{
-        UPDATE
-            job
-        SET
-            enqueue_time = ?,
-            run_after    = ?,
-            retry_cnt    = ?
-        WHERE
-            id = ? }
+            UPDATE
+                job
+            SET
+                enqueue_time = ?,
+                run_after    = ?,
+                retry_cnt    = ?
+            WHERE
+                id = ?
+        }
     );
 
     my $row;
@@ -404,9 +400,9 @@ sub reenqueue {
 
 
 sub dequeue {
-    my ($class, $args) = @_;
-    my $sth = $class->{dbh}->prepare(
-        q{ DELETE FROM  job WHERE id = ? }
+    my ($self, $args) = @_;
+    my $sth = $self->{dbh}->prepare(
+        q{DELETE FROM  job WHERE id = ?}
     );
 
     my $row;
@@ -422,9 +418,9 @@ sub dequeue {
 
 
 sub get_func_id {
-    my ($class, $funcname) = @_;
+    my ($self, $funcname) = @_;
     
-    my $sth_sel = $class->{dbh}->prepare(
+    my $sth_sel = $self->{dbh}->prepare(
         q{SELECT * FROM func WHERE name = ?}
     );
 
@@ -435,7 +431,7 @@ sub get_func_id {
         $func_id =  $ret_hashref->{id};
     }
     else{
-        my $sth_ins = $class->{dbh}->prepare(
+        my $sth_ins = $self->{dbh}->prepare(
             q{INSERT INTO func ( name ) VALUES ( ? )}
         );
         eval{
