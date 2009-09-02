@@ -11,8 +11,7 @@ run_tests(3, sub {
 
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
-    my $job_id = $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
-    my $job = $manager->lookup_job($job_id);
+    my $job = $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
 
     is $job->id, 1;
     is $job->arg, 'arg';

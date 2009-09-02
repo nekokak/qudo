@@ -66,6 +66,12 @@ sub job_list{
     my ($class, $limit, $funcs) = @_;
 
     my $sql = $class->_search_job_sql();
+    $sql .= q{
+        WHERE
+            job.grabbed_until <= ? 
+          AND
+            job.run_after <= ?
+    };
     my @bind = $class->get_server_time;
     push @bind, $class->get_server_time;
 
@@ -164,12 +170,11 @@ sub lookup_job {
     my ($class, $job_id) = @_;
 
     my $sql = $class->_search_job_sql();
-    my @bind = $class->get_server_time;
-    push @bind, $class->get_server_time;
 
+    my @bind;
     # func.name
     if( $job_id ){
-        $sql .= q{ AND (job.id = ?)};
+        $sql .= q{ WHERE job.id = ?};
         push @bind , $job_id;
     }
 
@@ -192,6 +197,12 @@ sub find_job {
     my ($class, $limit, $func_map) = @_;
 
     my $sql = $class->_search_job_sql();
+    $sql .= q{
+        WHERE
+            job.grabbed_until <= ? 
+          AND
+            job.run_after <= ?
+    };
     my @bind = $class->get_server_time;
     push @bind, $class->get_server_time;
 
@@ -233,10 +244,6 @@ sub _search_job_sql{
         FROM job
         INNER JOIN
             func ON job.func_id = func.id
-        WHERE
-            job.grabbed_until <= ? 
-            AND
-            job.run_after <= ?
     };
     return $sql;
 }

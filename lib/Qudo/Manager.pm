@@ -108,7 +108,12 @@ sub enqueue {
     $self->call_hook('pre_enqueue', $funcname, $args);
     $self->call_hook('serialize',   $funcname, $args);
 
-    return $self->driver->enqueue($args);
+    my $job_id = $self->driver->enqueue($args);
+    my $job = $self->lookup_job($job_id);
+
+    $self->call_hook('post_enqueue', $funcname, $job);
+
+    return $job;
 }
 
 sub reenqueue {
@@ -147,8 +152,8 @@ sub lookup_job {
     my ($self, $job_id) = @_;
 
     my $callback = $self->driver->lookup_job($job_id);
-
-    return $self->_grab_a_job($callback);
+    my $job_data = $callback->();
+    return $job_data ? $self->_data2job($job_data) : undef;
 }
 
 sub find_job {
@@ -158,6 +163,15 @@ sub find_job {
     my $callback = $self->driver->find_job($self->{find_job_limit_size}, $self->{func_map});
 
     return $self->_grab_a_job($callback);
+}
+
+sub _data2job {
+    my ($self, $job_data) = @_;
+
+    Qudo::Job->new(
+        manager  => $self,
+        job_data => $job_data,
+    );
 }
 
 sub _grab_a_job {
@@ -179,11 +193,7 @@ sub _grab_a_job {
         );
         next if $grab_job < 1;
 
-        my $job = Qudo::Job->new(
-            manager  => $self,
-            job_data => $job_data,
-        );
-        return $job;
+        return $self->_data2job($job_data);
     }
     return;
 }
@@ -201,7 +211,7 @@ sub job_failed {
     );
 }
 
-sub enqueue_failed_job {
+sub enqueue_from_failed_job {
     my ($self, $exception_log) = @_;
 
     my $args = +{
@@ -210,7 +220,8 @@ sub enqueue_failed_job {
         uniqkey => $exception_log->{uniqkey},
     };
 
-    return $self->driver->enqueue($args);
+    my $job_id = $self->driver->enqueue($args);
+    $self->lookup_job($job_id);
 }
 
 1;

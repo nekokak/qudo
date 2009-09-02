@@ -11,8 +11,7 @@ run_tests(6, sub {
 
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
-    my $job_id = $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
-    my $job = $manager->lookup_job($job_id);
+    my $job = $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
 
     is $job->id, 1;
     is $job->arg, 'arg';
@@ -21,8 +20,7 @@ run_tests(6, sub {
     $manager->work_once; # worker failed.
 
     my $exception = $master->exception_list;
-    $job_id = $manager->enqueue_failed_job($exception->[0]);
-    $job = $manager->lookup_job($job_id);
+    $job = $manager->enqueue_from_failed_job($exception->[0]);
 
     is $job->id, 2;
     is $job->arg, 'arg';

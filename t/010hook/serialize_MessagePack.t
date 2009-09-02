@@ -23,8 +23,7 @@ run_tests(12, sub {
     { # load Qudo::Hook::Serialize::MessagePack
         $manager->global_register_hooks(qw/Qudo::Hook::Serialize::MessagePack/);
 
-        my $job_id = $manager->enqueue("Worker::Test", { arg => \%hash , uniqkey => 'uniqkey1'});
-        my $job = $manager->lookup_job($job_id);
+        my $job = $manager->enqueue("Worker::Test", { arg => \%hash , uniqkey => 'uniqkey1'});
 
         is $job->id, 1;
         is $job->arg, Data::MessagePack->pack( \%hash );
@@ -38,8 +37,7 @@ run_tests(12, sub {
     }
 
     { # failed worker by Qudo::Hook::Serialize::MessagePack
-        my $job_id = $manager->enqueue("Worker::Test2", { arg => \%hash , uniqkey => 'uniqkey1'});
-        my $job = $manager->lookup_job($job_id);
+        my $job = $manager->enqueue("Worker::Test2", { arg => \%hash , uniqkey => 'uniqkey1'});
 
         is $job->id, 2;
         is $job->arg, Data::MessagePack->pack( \%hash );
@@ -55,8 +53,7 @@ run_tests(12, sub {
     { # unload Qudo::Hook::Serialize::MessagePack
         $manager->global_unregister_hooks(qw/Qudo::Hook::Serialize::MessagePack/);
 
-        my $job_id = $master->manager->enqueue("Worker::Test", { arg => 'arg' , uniqkey => 'uniqkey2'});
-        my $job = $manager->lookup_job($job_id);
+        my $job = $master->manager->enqueue("Worker::Test", { arg => 'arg' , uniqkey => 'uniqkey2'});
 
         is $job->id, 3;
         is $job->arg , 'arg';

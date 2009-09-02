@@ -99,6 +99,7 @@ sub lookup_job {
 
     my $rs = $class->_search_job_rs(limit => 1);
     $rs->add_where('job.id' => $job_id);
+
     my $itr = $rs->retrieve;
 
     return $class->_get_job_data($itr);
@@ -109,6 +110,11 @@ sub find_job {
 
     my $rs = $class->_search_job_rs(limit => $limit);
     $rs->add_where('func.name' => [keys %$func_map]);
+
+    my $servertime = $class->get_server_time;
+    $rs->add_where('job.grabbed_until' => { '<=', => $servertime});
+    $rs->add_where('job.run_after'     => { '<=', => $servertime});
+
     my $itr = $rs->retrieve;
 
     return $class->_get_job_data($itr);
@@ -131,9 +137,6 @@ sub _search_job_rs {
             condition => 'job.func_id = func.id',
         }
     );
-    my $servertime = $class->get_server_time;
-    $rs->add_where('job.grabbed_until' => { '<=', => $servertime});
-    $rs->add_where('job.run_after'     => { '<=', => $servertime});
     return $rs;
 }
 
