@@ -214,6 +214,10 @@ sub job_failed {
 sub enqueue_from_failed_job {
     my ($self, $exception_log) = @_;
 
+    if ( $exception_log->{retried_fg} ) {
+        Carp::carp('this exception is already retried');
+        return;
+    }
     my $args = +{
         func_id => $exception_log->{func_id},
         arg     => $exception_log->{arg},
