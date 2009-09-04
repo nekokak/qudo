@@ -119,7 +119,7 @@ sub exception_list {
             exception_log.message,
             exception_log.uniqkey,
             exception_log.arg,
-            exception_log.retried_fg
+            exception_log.retried
         FROM
             exception_log
     };
@@ -299,7 +299,7 @@ sub logging_exception {
     my $sth = $self->{dbh}->prepare(
         q{
             INSERT INTO exception_log
-                ( func_id , message , uniqkey, arg, exception_time, retried_fg)
+                ( func_id , message , uniqkey, arg, exception_time, retried)
             VALUES
                 ( ? , ? , ?, ?, ?, ?)
         }
@@ -456,7 +456,7 @@ sub retry_from_exception_log {
     my ($self, $exception_log_id) = @_;
 
     $self->_execute(
-        q{UPDATE exception_log SET retried_fg = 1 WHERE id = ?},
+        q{UPDATE exception_log SET retried = 1 WHERE id = ?},
         [$exception_log_id]
     );
 }

@@ -21,7 +21,7 @@ run_tests(10, sub {
     $manager->work_once; # worker failed.
 
     my $exception = $master->exception_list;
-    is $master->exception_list->[0]->{retried_fg}, 0;
+    is $master->exception_list->[0]->{retried}, 0;
     $job = $manager->enqueue_from_failed_job($exception->[0]);
 
     is $job->id, 2;
@@ -29,7 +29,7 @@ run_tests(10, sub {
     is $job->uniqkey, 'uniqkey';
 
     $exception = $master->exception_list;
-    is $master->exception_list->[0]->{retried_fg}, 1;
+    is $master->exception_list->[0]->{retried}, 1;
 
     stderr_like( sub {$manager->enqueue_from_failed_job($exception->[0])}, qr/this exception is already retried/);
 

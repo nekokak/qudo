@@ -21,7 +21,7 @@ CREATE TABLE exception_log (
     message         MEDIUMBLOB NOT NULL,
     uniqkey         VARCHAR(255) NULL,
     arg             MEDIUMBLOB,
-    retried_fg      TINYINT(1) NOT NULL DEFAULT 0,
+    retried         TINYINT(1) NOT NULL DEFAULT 0,
     INDEX (func_id),
     INDEX (exception_time)
 );

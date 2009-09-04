@@ -22,7 +22,7 @@ sub exception_list {
                           exception_log.message
                           exception_log.uniqkey
                           exception_log.arg
-                          exception_log.retried_fg
+                          exception_log.retried
                       /],
             from   => [qw/exception_log/],
             limit  => $args{limit},
@@ -215,7 +215,7 @@ sub retry_from_exception_log {
 
     $class->update('exception_log',
         {
-            retried_fg => 1,
+            retried => 1,
         },
         {
             id => $exception_log_id,

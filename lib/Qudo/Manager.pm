@@ -214,7 +214,7 @@ sub job_failed {
 sub enqueue_from_failed_job {
     my ($self, $exception_log) = @_;
 
-    if ( $exception_log->{retried_fg} ) {
+    if ( $exception_log->{retried} ) {
         Carp::carp('this exception is already retried');
         return;
     }

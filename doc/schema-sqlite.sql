@@ -21,6 +21,6 @@ CREATE TABLE exception_log (
     message         MEDIUMBLOB NOT NULL,
     uniqkey         VARCHAR(255) NULL,
     arg             MEDIUMBLOB,
-    retried_fg      TINYINT(1) NOT NULL
+    retried         TINYINT(1) NOT NULL
 );
 
