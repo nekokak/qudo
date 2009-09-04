@@ -81,6 +81,41 @@ And it has to have 'work' method too.
 'work' method accept Qudo::Job object at parameter.
 If your work complete , you may call Qudo::Job->complete() method.
 
+=head1 WORKER SETTING
+
+=head2 max_retries
+
+    package Your::Worker;
+    use base 'Qudo::Worker';
+    sub max_retries { 2 }
+    sub work { ... }
+
+How many times it retries if worker doesn't succeed is set.
+It is retried two times in this example.
+By default, return 0. no retry.
+
+=head2 retry_delay
+
+    package Your::Worker;
+    use base 'Qudo::Worker';
+    sub retry_delay { 10 }
+    sub work { ... }
+
+returns the number of seconds after a failure workers should wait until
+retry a job that has already failed retry_delay times.
+By default,return 0 seconds
+
+=head2 grab_for
+
+    package Your::Worker;
+    use base 'Qudo::Worker';
+    sub retry_delay { 60 }
+    sub work { ... }
+
+Returns the number of seconds workers of this class will claim a grabbed a job.
+By default,return 3600 seconds.
+
 =cut
 
 1;
+

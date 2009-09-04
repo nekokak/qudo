@@ -28,12 +28,12 @@ sub new {
         @_,
     }, $class;
 
-    $self->setup_driver;
+    $self->_setup_driver;
 
     return $self;
 }
 
-sub setup_driver {
+sub _setup_driver {
     my $self = shift;
 
     my $driver = 'Qudo::Driver::' . $self->{driver_class};
@@ -109,7 +109,7 @@ Qudo - simple job queue manager
             password => '',
         },
     );
-    $qudo->enqueue("Worker::Test", 'arg', 'uniqkey');
+    $qudo->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
     
     # do work:
     use Qudo;
