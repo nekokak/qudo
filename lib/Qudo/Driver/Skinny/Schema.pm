@@ -27,11 +27,12 @@ install_table func => schema {
 
 install_table exception_log => schema {
     pk 'id';
-    columns qw/id func_id message arg exception_time/;
+    columns qw/id func_id message arg exception_time retried_fg/;
 
     trigger pre_insert => callback {
         my ($class, $args) = @_;
         $args->{exception_time} ||= time;
+        $args->{retried_fg} = 0;
     };
 };
 

@@ -22,6 +22,7 @@ sub exception_list {
                           exception_log.message
                           exception_log.uniqkey
                           exception_log.arg
+                          exception_log.retried_fg
                       /],
             from   => [qw/exception_log/],
             limit  => $args{limit},
@@ -207,6 +208,19 @@ sub get_func_id {
 
     my $func = $class->find_or_create('func',{ name => $funcname });
     return $func ? $func->id : undef;
+}
+
+sub retry_from_exception_log {
+    my ($class, $exception_log_id) = @_;
+
+    $class->update('exception_log',
+        {
+            retried_fg => 1,
+        },
+        {
+            id => $exception_log_id,
+        },
+    );
 }
 
 1;

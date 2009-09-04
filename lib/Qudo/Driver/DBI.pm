@@ -118,7 +118,8 @@ sub exception_list {
             exception_log.exception_time,
             exception_log.message,
             exception_log.uniqkey,
-            exception_log.arg
+            exception_log.arg,
+            exception_log.retried_fg
         FROM
             exception_log
     };
@@ -298,9 +299,9 @@ sub logging_exception {
     my $sth = $self->{dbh}->prepare(
         q{
             INSERT INTO exception_log
-                ( func_id , message , uniqkey, arg, exception_time )
+                ( func_id , message , uniqkey, arg, exception_time, retried_fg)
             VALUES
-                ( ? , ? , ?, ?, ?)
+                ( ? , ? , ?, ?, ?, ?)
         }
     );
 
@@ -311,6 +312,7 @@ sub logging_exception {
             $args->{uniqkey} , 
             $args->{arg} , 
             time(),
+            0,
         );
     };
     if( my $e =  $@ ){
@@ -450,6 +452,26 @@ sub get_func_id {
     return $func_id;
 }
 
+sub retry_from_exception_log {
+    my ($self, $exception_log_id) = @_;
+
+    $self->_execute(
+        q{UPDATE exception_log SET retried_fg = 1 WHERE id = ?},
+        [$exception_log_id]
+    );
+}
+
+sub _execute {
+    my ($self, $sql, $bind) = @_;
+
+    my $sth;
+    eval {
+        $sth = $self->{dbh}->prepare($sql);
+        $sth->execute(@{$bind});
+    };
+    if ($@) { croak $@ }
+    $sth;
+}
 
 sub _join_func_name{
     my ($self , $funcs ) = @_;

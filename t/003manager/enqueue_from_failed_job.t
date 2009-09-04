@@ -3,7 +3,7 @@ use warnings;
 use Qudo::Test;
 use Test::More;
 
-run_tests(6, sub {
+run_tests(8, sub {
     my $driver = shift;
     my $master = test_master(
         driver_class => $driver,
@@ -20,11 +20,15 @@ run_tests(6, sub {
     $manager->work_once; # worker failed.
 
     my $exception = $master->exception_list;
+    is $master->exception_list->[0]->{retried_fg}, 0;
     $job = $manager->enqueue_from_failed_job($exception->[0]);
 
     is $job->id, 2;
     is $job->arg, 'arg';
     is $job->uniqkey, 'uniqkey';
+
+    $exception = $master->exception_list;
+    is $master->exception_list->[0]->{retried_fg}, 1;
 
     teardown_db;
 });

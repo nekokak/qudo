@@ -20,6 +20,7 @@ CREATE TABLE exception_log (
     exception_time  INTEGER UNSIGNED NOT NULL,
     message         MEDIUMBLOB NOT NULL,
     uniqkey         VARCHAR(255) NULL,
-    arg             MEDIUMBLOB
+    arg             MEDIUMBLOB,
+    retried_fg      TINYINT(1) NOT NULL
 );
 

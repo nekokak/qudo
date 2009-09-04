@@ -221,6 +221,9 @@ sub enqueue_from_failed_job {
     };
 
     my $job_id = $self->driver->enqueue($args);
+
+    $self->driver->retry_from_exception_log($exception_log->{id});
+
     $self->lookup_job($job_id);
 }
 
