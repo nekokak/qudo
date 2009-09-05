@@ -21,8 +21,6 @@ inc/Test/Builder/Module.pm
 inc/Test/More.pm
 inc/Test/Output.pm
 lib/Qudo.pm
-lib/Qudo/.Job.pm.swp
-lib/Qudo/Driver/.DBI.pm.swp
 lib/Qudo/Driver/DBI.pm
 lib/Qudo/Driver/DBI/DBD.pm
 lib/Qudo/Driver/DBI/DBD/mysql.pm
@@ -52,7 +50,6 @@ t/002master/enqueue.t
 t/002master/exception_list.t
 t/002master/job_count.t
 t/002master/job_list.t
-t/003manager/.enqueue_from_failed_job.t.swp
 t/003manager/can_do.t
 t/003manager/dose_not_has_abilities.t
 t/003manager/enqueue.t
@@ -79,7 +76,6 @@ t/Mock/Hook/PostWork.pm
 t/Mock/Hook/PreWork.pm
 t/Mock/Plugin/Coderef.pm
 t/Mock/Plugin/Object.pm
-TODO
 xt/perlcritic.t
 xt/perlcriticrc
 xt/synopsis.t
