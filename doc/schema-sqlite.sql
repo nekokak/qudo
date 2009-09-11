@@ -23,4 +23,13 @@ CREATE TABLE exception_log (
     arg             MEDIUMBLOB,
     retried         TINYINT(1) NOT NULL
 );
+CREATE TABLE job_status (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    func_id         INTEGER UNSIGNED NOT NULL,
+    arg             MEDIUMBLOB,
+    uniqkey         VARCHAR(255) NULL,
+    status          VARCHAR(10),
+    process_time    INTEGER UNSIGNED NOT NULL,
+    job_end_time    INTEGER UNSIGNED NOT NULL
+);
 

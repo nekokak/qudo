@@ -13,6 +13,8 @@ our $FIND_JOB_LIMIT_SIZE = 30;
 our $DEFAULT_DRIVER = 'Skinny';
 our $EXCEPTION_LIMIT_SIZE = 10;
 our $EXCEPTION_OFFSET_SIZE = 0;
+our $JOB_STATUS_LIMIT_SIZE = 10;
+our $JOB_STATUS_OFFSET_SIZE = 0;
 
 sub new {
     my $class = shift;
@@ -91,6 +93,14 @@ sub exception_list {
     $args{limit}  ||= $EXCEPTION_LIMIT_SIZE;
     $args{offset} ||= $EXCEPTION_OFFSET_SIZE;
     return $self->{driver}->exception_list(%args);
+}
+
+sub job_status_list {
+    my ($self, %args) = @_;
+
+    $args{limit}  ||= $JOB_STATUS_LIMIT_SIZE;
+    $args{offset} ||= $JOB_STATUS_OFFSET_SIZE;
+    return $self->{driver}->job_status_list(%args);
 }
 
 =head1 NAME

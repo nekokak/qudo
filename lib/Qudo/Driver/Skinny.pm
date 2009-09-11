@@ -50,6 +50,45 @@ sub exception_list {
     return \@exception_list;
 }
 
+sub job_status_list {
+    my ($class, %args) = @_;
+
+    my $rs = $class->resultset(
+        {
+            select => [qw/job_status.id
+                          job_status.func_id
+                          job_status.arg
+                          job_status.uniqkey
+                          job_status.status
+                          job_status.process_time
+                          job_status.job_end_time
+                      /],
+            from   => [qw/job_status/],
+            limit  => $args{limit},
+            offset => $args{offset},
+        }
+    );
+
+    if ($args{funcs}) {
+        $rs->from([]);
+        $rs->add_join(
+            job_status => {
+                type      => 'inner',
+                table     => 'func',
+                condition => 'job_status.func_id = func.id',
+            }
+        );
+        $rs->add_where('func.name' => $args{funcs});
+    }
+    my $itr = $rs->retrieve;
+
+    my @job_status_list;
+    while (my $row = $itr->next) {
+        push @job_status_list, $row->get_columns;
+    }
+    return \@job_status_list;
+}
+
 sub job_count {
     my ($class, $funcs) = @_;
 
@@ -176,6 +215,14 @@ sub logging_exception {
     my ($class, $args) = @_;
 
     $class->insert('exception_log', $args);
+
+    return;
+}
+
+sub set_job_status {
+    my ($class, $args) = @_;
+
+    $class->insert('job_status', $args);
 
     return;
 }

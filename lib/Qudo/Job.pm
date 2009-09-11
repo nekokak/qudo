@@ -17,8 +17,14 @@ sub arg : lvalue  { $_[0]->{job_data}->{job_arg}           }
 sub arg_origin : lvalue { $_[0]->{arg_origin} }
 
 sub manager  { $_[0]->{manager} }
+sub process_time { 0 }
 
-sub completed { $_[0]->{_complete} = 1 }
+sub completed {
+    my $self = shift;
+    $self->{_complete} = 1;
+    return unless $self->funcname->set_job_status;
+    $self->manager->set_job_status($self, 'completed');
+}
 
 sub is_completed { $_[0]->{_complete} }
 

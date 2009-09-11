@@ -211,6 +211,20 @@ sub job_failed {
     );
 }
 
+sub set_job_status {
+    my ($self, $job, $status) = @_;
+
+    $self->driver->set_job_status(
+        {
+            func_id      => $job->func_id,
+            arg          => $job->arg_origin || $job->arg,
+            uniqkey      => $job->uniqkey,
+            status       => $status,
+            process_time => $job->process_time,
+        }
+    );
+}
+
 sub enqueue_from_failed_job {
     my ($self, $exception_log) = @_;
 

@@ -9,6 +9,7 @@ __PACKAGE__->mk_classdata(qw/_hooks/);
 sub max_retries { 0 }
 sub retry_delay { 0 }
 sub grab_for    { 60*60 } # default setting 1 hour
+sub set_job_status { 0 }  # job process status store for job_status table.
 sub hooks {
     my $class = shift;
     $class->_hooks(+{}) unless $class->_hooks;

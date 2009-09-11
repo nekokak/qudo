@@ -36,5 +36,16 @@ install_table exception_log => schema {
     };
 };
 
+install_table job_status => schema {
+    pk 'id';
+    columns qw/id func_id arg uniqkey status job_end_time/;
+
+    trigger pre_insert => callback {
+        my ($class, $args) = @_;
+        $args->{job_end_time} ||= time;
+    };
+};
+
+
 1;
 
