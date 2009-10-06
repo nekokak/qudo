@@ -221,6 +221,7 @@ sub set_job_status {
             uniqkey      => $job->uniqkey,
             status       => $status,
             process_time => $job->process_time,
+            job_end_time => time(),
         }
     );
 }

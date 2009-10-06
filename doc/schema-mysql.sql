@@ -26,3 +26,12 @@ CREATE TABLE exception_log (
     INDEX (exception_time)
 );
 
+CREATE TABLE job_status (
+    id              BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    func_id         INTEGER UNSIGNED NOT NULL DEFAULT 0,
+    arg             MEDIUMBLOB NOT NULL,
+    uniqkey         VARCHAR(255) NULL,
+    status          VARCHAR(10),
+    process_time    INTEGER UNSIGNED NOT NULL,
+    job_end_time    INTEGER UNSIGNED NOT NULL
+);

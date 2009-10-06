@@ -34,6 +34,53 @@ sub _connect {
     );
 }
 
+sub job_status_list {
+    my ($self, %args) = @_;
+
+    my $sql = q{
+        SELECT
+            job_status.id,
+            job_status.func_id,
+            job_status.arg,
+            job_status.uniqkey,
+            job_status.status,
+            job_status.process_time,
+            job_status.job_end_time
+        FROM
+            job_status
+    };
+
+    my @funcs;
+    if( $args{funcs} ){
+        if( ref($args{funcs}) eq 'ARRAY' ){
+            @funcs = @{$args{funcs}};
+        }
+        else{
+            push @funcs , $args{funcs};
+        }
+
+        $sql .= sprintf( q{
+            INNER JOIN
+                func
+            ON
+                job_status.func_id = func.id
+            WHERE (func.name IN (%s) )}, join(',',map{'?'} @funcs) );
+    }
+
+    $sql .= q{ LIMIT ? OFFSET ? };
+
+    my $sth = $self->_execute(
+        $sql,
+        [ @funcs , $args{limit} ,$args{offset} ]
+    );
+
+    my @job_status_list;
+    while (my $row = $sth->fetchrow_hashref) {
+        push @job_status_list, $row;
+    }
+    return \@job_status_list;
+}
+
 sub job_count {
     my ($self , $funcs) = @_;
 
@@ -321,6 +368,25 @@ sub logging_exception {
     return;
 }
 
+sub set_job_status{
+    my ($self, $args) = @_;
+
+    my @column = keys %{$args};
+    my $sql  = $self->_build_insert_sql(
+        'job_status',
+        \@column
+    );
+
+    my @bind = map {$args->{$_}} @column;
+
+    $self->_execute(
+        $sql,
+        \@bind
+    );
+
+    return;
+}
+
 sub get_server_time {
     my $self = shift;
 
@@ -342,11 +408,10 @@ sub enqueue {
     $args->{run_after}     = time + ($args->{run_after}||0);
 
     my @column = keys %{$args};
-    my $sql  = 'INSERT INTO job ( ';
-       $sql .= join ' ,' , @column;
-       $sql .= ' ) VALUES ( ';
-       $sql .= join(', ', ('?') x @column);
-       $sql .=  ')';
+    my $sql  = $self->_build_insert_sql(
+        'job',
+        \@column
+    );
 
     my $sth_ins = $self->{dbh}->prepare( $sql );
     my @bind = map {$args->{$_}} @column;
@@ -484,9 +549,18 @@ sub _join_func_name{
     return $func_name;
 }
 
+sub _build_insert_sql{
+    my( $self , $table , $column_ary_ref ) = @_;
+
+    my $sql  = qq{ INSERT INTO $table ( };
+       $sql .= join ' , ' , @{$column_ary_ref};
+       $sql .= ' ) VALUES ( ';
+       $sql .= join( ' , ', ('?') x @{$column_ary_ref} );
+       $sql .= ' )';
+
+    return $sql;
+}
+
 1;
 
-=head1 AUTHOR
-
-Masaru Hoshino <masartz _at_ gmail dot com>
 
