@@ -216,12 +216,12 @@ sub set_job_status {
 
     $self->driver->set_job_status(
         {
-            func_id      => $job->func_id,
-            arg          => $job->arg_origin || $job->arg,
-            uniqkey      => $job->uniqkey,
-            status       => $status,
-            process_time => $job->process_time,
-            job_end_time => time(),
+            func_id        => $job->func_id,
+            arg            => $job->arg_origin || $job->arg,
+            uniqkey        => $job->uniqkey,
+            status         => $status,
+            job_start_time => $job->job_start_time,
+            job_end_time   => time(),
         }
     );
 }

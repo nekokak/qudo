@@ -33,6 +33,6 @@ CREATE TABLE job_status (
     arg             BYTEA,
     uniqkey         VARCHAR(255) NULL,
     status          VARCHAR(10),
-    process_time    INTEGER NOT NULL,
+    job_start_time  INTEGER NOT NULL,
     job_end_time    INTEGER NOT NULL
 );

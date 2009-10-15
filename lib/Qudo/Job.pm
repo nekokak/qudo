@@ -17,7 +17,7 @@ sub arg : lvalue  { $_[0]->{job_data}->{job_arg}           }
 sub arg_origin : lvalue { $_[0]->{arg_origin} }
 
 sub manager  { $_[0]->{manager} }
-sub process_time { 0 }
+sub job_start_time : lvalue { $_[0]->{job_start_time} }
 
 sub completed {
     my $self = shift;

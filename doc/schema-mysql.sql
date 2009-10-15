@@ -32,6 +32,6 @@ CREATE TABLE job_status (
     arg             MEDIUMBLOB NOT NULL,
     uniqkey         VARCHAR(255) NULL,
     status          VARCHAR(10),
-    process_time    INTEGER UNSIGNED NOT NULL,
+    job_start_time  INTEGER UNSIGNED NOT NULL,
     job_end_time    INTEGER UNSIGNED NOT NULL
 );

@@ -4,7 +4,7 @@ use Qudo::Test;
 use Test::More;
 use Test::Output;
 
-run_tests(8, sub {
+run_tests(7, sub {
     my $driver = shift;
     my $master = test_master(
         driver_class => $driver,
@@ -29,7 +29,6 @@ run_tests(8, sub {
         is $job_status->[0]->{status}, 'completed';
         is $job_status->[0]->{arg}, 'arg';
         is $job_status->[0]->{uniqkey}, 'uniqkey';
-        is $job_status->[0]->{process_time}, 0;
         is scalar(@$job_status), 1;
     }
     {

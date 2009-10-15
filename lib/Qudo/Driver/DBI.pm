@@ -44,7 +44,7 @@ sub job_status_list {
             job_status.arg,
             job_status.uniqkey,
             job_status.status,
-            job_status.process_time,
+            job_status.job_start_time,
             job_status.job_end_time
         FROM
             job_status

@@ -38,9 +38,8 @@ install_table exception_log => schema {
 
 install_table job_status => schema {
     pk 'id';
-    columns qw/id func_id arg uniqkey status job_end_time/;
+    columns qw/id func_id arg uniqkey status job_start_time job_end_time/;
 };
-
 
 1;
 

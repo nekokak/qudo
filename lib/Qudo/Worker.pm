@@ -30,6 +30,9 @@ sub work_safely {
     my ($class, $manager, $job) = @_;
     my $res;
 
+    if ($job->funcname->set_job_status) {
+        $job->job_start_time = time;
+    }
     eval {
         $res = $class->work($job);
     };
