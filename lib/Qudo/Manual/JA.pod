@@ -313,4 +313,20 @@ job_listメソッドを使うと現在enqueueされているJobの情報を参�
 
     $client->job_list([qw/Your::Worker::Mail/]);
 
+=head2 job_status
+
+job_statusメソッドを使うと、処理されたJobの情報を確認する事が出来ます。
+job_statusメソッドを使うには、
+
+    package Worker::Test;
+    use base 'Qudo::Worker';
+    sub set_job_status { 1 }
+    sub work {
+        my ($self, $job) = @_;
+        $job->completed();
+    }
+
+このように、set_job_statusに1を設定してください。
+デフォルトではset_job_statusは0に設定されているので、
+Jobの情報はロギングされません。
 
