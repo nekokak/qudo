@@ -20,7 +20,7 @@ run_tests(2, sub {
 
     stdout_is( sub {$manager->work_once}, 1 ); # check job
 
-    teardown_db;
+    teardown_dbs;
 });
 
 package Worker::Test;

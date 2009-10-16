@@ -45,7 +45,7 @@ run_tests(7, sub {
         is $res , 'arg';
     }
 
-    teardown_db;
+    teardown_dbs;
 });
 
 package Worker::Test;

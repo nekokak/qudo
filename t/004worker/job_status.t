@@ -40,7 +40,7 @@ run_tests(7, sub {
         is scalar(@$job_status), 2;
 
     }
-    teardown_db;
+    teardown_dbs;
 });
 
 package Worker::Test;

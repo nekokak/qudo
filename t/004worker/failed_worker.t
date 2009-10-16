@@ -20,7 +20,7 @@ run_tests(3, sub {
     is $exception->[0]->{arg}, 'arg';
     is scalar(@$exception), 1;
 
-    teardown_db;
+    teardown_dbs;
 });
 
 package Worker::Test;

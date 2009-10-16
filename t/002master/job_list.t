@@ -25,7 +25,7 @@ run_tests(2, sub {
         +{func_name => 'Worker::Test1', job_arg => 'arg1'},
     ];
 
-    teardown_db;
+    teardown_dbs;
 });
 
 package Worker::Test1;

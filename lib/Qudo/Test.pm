@@ -7,7 +7,7 @@ our @EXPORT = qw/
     run_tests
       run_tests_mysql run_tests_sqlite
     test_master
-    teardown_db
+    teardown_dbs
 /;
 
 use Carp qw(croak);
@@ -58,23 +58,26 @@ sub run_tests_sqlite {
     }
 }
 
+my $test_dbs;
 sub test_master {
     my %opts = @_;
-    my $dbname = delete $opts{dbname} || 'default';
-    my $init   = delete $opts{init};
+    my $dbs  = delete $opts{dbs} || ['default'];
+    my $init = delete $opts{init};
     $init = 1 unless defined $init;
 
+    $test_dbs = $dbs;
+
     if ($init) {
-        setup_db($dbname);
+        setup_dbs($dbs);
     }
 
     my $params = +{
         databases => [
-            +{
-                dsn      => dsn_for($dbname),
+            map {{
+                dsn      => dsn_for($_),
                 username => 'root',
                 password => '',
-            },
+            }} @$dbs
         ],
         %opts,
     };
@@ -82,29 +85,32 @@ sub test_master {
     return Qudo->new(%$params);
 }
 
-sub setup_db {
-    my $dbname = shift;
+sub setup_dbs {
+    my $dbs = shift;
 
     my $schema = load_schema();
-    teardown_db($dbname);
+    teardown_dbs($dbs);
 
-    if ($ENV{USE_MYSQL}) {
-        create_mysql_db(mysql_dbname($dbname));
+    for my $db (@$dbs) {
+        if ($ENV{USE_MYSQL}) {
+            create_mysql_db(mysql_dbname($db));
+        }
+
+        my $dbh = DBI->connect(
+            dsn_for($db),
+            'root',
+            '',
+            { RaiseError => 1, PrintError => 0 }
+        ) or die "Couldn't connect: $!\n";
+
+        for my $sql (@{ $ENV{USE_MYSQL} ? $schema->{mysql} : $schema->{sqlite} }) {
+            $sql =~ s!^\s*create\s+table\s+(\w+)!CREATE TABLE $1!i;
+            $sql .= " ENGINE=INNODB\n" if $ENV{USE_MYSQL};
+            $dbh->do($sql);
+        }
+
+        $dbh->disconnect;
     }
-    my $dbh = DBI->connect(
-        dsn_for($dbname),
-        'root',
-        '',
-        { RaiseError => 1, PrintError => 0 }
-    ) or die "Couldn't connect: $!\n";
-
-    for my $sql (@{ $ENV{USE_MYSQL} ? $schema->{mysql} : $schema->{sqlite} }) {
-        $sql =~ s!^\s*create\s+table\s+(\w+)!CREATE TABLE $1!i;
-        $sql .= " ENGINE=INNODB\n" if $ENV{USE_MYSQL};
-        $dbh->do($sql);
-    }
-
-    $dbh->disconnect;
 }
 
 my $schema_data;
@@ -161,14 +167,17 @@ sub drop_mysql_db {
     mysql_dbh()->do("DROP DATABASE IF EXISTS $dbname");
 }
 
-sub teardown_db {
-    my $dbname = shift || 'default';
-    if ($ENV{USE_MYSQL}) {
-        drop_mysql_db(mysql_dbname($dbname));
-    } else {
-        my $file = db_filename($dbname);
-        return unless -e $file;
-        unlink $file or die "Can't teardown $dbname: $!";
+sub teardown_dbs {
+    my $dbs = shift || $test_dbs;
+
+    for my $db (@$dbs) {
+        if ($ENV{USE_MYSQL}) {
+            drop_mysql_db(mysql_dbname($db));
+        } else {
+            my $file = db_filename($db);
+            return unless -e $file;
+            unlink $file or die "Can't teardown $db: $!";
+        }
     }
 }
 

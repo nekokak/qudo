@@ -17,7 +17,7 @@ run_tests(4, sub {
     is $master->job_count([qw/Worker::Test2/]), 1;
     is $master->job_count([qw/Worker::Test1 Worker::Test2/]), 2;
 
-    teardown_db;
+    teardown_dbs;
 });
 
 package Worker::Test1;

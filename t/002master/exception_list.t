@@ -36,7 +36,7 @@ run_tests(8, sub {
     $list = $master->exception_list(funcs => [qw/Worker::Test2/]);
     is scalar(@$list), 1;
 
-    teardown_db;
+    teardown_dbs;
 });
 
 package Worker::Test1;

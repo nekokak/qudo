@@ -14,7 +14,7 @@ run_tests(1, sub {
     $master->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
     stdout_is( sub { $manager->work_once } , "arg");
 
-    teardown_db;
+    teardown_dbs;
 });
 
 package Worker::Test;

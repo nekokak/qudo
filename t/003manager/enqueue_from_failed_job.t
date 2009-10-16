@@ -35,7 +35,7 @@ run_tests(10, sub {
 
     is $master->job_count([qw/Worker::Test/]), 1;
 
-    teardown_db;
+    teardown_dbs;
 });
 
 package Worker::Test;

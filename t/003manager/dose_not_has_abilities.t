@@ -12,6 +12,6 @@ run_tests(1, sub {
 
     ok ! $master->manager->has_abilities;
 
-    teardown_db;
+    teardown_dbs;
 });
 
