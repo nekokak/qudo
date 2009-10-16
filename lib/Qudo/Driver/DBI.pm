@@ -247,7 +247,7 @@ sub find_job {
     $sql .= q{
         WHERE
             job.grabbed_until <= ? 
-          AND
+        AND
             job.run_after <= ?
     };
     my @bind = $self->get_server_time;
@@ -260,8 +260,11 @@ sub find_job {
         push @bind , @{$keys};
     }
 
+    # priority
+    $sql .= q{ ORDER BY job.priority DESC };
+
     # limit
-    $sql .= q{LIMIT ?};
+    $sql .= q{ LIMIT ? };
     push @bind , $limit;
 
     my $sth = $self->{dbh}->prepare( $sql );
@@ -285,6 +288,7 @@ sub _search_job_sql {
             job.func_id AS func_id,
             job.grabbed_until AS grabbed_until,
             job.retry_cnt AS retry_cnt,
+            job.priority AS priority,
             func.name AS funcname
         FROM job
         INNER JOIN
@@ -302,6 +306,7 @@ sub _get_job_data {
                 job_uniqkey       => $row->{uniqkey},
                 job_grabbed_until => $row->{grabbed_until},
                 job_retry_cnt     => $row->{retry_cnt},
+                priority          => $row->{priority},
                 func_id           => $row->{func_id},
                 func_name         => $row->{funcname},
             };
@@ -408,6 +413,7 @@ sub enqueue {
     $args->{grabbed_until} ||= 0;
     $args->{retry_cnt}     ||= 0;
     $args->{run_after}     = time + ($args->{run_after}||0);
+    $args->{priority}      ||= 0;
 
     my @column = keys %{$args};
     my $sql  = $self->_build_insert_sql(

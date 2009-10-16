@@ -12,6 +12,7 @@ CREATE TABLE job (
     grabbed_until   INTEGER  NOT NULL,
     run_after       INTEGER  NOT NULL,
     retry_cnt       INTEGER  NOT NULL,
+    priority        INTEGER  NOT NULL,
     UNIQUE(func_id, uniqkey)
 );
 

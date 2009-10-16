@@ -103,6 +103,7 @@ sub enqueue {
         arg       => $arg->{arg},
         uniqkey   => $arg->{uniqkey},
         run_after => $arg->{run_after}||0,
+        priority  => $arg->{priority} ||0,
     };
 
     $self->call_hook('pre_enqueue', $funcname, $args);

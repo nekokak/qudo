@@ -12,6 +12,7 @@ CREATE TABLE job (
     grabbed_until   INTEGER UNSIGNED NOT NULL,
     run_after       INTEGER UNSIGNED NOT NULL,
     retry_cnt       INTEGER UNSIGNED NOT NULL,
+    priority        INTEGER UNSIGNED NOT NULL,
     UNIQUE(func_id,uniqkey)
 );
 CREATE TABLE exception_log (
