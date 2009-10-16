@@ -164,7 +164,7 @@ sub _search_job_rs {
 
     my $rs = $class->resultset(
         {
-            select => [qw/job.id job.arg job.uniqkey job.func_id job.grabbed_until job.retry_cnt/],
+            select => [qw/job.id job.arg job.uniqkey job.func_id job.grabbed_until job.retry_cnt job.priority/],
             limit  => $args{limit},
         }
     );
@@ -176,6 +176,8 @@ sub _search_job_rs {
             condition => 'job.func_id = func.id',
         }
     );
+    $rs->order({column => 'job.priority', desc => 'DESC'});
+
     return $rs;
 }
 
@@ -189,6 +191,7 @@ sub _get_job_data {
             job_uniqkey       => $job->uniqkey,
             job_grabbed_until => $job->grabbed_until,
             job_retry_cnt     => $job->retry_cnt,
+            job_priority      => $job->priority,
             func_id           => $job->func_id,
             func_name         => $job->funcname,
         };

@@ -306,7 +306,7 @@ sub _get_job_data {
                 job_uniqkey       => $row->{uniqkey},
                 job_grabbed_until => $row->{grabbed_until},
                 job_retry_cnt     => $row->{retry_cnt},
-                priority          => $row->{priority},
+                job_priority      => $row->{priority},
                 func_id           => $row->{func_id},
                 func_name         => $row->{funcname},
             };

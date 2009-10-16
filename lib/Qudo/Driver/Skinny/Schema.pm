@@ -3,13 +3,14 @@ use DBIx::Skinny::Schema;
 
 install_table job => schema {
     pk 'id';
-    columns qw/id func_id arg uniqkey enqueue_time grabbed_until run_after retry_cnt/;
+    columns qw/id func_id arg uniqkey enqueue_time grabbed_until run_after retry_cnt priority/;
 
     trigger pre_insert => callback {
         my ($class, $args) = @_;
         $args->{enqueue_time}  ||= time;
         $args->{grabbed_until} ||= 0;
         $args->{retry_cnt}     ||= 0;
+        $args->{priority}      ||= 0;
         $args->{run_after}     = time + ($args->{run_after}||0);
     };
 
