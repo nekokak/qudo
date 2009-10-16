@@ -1,6 +1,6 @@
 use Qudo::Test;
 use Test::More;
-use List::Util;
+use List::Util qw/shuffle/;
 
 my $expected_priority;
 run_tests(10, sub {
@@ -14,7 +14,7 @@ run_tests(10, sub {
 
     my @job_priority = (1..10);
 
-    for my $priority (@job_priority) {
+    for my $priority (shuffle @job_priority) {
         $manager->enqueue(
             "Worker::Test",
             {
