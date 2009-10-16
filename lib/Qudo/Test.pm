@@ -69,11 +69,13 @@ sub test_master {
     }
 
     my $params = +{
-        database => +{
-            dsn      => dsn_for($dbname),
-            username => 'root',
-            password => '',
-        },
+        databases => [
+            +{
+                dsn      => dsn_for($dbname),
+                username => 'root',
+                password => '',
+            },
+        ],
         %opts,
     };
 

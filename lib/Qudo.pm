@@ -7,6 +7,7 @@ our $VERSION = '0.01_01';
 use Qudo::Manager;
 use Carp;
 use UNIVERSAL::require;
+use List::Util qw/shuffle/;
 
 our $RETRY_SECONDS = 30;
 our $FIND_JOB_LIMIT_SIZE = 30;
@@ -27,6 +28,7 @@ sub new {
         default_plugins     => [],
         manager             => '',
         manager_abilities   => [],
+        databases           => [],
         @_,
     }, $class;
 
@@ -40,14 +42,42 @@ sub _setup_driver {
 
     my $driver = 'Qudo::Driver::' . $self->{driver_class};
     $driver->use or Carp::croak $@;
-    $self->{driver} = $driver->init_driver($self);
+    $driver->init_driver($self);
+#    $self->{driver} = $driver->init_driver($self);
+}
+
+my %connection;
+sub set_connection {
+    my ($self, $dsn, $connection) = @_;
+    $connection{$dsn} = $connection;
+}
+sub get_connection {
+    my ($self, $dsn) = @_;
+    $connection{$dsn};
+}
+
+sub shuffled_databases {
+    my $self = shift;
+    my @dsns = keys %connection;
+    return shuffle(@dsns);
+}
+
+sub driver {
+    my $self = shift;
+    my $dsn = $self->shuffled_databases;
+    $self->driver_for($dsn);
+}
+
+sub driver_for {
+    my ($self, $dsn) = @_;
+    $self->get_connection($dsn);
 }
 
 sub manager {
     my $self = shift;
 
     $self->{manager} ||= Qudo::Manager->new(
-        driver              => $self->{driver},
+        driver              => sub { $self->driver },
         find_job_limit_size => $self->{find_job_limit_size},
         retry_seconds       => $self->{retry_seconds},
         default_hooks       => $self->{default_hooks},
@@ -78,13 +108,13 @@ sub work {
 sub job_list {
     my ($self, $funcs) = @_;
 
-    return $self->{driver}->job_list($self->{find_job_limit_size}, $funcs);
+    return $self->driver->job_list($self->{find_job_limit_size}, $funcs);
 }
 
 sub job_count {
     my ($self, $funcs) = @_;
 
-    return $self->{driver}->job_count($funcs);
+    return $self->driver->job_count($funcs);
 }
 
 sub exception_list {
@@ -92,7 +122,7 @@ sub exception_list {
 
     $args{limit}  ||= $EXCEPTION_LIMIT_SIZE;
     $args{offset} ||= $EXCEPTION_OFFSET_SIZE;
-    return $self->{driver}->exception_list(%args);
+    return $self->driver->exception_list(%args);
 }
 
 sub job_status_list {
@@ -100,7 +130,7 @@ sub job_status_list {
 
     $args{limit}  ||= $JOB_STATUS_LIMIT_SIZE;
     $args{offset} ||= $JOB_STATUS_OFFSET_SIZE;
-    return $self->{driver}->job_status_list(%args);
+    return $self->driver->job_status_list(%args);
 }
 
 =head1 NAME

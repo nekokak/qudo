@@ -29,7 +29,7 @@ sub new {
     return $self;
 }
 
-sub driver { $_[0]->{driver} }
+sub driver { $_[0]->{driver}->() }
 sub plugin { $_[0]->{plugin} }
 
 sub register_abilities {

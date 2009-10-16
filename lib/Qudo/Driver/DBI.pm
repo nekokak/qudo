@@ -10,17 +10,19 @@ use Qudo::Driver::DBI::DBD;
 sub init_driver {
     my ($class, $master) = @_;
 
-    my $self = bless {
-        database => $master->{database} ,
-        dbh      => '',
-        dbd      => '',
-    }, $class;
-    $self->_connect();
+    for my $database (@{$master->{databases}}) {
+        my $connection = bless {
+            database => $database,
+            dbh      => '',
+            dbd      => '',
+        }, $class;
+        $connection->_connect();
 
-    my $dbd_type = $self->{dbh}->{Driver}->{Name};
-    $self->{dbd} = Qudo::Driver::DBI::DBD->new($dbd_type);
-    
-    return $self;
+        my $dbd_type = $connection->{dbh}->{Driver}->{Name};
+        $connection->{dbd} = Qudo::Driver::DBI::DBD->new($dbd_type);
+
+        $master->set_connection($database->{dsn}, $connection);
+    }
 }
 
 sub _connect {

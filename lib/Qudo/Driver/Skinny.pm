@@ -1,14 +1,13 @@
 package Qudo::Driver::Skinny;
-
-use DBIx::Skinny setup => +{
-};
+use DBIx::Skinny;
 
 sub init_driver {
     my ($class, $master) = @_;
 
-    $class->reconnect($master->{database});
-
-    return $class;
+    for my $database (@{$master->{databases}}) {
+        my $connection = $class->new($database);
+        $master->set_connection($database->{dsn}, $connection);
+    }
 }
 
 sub exception_list {
