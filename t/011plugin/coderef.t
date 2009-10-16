@@ -1,8 +1,5 @@
-use strict;
-use warnings;
 use Qudo::Test;
 use Test::Output;
-use lib './t';
 
 run_tests(1, sub {
     my $driver = shift;

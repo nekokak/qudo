@@ -1,8 +1,5 @@
-use strict;
-use warnings;
 use Qudo::Test;
 use Test::More;
-use lib './t';
 
 BEGIN {
   eval "use JSON::XS";

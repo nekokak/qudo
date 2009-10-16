@@ -1,5 +1,3 @@
-use strict;
-use warnings;
 use Qudo::Test;
 use Test::Output;
 

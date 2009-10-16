@@ -1,15 +1,7 @@
 package Qudo::Test;
 use strict;
 use warnings;
-
-use Exporter 'import';
-our @EXPORT = qw/
-    run_tests
-      run_tests_mysql run_tests_sqlite
-    test_master
-    teardown_dbs
-/;
-
+use lib qw(./lib ./t/lib);
 use Carp qw(croak);
 use Qudo;
 use YAML;
@@ -17,6 +9,18 @@ use DBI;
 use Test::More;
 
 our @SUPPORT_DRIVER = qw/Skinny DBI/;
+
+sub import {
+    my $caller = caller(0);
+
+    strict->import;
+    warnings->import;
+
+    for my $func (qw/run_tests run_tests_mysql run_tests_sqlite test_master teardown_dbs/) {
+        no strict 'refs'; ## no critic.
+        *{$caller.'::'.$func} = \&$func;
+    }
+}
 
 sub run_tests {
     my ($n, $code) = @_;

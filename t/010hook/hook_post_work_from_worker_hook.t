@@ -1,8 +1,5 @@
-use strict;
-use warnings;
 use Qudo::Test;
 use Test::Output;
-use lib './t';
 
 {
     package Worker::Test;
