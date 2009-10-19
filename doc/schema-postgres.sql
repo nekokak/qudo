@@ -10,15 +10,15 @@ CREATE TABLE job (
     uniqkey         VARCHAR(255) NULL,
     enqueue_time    INTEGER,
     grabbed_until   INTEGER  NOT NULL,
-    run_after       INTEGER  NOT NULL,
-    retry_cnt       INTEGER  NOT NULL,
-    priority        INTEGER  NOT NULL,
+    run_after       INTEGER  NOT NULL DEFAULT 0,
+    retry_cnt       INTEGER  NOT NULL DEFAULT 0,
+    priority        INTEGER  NOT NULL DEFAULT 0,
     UNIQUE(func_id, uniqkey)
 );
 
 CREATE TABLE exception_log (
     id              SERIAL,
-    func_id         INTEGER NOT NULL,
+    func_id         INTEGER NOT NULL DEFAULT 0,
     exception_time  INTEGER NOT NULL,
     message         BYTEA,
     uniqkey         VARCHAR(255) NULL,
@@ -30,7 +30,7 @@ CREATE INDEX exception_log_exception_time ON exception_log (exception_time);
 
 CREATE TABLE job_status (
     id              SERIAL,
-    func_id         INTEGER NOT NULL,
+    func_id         INTEGER NOT NULL DEFAULT 0,
     arg             BYTEA,
     uniqkey         VARCHAR(255) NULL,
     status          VARCHAR(10),
