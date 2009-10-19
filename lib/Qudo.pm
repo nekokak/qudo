@@ -29,6 +29,7 @@ sub new {
         manager             => '',
         manager_abilities   => [],
         databases           => [],
+        connections         => +{},
         @_,
     }, $class;
 
@@ -43,22 +44,20 @@ sub _setup_driver {
     my $driver = 'Qudo::Driver::' . $self->{driver_class};
     $driver->use or Carp::croak $@;
     $driver->init_driver($self);
-#    $self->{driver} = $driver->init_driver($self);
 }
 
-my %connection;
 sub set_connection {
     my ($self, $dsn, $connection) = @_;
-    $connection{$dsn} = $connection;
+    $self->{connections}->{$dsn} = $connection;
 }
 sub get_connection {
     my ($self, $dsn) = @_;
-    $connection{$dsn};
+    $self->{connections}->{$dsn};
 }
 
 sub shuffled_databases {
     my $self = shift;
-    my @dsns = keys %connection;
+    my @dsns = keys %{$self->{connections}};
     return shuffle(@dsns);
 }
 
