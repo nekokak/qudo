@@ -3,6 +3,7 @@ CREATE TABLE func (
     name       VARCHAR(255) NOT NULL,
     UNIQUE(name)
 );
+
 CREATE TABLE job (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     func_id         INTEGER UNSIGNED NOT NULL,
@@ -15,6 +16,7 @@ CREATE TABLE job (
     priority        INTEGER UNSIGNED NOT NULL DEFAULT 0,
     UNIQUE(func_id,uniqkey)
 );
+
 CREATE TABLE exception_log (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     func_id         INTEGER UNSIGNED NOT NULL DEFAULT 0,
@@ -24,6 +26,7 @@ CREATE TABLE exception_log (
     arg             MEDIUMBLOB,
     retried         TINYINT(1) NOT NULL DEFAULT 0
 );
+
 CREATE TABLE job_status (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     func_id         INTEGER UNSIGNED NOT NULL DEFAULT 0,
@@ -33,4 +36,3 @@ CREATE TABLE job_status (
     job_start_time  INTEGER UNSIGNED NOT NULL,
     job_end_time    INTEGER UNSIGNED NOT NULL
 );
-

@@ -3,6 +3,7 @@ CREATE TABLE func (
     name       VARCHAR(255) NOT NULL,
     UNIQUE(name)
 );
+
 CREATE TABLE job (
     id              BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
     func_id         INTEGER UNSIGNED NOT NULL,
@@ -15,6 +16,7 @@ CREATE TABLE job (
     priority        INTEGER UNSIGNED NOT NULL DEFAULT 0,
     UNIQUE(func_id, uniqkey)
 );
+
 CREATE TABLE exception_log (
     id              BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
     func_id         INTEGER UNSIGNED NOT NULL DEFAULT 0,

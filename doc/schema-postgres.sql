@@ -3,6 +3,7 @@ CREATE TABLE func (
     name       VARCHAR(255) NOT NULL,
     UNIQUE(name)
 );
+
 CREATE TABLE job (
     id              SERIAL,
     func_id         INT NOT NULL,
@@ -37,3 +38,4 @@ CREATE TABLE job_status (
     job_start_time  INTEGER NOT NULL,
     job_end_time    INTEGER NOT NULL
 );
+
