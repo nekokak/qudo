@@ -525,6 +525,22 @@ sub get_func_id {
     return $func_id;
 }
 
+sub get_func_name {
+    my ($self, $funcid) = @_;
+
+    my $sth;
+    eval {
+        $sth = $self->{dbh}->prepare(
+            q{SELECT * FROM func WHERE id = ?}
+        );
+        $sth->execute( $funcid );
+    };
+    if ($@) { croak $@ }
+
+    my $ret_hashref = $sth->fetchrow_hashref();
+    return $ret_hashref ? $ret_hashref->{name} : undef;
+}
+
 sub retry_from_exception_log {
     my ($self, $exception_log_id) = @_;
 

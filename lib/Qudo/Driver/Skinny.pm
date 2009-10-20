@@ -259,6 +259,13 @@ sub get_func_id {
     return $func ? $func->id : undef;
 }
 
+sub get_func_name {
+    my ($class, $funcid) = @_;
+
+    my $func = $class->single('func',{ id => $funcid });
+    return $func ? $func->name : undef;
+}
+
 sub retry_from_exception_log {
     my ($class, $exception_log_id) = @_;
 

@@ -91,11 +91,21 @@ sub can_do {
     $self->{func_map}->{$funcname} = 1;
 }
 
+sub funcname_to_id {
+    my ($self, $funcname, $db) = @_;
+    $self->{_func_cache}->{$db}->{funcname2id}->{$funcname} ||= $self->driver_for($db)->get_func_id( $funcname );
+}
+
+sub funcid_to_name {
+    my ($self, $funcid, $db) = @_;
+    $self->{_func_cache}->{$db}->{funcid2name}->{$funcid} ||= $self->driver_for($db)->get_func_name( $funcid );
+}
+
 sub enqueue {
     my ($self, $funcname, $arg) = @_;
 
     my $db = $self->shuffled_databases;
-    my $func_id = $self->{_func_id_cache}->{$db}->{$funcname} ||= $self->driver_for($db)->get_func_id( $funcname );
+    my $func_id = $self->funcname_to_id($funcname, $db);
 
     unless ($func_id) {
         croak "$funcname can't get";
