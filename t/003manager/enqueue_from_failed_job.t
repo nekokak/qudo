@@ -2,7 +2,7 @@ use Qudo::Test;
 use Test::More;
 use Test::Output;
 
-run_tests(10, sub {
+run_tests(11, sub {
     my $driver = shift;
     my $master = test_master(
         driver_class => $driver,
@@ -19,17 +19,21 @@ run_tests(10, sub {
     $manager->work_once; # worker failed.
 
     my $exception = $master->exception_list;
-    is $master->exception_list->[0]->{retried}, 0;
-    $job = $manager->enqueue_from_failed_job($exception->[0]);
+    my ($db, $rows) = each %$exception;
+
+    is $rows->[0]->{retried}, 0;
+    $job = $manager->enqueue_from_failed_job($rows->[0], $db);
 
     is $job->id, 2;
     is $job->arg, 'arg';
     is $job->uniqkey, 'uniqkey';
+    is $job->db, $db;
 
     $exception = $master->exception_list;
-    is $master->exception_list->[0]->{retried}, 1;
+    ($db, $rows) = each %$exception;
+    is $rows->[0]->{retried}, 1;
 
-    stderr_like( sub {$manager->enqueue_from_failed_job($exception->[0])}, qr/this exception is already retried/);
+    stderr_like( sub {$manager->enqueue_from_failed_job($rows->[0], $db)}, qr/this exception is already retried/);
 
     is $master->job_count([qw/Worker::Test/]), 1;
 

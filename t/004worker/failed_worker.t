@@ -14,9 +14,10 @@ run_tests(3, sub {
     $manager->work_once; # failed worker
 
     my $exception = $master->exception_list;
-    like $exception->[0]->{message}, qr/^failed worker/;
-    is $exception->[0]->{arg}, 'arg';
-    is scalar(@$exception), 1;
+    my ($db, $rows) = %$exception;
+    like $rows->[0]->{message}, qr/^failed worker/;
+    is $rows->[0]->{arg}, 'arg';
+    is scalar(@$rows), 1;
 
     teardown_dbs;
 });

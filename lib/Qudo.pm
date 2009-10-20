@@ -62,8 +62,8 @@ sub shuffled_databases {
 }
 
 sub driver {
-    my $self = shift;
-    my $dsn = $self->shuffled_databases;
+    my ($self, $dsn) = @_;
+    $dsn ||= $self->shuffled_databases;
     $self->driver_for($dsn);
 }
 
@@ -76,7 +76,8 @@ sub manager {
     my $self = shift;
 
     $self->{manager} ||= Qudo::Manager->new(
-        driver              => sub { $self->driver },
+        driver_for          => sub { $self->driver_for(+shift) },
+        shuffled_databases  => sub { $self->shuffled_databases },
         find_job_limit_size => $self->{find_job_limit_size},
         retry_seconds       => $self->{retry_seconds},
         default_hooks       => $self->{default_hooks},
@@ -121,7 +122,11 @@ sub exception_list {
 
     $args{limit}  ||= $EXCEPTION_LIMIT_SIZE;
     $args{offset} ||= $EXCEPTION_OFFSET_SIZE;
-    return $self->driver->exception_list(%args);
+    my %exception_list;
+    for my $db ($self->shuffled_databases) {
+        $exception_list{$db} = $self->driver_for($db)->exception_list(%args);
+    }
+    return \%exception_list;
 }
 
 sub job_status_list {

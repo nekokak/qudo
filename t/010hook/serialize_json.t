@@ -43,7 +43,8 @@ run_tests(12, sub {
 
         $manager->work_once; # worker failed
         my $exception = $master->exception_list;
-        is $exception->[0]->{arg}, '{"key":"arg"}';
+        my ($db, $rows) = each %$exception;
+        is $rows->[0]->{arg}, '{"key":"arg"}';
     }
 
     { # unload Qudo::Hook::Serialize::JSON
