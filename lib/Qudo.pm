@@ -142,11 +142,11 @@ Qudo - simple job queue manager
     use Qudo;
     my $qudo = Qudo->new(
         driver_class => 'Skinny',
-        database => +{
+        databases => [+{
             dsn      => 'dbi:SQLite:/tmp/qudo.db',
             username => '',
             password => '',
-        },
+        }],
     );
     $qudo->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
     
@@ -154,11 +154,11 @@ Qudo - simple job queue manager
     use Qudo;
     my $qudo2 = Qudo->new(
         driver_class => 'Skinny',
-        database => +{
+        databases => [+{
             dsn      => 'dbi:SQLite:/tmp/qudo.db',
             username => '',
             password => '',
-        },
+        }],
         manager_abilities => [qw/Worker::Test/],
     );
     $qudo2->work(); # boot manager
