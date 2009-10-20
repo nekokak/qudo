@@ -15,16 +15,16 @@ run_tests(8, sub {
     my ($db, $rows) = each %$list;
     is scalar(@$rows), 2;
 
-    $list = $master->exception_list(funcs => [qw/Worker::Test1/]);
+    $list = $master->exception_list({funcs => [qw/Worker::Test1/]});
     ($db, $rows) = each %$list;
     is scalar(@$rows), 2;
 
-    $list = $master->exception_list(funcs => [qw/Worker::Test1/], limit => 1);
+    $list = $master->exception_list({funcs => [qw/Worker::Test1/], limit => 1});
     ($db, $rows) = each %$list;
     is scalar(@$rows), 1;
     is $rows->[0]->{message}, 'exception1';
 
-    $list = $master->exception_list(funcs => [qw/Worker::Test1/], limit => 1, offset => 1);
+    $list = $master->exception_list({funcs => [qw/Worker::Test1/], limit => 1, offset => 1});
     ($db, $rows) = each %$list;
     is scalar(@$rows), 1;
     is $rows->[0]->{message}, 'exception2';
@@ -36,7 +36,7 @@ run_tests(8, sub {
     ($db, $rows) = each %$list;
     is scalar(@$rows), 3;
 
-    $list = $master->exception_list(funcs => [qw/Worker::Test2/]);
+    $list = $master->exception_list({funcs => [qw/Worker::Test2/]});
     ($db, $rows) = each %$list;
     is scalar(@$rows), 1;
 

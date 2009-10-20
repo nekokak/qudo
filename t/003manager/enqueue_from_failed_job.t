@@ -35,7 +35,9 @@ run_tests(11, sub {
 
     stderr_like( sub {$manager->enqueue_from_failed_job($rows->[0], $db)}, qr/this exception is already retried/);
 
-    is $master->job_count([qw/Worker::Test/]), 1;
+    my $row = $master->job_count([qw/Worker::Test/]);
+    my ($dsn, $count) = each %$row;
+    is $count, 1;
 
     teardown_dbs;
 });

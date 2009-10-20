@@ -15,7 +15,8 @@ run_tests(7, sub {
         $manager->work_once; # logging job_status
 
         my $job_status = $master->job_status_list;
-        is scalar(@$job_status), 0;
+        my ($dsn, $rows)  = each %$job_status;
+        is scalar(@$rows), 0;
     }
     {
         $manager->can_do('Worker::Test2');
@@ -23,19 +24,21 @@ run_tests(7, sub {
         $manager->work_once; # logging job_status
 
         my $job_status = $master->job_status_list;
-        is $job_status->[0]->{func_id}, $job->func_id;
-        is $job_status->[0]->{status}, 'completed';
-        is $job_status->[0]->{arg}, 'arg';
-        is $job_status->[0]->{uniqkey}, 'uniqkey';
-        is scalar(@$job_status), 1;
+        my ($dsn, $rows)  = each %$job_status;
+        is $rows->[0]->{func_id}, $job->func_id;
+        is $rows->[0]->{status}, 'completed';
+        is $rows->[0]->{arg}, 'arg';
+        is $rows->[0]->{uniqkey}, 'uniqkey';
+        is scalar(@$rows), 1;
     }
     {
         $manager->can_do('Worker::Test3');
         my $job = $manager->enqueue("Worker::Test3", { arg => 'arg', uniqkey => 'uniqkey'});
         $manager->work_once; # logging job_status
 
-        my $job_status = $master->job_status_list( funcs => ['Worker::Test2','Worker::Test3'] );
-        is scalar(@$job_status), 2;
+        my $job_status = $master->job_status_list({ funcs => ['Worker::Test2','Worker::Test3'] });
+        my ($dsn, $rows)  = each %$job_status;
+        is scalar(@$rows), 2;
 
     }
     teardown_dbs;

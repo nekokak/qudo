@@ -112,29 +112,51 @@ sub job_list {
 }
 
 sub job_count {
-    my ($self, $funcs) = @_;
+    my ($self, $funcs, $dsn) = @_;
 
-    return $self->driver->job_count($funcs);
+    if ($dsn) {
+        return $self->driver_for($dsn)->job_count($funcs);
+    }
+
+    my %job_count;
+    for my $db ($self->shuffled_databases) {
+        $job_count{$db} = $self->driver_for($db)->job_count($funcs);
+    }
+    return \%job_count;
 }
 
 sub exception_list {
-    my ($self, %args) = @_;
+    my ($self, $args, $dsn) = @_;
 
-    $args{limit}  ||= $EXCEPTION_LIMIT_SIZE;
-    $args{offset} ||= $EXCEPTION_OFFSET_SIZE;
+    $args->{limit}  ||= $EXCEPTION_LIMIT_SIZE;
+    $args->{offset} ||= $EXCEPTION_OFFSET_SIZE;
+
+    if ($dsn) {
+        return $self->driver_for($dsn)->exception_list($args);
+    }
+
     my %exception_list;
     for my $db ($self->shuffled_databases) {
-        $exception_list{$db} = $self->driver_for($db)->exception_list(%args);
+        $exception_list{$db} = $self->driver_for($db)->exception_list($args);
     }
     return \%exception_list;
 }
 
 sub job_status_list {
-    my ($self, %args) = @_;
+    my ($self, $args, $dsn) = @_;
 
-    $args{limit}  ||= $JOB_STATUS_LIMIT_SIZE;
-    $args{offset} ||= $JOB_STATUS_OFFSET_SIZE;
-    return $self->driver->job_status_list(%args);
+    $args->{limit}  ||= $JOB_STATUS_LIMIT_SIZE;
+    $args->{offset} ||= $JOB_STATUS_OFFSET_SIZE;
+
+    if ($dsn) {
+        return $self->driver_for($dsn)->job_status_list($args);
+    }
+
+    my %job_status_list;
+    for my $db ($self->shuffled_databases) {
+        $job_status_list{$db} = $self->driver_for($db)->job_status_list($args);
+    }
+    return \%job_status_list;
 }
 
 =head1 NAME

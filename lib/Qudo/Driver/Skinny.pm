@@ -11,7 +11,7 @@ sub init_driver {
 }
 
 sub exception_list {
-    my ($class, %args) = @_;
+    my ($class, $args) = @_;
 
     my $rs = $class->resultset(
         {
@@ -24,12 +24,12 @@ sub exception_list {
                           exception_log.retried
                       /],
             from   => [qw/exception_log/],
-            limit  => $args{limit},
-            offset => $args{offset},
+            limit  => $args->{limit},
+            offset => $args->{offset},
         }
     );
 
-    if ($args{funcs}) {
+    if ($args->{funcs}) {
         $rs->from([]);
         $rs->add_join(
             exception_log => {
@@ -38,7 +38,7 @@ sub exception_list {
                 condition => 'exception_log.func_id = func.id',
             }
         );
-        $rs->add_where('func.name' => $args{funcs});
+        $rs->add_where('func.name' => $args->{funcs});
     }
     my $itr = $rs->retrieve;
 
@@ -50,7 +50,7 @@ sub exception_list {
 }
 
 sub job_status_list {
-    my ($class, %args) = @_;
+    my ($class, $args) = @_;
 
     my $rs = $class->resultset(
         {
@@ -63,12 +63,12 @@ sub job_status_list {
                           job_status.job_end_time
                       /],
             from   => [qw/job_status/],
-            limit  => $args{limit},
-            offset => $args{offset},
+            limit  => $args->{limit},
+            offset => $args->{offset},
         }
     );
 
-    if ($args{funcs}) {
+    if ($args->{funcs}) {
         $rs->from([]);
         $rs->add_join(
             job_status => {
@@ -77,7 +77,7 @@ sub job_status_list {
                 condition => 'job_status.func_id = func.id',
             }
         );
-        $rs->add_where('func.name' => $args{funcs});
+        $rs->add_where('func.name' => $args->{funcs});
     }
     my $itr = $rs->retrieve;
 

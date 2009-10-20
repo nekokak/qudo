@@ -16,7 +16,7 @@ sub import {
     strict->import;
     warnings->import;
 
-    for my $func (qw/run_tests run_tests_mysql run_tests_sqlite test_master teardown_dbs/) {
+    for my $func (qw/run_tests run_tests_mysql run_tests_sqlite test_master teardown_dbs dsn_for/) {
         no strict 'refs'; ## no critic.
         *{$caller.'::'.$func} = \&$func;
     }

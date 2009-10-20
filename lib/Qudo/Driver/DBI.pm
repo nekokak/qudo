@@ -37,7 +37,7 @@ sub _connect {
 }
 
 sub job_status_list {
-    my ($self, %args) = @_;
+    my ($self, $args) = @_;
 
     my $sql = q{
         SELECT
@@ -53,12 +53,12 @@ sub job_status_list {
     };
 
     my @funcs;
-    if( $args{funcs} ){
-        if( ref($args{funcs}) eq 'ARRAY' ){
-            @funcs = @{$args{funcs}};
+    if( $args->{funcs} ){
+        if( ref($args->{funcs}) eq 'ARRAY' ){
+            @funcs = @{$args->{funcs}};
         }
         else{
-            push @funcs , $args{funcs};
+            push @funcs , $args->{funcs};
         }
 
         $sql .= sprintf( q{
@@ -73,7 +73,7 @@ sub job_status_list {
 
     my $sth = $self->_execute(
         $sql,
-        [ @funcs , $args{limit} ,$args{offset} ]
+        [ @funcs , $args->{limit} ,$args->{offset} ]
     );
 
     my @job_status_list;
@@ -154,12 +154,12 @@ sub job_list {
 }
 
 sub exception_list {
-    my ($self, %args) = @_;
+    my ($self, $args) = @_;
 
     my @bind   = ();
-    my $limit  = $args{limit};
-    my $offset = $args{offset};
-    my $funcs  = $args{funcs} || '';
+    my $limit  = $args->{limit};
+    my $offset = $args->{offset};
+    my $funcs  = $args->{funcs} || '';
     my $sql = q{
         SELECT
             exception_log.id,
