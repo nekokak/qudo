@@ -44,7 +44,8 @@ run_tests(12, sub {
 
         $manager->work_once; # worker failed
         my $exception = $master->exception_list;
-        is $exception->[0]->{arg} , Data::MessagePack->pack( \%hash );
+        my ($db, $rows) = each %$exception;
+        is $rows->[0]->{arg} , Data::MessagePack->pack( \%hash );
     }
 
     { # unload Qudo::Hook::Serialize::MessagePack
