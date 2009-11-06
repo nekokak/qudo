@@ -1,0 +1,165 @@
+=encoding utf8
+
+=head1 NAME 
+
+Qudo::Manual::JA::Tutorial - Qudo's sample code document lang:ja
+
+=head1 DESCRIPTION
+
+QudoでJobを処理するためには、ClientとWorkerを作成する必要があります。
+
+ここではサンプルを用いながら、それぞれの作成方法について解説していきます。
+
+=head1 まず始めに
+
+Qudoを使うにはデータをストアするためにQudo用のデータベースを設定する必要があります。
+現在対応しているRDBMSは「MySQL」,「SQLite」,「PostgreSQL」です。
+
+スキーマはそれぞれ
+doc/schema-mysql.sql    … MySQL用
+doc/schema-sqlite.sql   … SQLite用
+doc/schema-postgres.sql … PostgreSQL用
+を用意してありますのでこれを基にデータベースを作成してください。
+
+=head1 client
+
+QudoでJob Queueingを行うクライアントは以下のように書きます
+
+    # in your script:
+    use Qudo;
+    my $client = Qudo->new(
+        driver_class => 'Skinny', # DBIx::Skinny
+        databases => [
+            +{
+                dsn      => 'dbi:SQLite:/tmp/qudo.db',
+                username => '',
+                password => '',
+            }
+        ],
+    );
+
+    # enqueue job
+    $client->enqueue("Your::Worker::Mail", { arg => $user->email, uniqkey => $user->login_id});
+
+まずQudoのオブジェクトを作成します。
+
+JobをQueueingするデータベースを指定してオブジェクトを作成します。
+
+Qudoでは複数のデータベースへの接続をサポートしています。
+
+オブジェクト作成時の第二引数は必ず、データベース接続情報のhashrefを配列にして、
+
+そのリファレンスを渡す形にしてください。
+
+作成したオブジェクトを元にJobをenqueueします。
+
+enqueueメソッドの
+
+第一引数はJobを処理させるWorkerのpackage名
+
+第二引数はWorkerが使う引数の情報
+
+この例の場合、Jobを処理するクラスとしてYour::Worker::Mailを指定し、
+
+処理させる引数として$user->email（メールアドレス）を指定し、
+
+Jobのユニークキーとして$user->login_id（ログインID）を指定しています。
+
+その他第二引数のhashrefに指定出来るオプションとしては、以下があります
+
+run_after … ここに秒数を指定することで、現在から何秒後に処理を開始させるかを指定出来ます。
+
+priority  … ここに優先度を指定することで、その種類のjobの中でpriotiry値が高いものから順に処理がされます
+
+クライアントが行う処理はこれだけです。
+
+あとはこれから作成するYour::Worker::Mailが処理してくれます。
+
+=head1 worker
+
+queueingされたJobを処理していくworkerを作成します
+
+    package Your::Worker::Mail;
+    use base 'Qudo::Worker';
+    sub work {
+        my ($class, $job) = @_;
+        print $job->arg; #print $user->email;
+        
+        # send mail process...
+        
+        $job->completed; # finished job!
+    }
+    1;
+
+Qudo::Wokerを継承したクラスを作成し、
+
+『必ず』workメソッドをオーバーライドしてください。
+
+workメソッドの第二引数にはJobの情報が丸々わたってきます。
+
+$job->argメソッドでQueueingする際に指定した、Workerに使ってほしいと指定された引数情報が格納されています。 
+
+次に、
+workerを起動するスクリプトを以下のように用意します
+
+    # ex) qudo-worker.pl :
+    use Qudo;
+    my $worker = Qudo->new(
+        driver_class => 'Skinny',
+        databases => [
+            +{
+                dsn      => 'dbi:SQLite:/tmp/qudo.db',
+                username => '',
+                password => '',
+            }
+        ],
+        manager_abilities => [qw/Your::Worker::Mail/], # set worker
+    );
+    $worker->work(); # boot manager
+    # work work work!
+
+clientと同じようにワーカーが使うデータベースを指定してQudoのオブジェクトを作成します。
+
+この時にmanager_abilitiesの引数をつかって、
+
+このworkerが管理するWorkerクラスを指定します。
+
+$worker->work()メソッドを呼び出すことで、
+
+JobがQueueingされる毎にWorkerクラスを呼び出して処理させています。
+
+基本的にはこれだけです。
+
+簡単でしょ:)
+
+workメソッド内では無限ループが発生し、JobがQueueingたびにJobに対応するWorkerに処理が移譲されます。
+
+=head2 Driver
+
+QudoではJobをstoreする仕組みを差し替える事ができます。
+
+デフォルトではDBIx::Skinnyを利用しRDBMSを利用したDriverが使われます。
+
+Skinny以外にはDBIをサポートしています。
+
+DriverもHookやPlugin同様、好きに書く事ができますので、DBICが使いたい人、CDBIを使いたい人、Data::Modelを使いたい人など色々有ると思いますので
+
+好きに書いてください:)
+
+書いたら教えてもらえるととてもうれしいです:)
+
+好きに書いたDriverは
+
+    Qudo->new(
+        driver_class => 'Your::Driver',
+        databases => [
+            +{
+                dsn      => 'dbi:SQLite:/tmp/qudo.db',
+                username => '',
+                password => '',
+            }
+        ],
+    );
+
+driver_classに設定することで使う事ができます。
+

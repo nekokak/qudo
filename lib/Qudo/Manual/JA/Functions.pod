@@ -1,0 +1,153 @@
+=encoding utf8
+
+=head1 NAME 
+
+Qudo::Manual::JA::Function - Qudo's major function document lang:ja
+
+=head1 DESCRIPTION
+
+ここではQudoの主な機能について解説していきます。
+
+=head1 Hook
+
+Qudoでは各所にHookポイントがあるので、Hookポイントをつかって各種処理を行う事ができます。
+
+Job を enqueueする時に引数をシリアライズしたりなどです。
+
+たとえば、enqueueする引数の情報をJSONでシリアライズしたい場合は
+
+    my $client = Qudo->new(...);
+    $client->global_register_hooks('Qudo::Hook::Serialize::JSON');
+    $client->enqueue('Test::Worker', { arg => {name => 'nekokak'}, uniqkey => 'uniq'});
+
+このようにHookモジュールをregister_pluginsに渡す事で設定でき、
+設定した引数がJSONでシリアライズされて保存されます。
+
+上記の場合Hookは全てのWorkerクラスに対して適用されるグローバルな設定となります。
+
+特定のWorkerだけ特定のHookをかけたい場合は、WorkerクラスにHookの設定を別途行います。
+
+    package Worker::Test;
+    use base 'Qudo::Worker';
+    __PACKAGE__->register_hooks('Qudo::Hook::Serialize::JSON');
+    sub work {
+        my ($self, $job) = @_;
+        $job->completed();
+    }
+
+worker毎に異なるHookを設定したい場合は、global_register_hooksで設定せず、
+worker毎にregister_hooksメソッドで設定してください。
+
+Hookは利用者が好きに書く事ができるので、Qudoが持っていない機能も簡単に書く事ができます。
+
+あなたが再利用できるHookを書いたのであれば私に教えてくださいね:)
+
+=head1 Plugin
+
+Qudoでは好きにPluginを書く事ができます。
+
+たとえばworkerで使うdebug print用のPluginを用意したとします。
+
+    package Your::Plugin::DebugPrint;
+    use strict;
+    use warnings;
+    use base 'Qudo::Plugin';
+    
+    sub plugin_name { 'debug' }
+    
+    sub load {
+        my $class = shift;
+        $class->register(
+            sub {
+                my $val = shift;
+                print STDOUT $val;
+            }
+        );
+    }
+
+用意したPluginをloadするには
+
+    $worker->register_plugins(qw/Your::Plugin::DebugPrint/);
+
+このようにregister_pluginsメソッドにロードさせたいモジュールのパッケージ名を指定します。
+
+プラグインの呼び出し方は
+
+    package Worker::Test;
+    use base 'Qudo::Worker';
+    sub work {
+        my ($self, $job) = @_;
+        $job->manager->plugin->{debug}->('debug message in Worker::Test::work');
+        $job->completed();
+    }
+
+このようにします。
+
+Your::Plugin::DebugPrintで指定したplugin_nameの値がハッシュのキーになっているので、
+そのキー経由でプラグインを呼び出す事ができます。
+
+ちなみに現在のところPluginはHookの様にグローバルなPluginとworkerローカルなPluginの設定の様に切り替える事はできません。
+
+これまた再利用できるPluginを書いたのであれば教えてください:)
+
+=head1 Error Handling
+
+jobの処理がcompleteしなかった場合、exception_logテーブルにエラー情報が書き込まれます。
+TheSchwartzの場合でもjobの処理が失敗した場合、errorテーブルにエラー情報が書き込まれますが、
+errorテーブルに一定数以上のレコードが溜まらないように、適宜deleteされます。
+Qudoの場合はexception_logに書き込まれた情報はQudo自体が消す事は有りません。
+これは、知らないエラーが発生したまま情報が消えてしまう事を嫌った為です。
+
+=head2 exception_list
+
+Qudoではexception_logの情報を取り出すためのメソッドを用意しています。
+
+    $client->exception_list;
+
+exception_listメソッドをつかえば、発生した例外情報を参照する事ができます。
+
+発生した例外を確認したのち、もう一度リトライさせたい場合があるとおもいます。
+その場合は以下のようにすると良いでしょう。
+
+    my $exceptions = $client->exception_list
+    $client->enqueue_from_failed_job($exceptions->[0]);
+
+こうするだけで、例外が発生した時のJobの情報を元にJobが再登録されます。
+
+再登録した例外情報にはretriedが1になり同じ例外情報からは再度Jobが登録できなくなります。
+
+=head1 Job Handling
+
+Jobの状態を確認するために以下のメソッド群を用意しています。
+
+=head2 job_count
+
+QudoではJobが溜まりすぎていないかを簡単に調べる事ができます。
+
+    $client->job_count([qw/Your::Worker::Mail/]);
+
+job_countメソッドに調べたいワーカー名を指定すると、処理されていないJobの件数を取得する事ができます。
+
+=head2 job_list
+
+job_listメソッドを使うと現在enqueueされているJobの情報を参照する事ができます。
+
+    $client->job_list([qw/Your::Worker::Mail/]);
+
+=head2 job_status_list
+
+job_statusメソッドを使うと、処理されたJobの情報を確認する事が出来ます。
+job_statusメソッドを使うには、
+
+    package Worker::Test;
+    use base 'Qudo::Worker';
+    sub set_job_status { 1 }
+    sub work {
+        my ($self, $job) = @_;
+        $job->completed();
+    }
+
+このように、set_job_statusに1を設定してください。
+デフォルトではset_job_statusは0に設定されているので、
+Jobの情報はロギングされません。
+
