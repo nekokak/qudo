@@ -1,3 +1,4 @@
+.shipit
 Changes
 doc/schema-mysql.sql
 doc/schema-postgres.sql
@@ -35,7 +36,6 @@ lib/Qudo/Hook/Serialize/Storable.pm
 lib/Qudo/HookLoader.pm
 lib/Qudo/Job.pm
 lib/Qudo/Manager.pm
-lib/Qudo/Manual/JA.pod
 lib/Qudo/Manual/JA/Functions.pod
 lib/Qudo/Manual/JA/Intro.pod
 lib/Qudo/Manual/JA/Tutorial.pod
@@ -85,11 +85,6 @@ t/lib/Mock/Hook/PostWork.pm
 t/lib/Mock/Hook/PreWork.pm
 t/lib/Mock/Plugin/Coderef.pm
 t/lib/Mock/Plugin/Object.pm
-t/Mock/Hook/Enqueue.pm
-t/Mock/Hook/PostWork.pm
-t/Mock/Hook/PreWork.pm
-t/Mock/Plugin/Coderef.pm
-t/Mock/Plugin/Object.pm
 TODO
 xt/perlcritic.t
 xt/perlcriticrc
