@@ -7,6 +7,7 @@ requires 'Carp';
 requires 'UNIVERSAL::require';
 requires 'DBI';
 requires 'YAML';
+requires 'Class::Data::Inheritable';
 
 build_requires 'Test::More';
 build_requires 'Test::Output';

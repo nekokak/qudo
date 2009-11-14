@@ -1,5 +1,9 @@
 Revision history for Perl extension Qudo
 
+0.01_03
+   XXXX-XX-XX
+        - FIXED: Makefile.pl (add:Class::Data::Inheritable)
+
 0.01_02
    2009-11-12
         - ADD: Job status Table for MySQL.
