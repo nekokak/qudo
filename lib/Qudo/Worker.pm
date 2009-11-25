@@ -119,6 +119,16 @@ By default,return 0 seconds
 Returns the number of seconds workers of this class will claim a grabbed a job.
 By default,return 3600 seconds.
 
+=head2 set_job_status
+
+    package Your::Worker;
+    use base 'Qudo::Worker';
+    sub set_job_status { 1 }
+    sub work { ... }
+
+set the flag.
+When flag is the truth, the processing result of worker is preserved in DB. 
+
 =cut
 
 1;
