@@ -1,5 +1,9 @@
 Revision history for Perl extension Qudo
 
+0.02
+   2009-12-09
+        - no change. stable version.
+
 0.01_03
    2009-11-21
         - FIXED: Makefile.pl (add:Class::Data::Inheritable. thanks Andreas J. Koenig)
