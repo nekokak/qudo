@@ -5,4 +5,7 @@
 - more document.
 - Test::Baseつかってないよね。。
 - set_job_statusはなまえがきもい
+- 初期schemaをセットアップするスクリプト
+- Qudo::Testでschemaファイルを読み込むのをかしこく
+-- Qudo::Plugin系をだれかが書くときにQudo::Testをつかいやすいように
 
