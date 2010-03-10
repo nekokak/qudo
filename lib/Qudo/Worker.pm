@@ -41,8 +41,9 @@ sub work_safely {
         if ( $job->retry_cnt < $class->max_retries ) {
             $job->reenqueue(
                 {
-                    retry_cnt   => $job->retry_cnt + 1,
-                    retry_delay => $class->retry_delay,
+                    grabbed_until => 0,
+                    retry_cnt     => $job->retry_cnt + 1,
+                    retry_delay   => $class->retry_delay,
                 }
             );
         } else {
