@@ -1,8 +1,8 @@
-.shipit
 Changes
 doc/schema-mysql.sql
 doc/schema-postgres.sql
 doc/schema-sqlite.sql
+inc/ExtUtils/MakeMaker.pm
 inc/Module/Install.pm
 inc/Module/Install/AuthorTests.pm
 inc/Module/Install/Base.pm
@@ -11,7 +11,7 @@ inc/Module/Install/Fetch.pm
 inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
-inc/Module/Install/Repository.pm
+inc/Module/Install/Share.pm
 inc/Module/Install/TestBase.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
@@ -85,7 +85,6 @@ t/lib/Mock/Hook/PostWork.pm
 t/lib/Mock/Hook/PreWork.pm
 t/lib/Mock/Plugin/Coderef.pm
 t/lib/Mock/Plugin/Object.pm
-TODO
 xt/perlcritic.t
 xt/perlcriticrc
 xt/synopsis.t

@@ -1,5 +1,9 @@
 Revision history for Perl extension Qudo
 
+0.0201
+   2010-03-10
+        - FIXED: reset grabbed_until for reenqueue (thanks id:lamanotrama)
+
 0.02
    2009-12-09
         - no change. stable version.
