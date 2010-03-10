@@ -448,9 +448,10 @@ sub reenqueue {
             UPDATE
                 job
             SET
-                enqueue_time = ?,
-                run_after    = ?,
-                retry_cnt    = ?
+                enqueue_time  = ?,
+                run_after     = ?,
+                retry_cnt     = ?,
+                grabbed_until = ?
             WHERE
                 id = ?
         }
@@ -462,6 +463,7 @@ sub reenqueue {
             time,
             (time + ($args->{retry_delay}||0) ),
             $args->{retry_cnt},
+            $args->{grabbed_until},
             $job_id,
         );
     };
