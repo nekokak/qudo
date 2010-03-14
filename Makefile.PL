@@ -11,6 +11,7 @@ requires 'Class::Data::Inheritable';
 
 build_requires 'Test::More';
 build_requires 'Test::Output';
+build_requires 'Test::Requires';
 auto_include;
 
 install_share 'doc';

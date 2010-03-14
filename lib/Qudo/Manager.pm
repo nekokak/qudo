@@ -5,6 +5,7 @@ use Qudo::Job;
 use Carp;
 use UNIVERSAL::require;
 use Qudo::HookLoader;
+use Scalar::Util qw/weaken/;
 
 sub new {
     my $class = shift;
@@ -22,6 +23,7 @@ sub new {
         abilities           => [],
         @_
     }, $class;
+    weaken($self->{qudo});
 
     $self->global_register_hooks(@{$self->{default_hooks}});
     $self->register_plugins(@{$self->{default_plugins}});
@@ -30,8 +32,8 @@ sub new {
     return $self;
 }
 
-sub driver_for { $_[0]->{driver_for}->($_[1]) }
-sub shuffled_databases { $_[0]->{shuffled_databases}->() }
+sub driver_for { $_[0]->{qudo}->driver_for($_[1]) }
+sub shuffled_databases { $_[0]->{qudo}->shuffled_databases() }
 sub plugin { $_[0]->{plugin} }
 
 sub register_abilities {
