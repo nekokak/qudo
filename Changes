@@ -1,5 +1,9 @@
 Revision history for Perl extension Qudo
 
+0.0202
+   2010-03-16
+        - FIXED: cycle reference.(thanks id:tokuhirom)
+
 0.0201
    2010-03-10
         - FIXED: reset grabbed_until for reenqueue (thanks id:lamanotrama)

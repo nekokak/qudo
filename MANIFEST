@@ -22,6 +22,7 @@ inc/Test/Builder.pm
 inc/Test/Builder/Module.pm
 inc/Test/More.pm
 inc/Test/Output.pm
+inc/Test/Requires.pm
 lib/Qudo.pm
 lib/Qudo/Driver/DBI.pm
 lib/Qudo/Driver/DBI/DBD.pm
@@ -67,6 +68,7 @@ t/003manager/priority.t
 t/004worker/basic.t
 t/004worker/failed_worker.t
 t/004worker/job_status.t
+t/004worker/memory_leak.t
 t/004worker/reenqueue.t
 t/004worker/retry_delay.t
 t/004worker/run_after.t
