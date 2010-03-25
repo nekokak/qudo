@@ -61,11 +61,6 @@ sub register_plugins {
 sub call_hook {
     my ($self, $hook_point, $worker_class, $args) = @_;
 
-    for my $module (keys %{$worker_class->hooks->{$hook_point}}) {
-        my $code = $worker_class->hooks->{$hook_point}->{$module};
-        $code->($args);
-    }
-
     for my $module (keys %{$self->hooks->{$hook_point}}) {
         my $code = $self->hooks->{$hook_point}->{$module};
         $code->($args);
