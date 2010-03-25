@@ -202,6 +202,69 @@ If you add Hook Point around job's working method ,
 you can add it easily and many point of work milestone.
 Qudo is consided about adding Hook Point Flexibility.
 
+=head1 USEAGE
+
+=head2 C<Qudo-E<gt>new( %args )>
+
+Optional members of C<%args> are:
+
+=item * C<driver_class>
+
+set Qudo::Driver::(Skinny|DBI).
+default driver_class is Skinny.
+
+=over 4
+
+=item * C<databases>
+
+An arrayref of database information. Qudo can use multiple databases,
+such that if any of them are unavailable,
+the worker will search for appropriate jobs in the other databases automatically.
+
+Each member of the C<databases> value should be a hashref containing either:
+
+=over 4
+
+=item * C<dsn>
+
+The database DSN for this database.
+
+=item * C<username>
+
+The username to use when connecting to this database.
+
+=item * C<password>
+
+The password to use when connecting to this database.
+
+=back
+
+=item * C<manager_abilities>
+
+An arrayref of worker class name.
+please specify it when moving it by the usage of worker.
+it is not necessary to specify it for the usage of enqueue client.
+
+=item * C<find_job_limit_size>
+
+The maximum number in which it looks for job by one processing.
+Qudo default limit 30.
+please specify it when moving it by the usage of worker.
+it is not necessary to specify it for the usage of enqueue client.
+
+=item * C<retry_seconds>
+
+The number of seconds after which to try reconnecting to apparently dead databases.
+If not given, Qudo will retry connecting to databases after 30 seconds.
+
+=item * C<default_hooks>
+
+An arrayref of hook class name.
+
+=item * C<default_plugins>
+
+An arrayref of plugin class name.
+
 =head1 REPOS
 
 http://github.com/nekokak/qudo/tree/master
