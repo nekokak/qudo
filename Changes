@@ -1,5 +1,9 @@
 Revision history for Perl extension Qudo
 
+0.0203
+   2010-03-29
+        - MOD: The Hook function in worker was deleted. 
+
 0.0202
    2010-03-16
         - FIXED: cycle reference.(thanks id:tokuhirom)

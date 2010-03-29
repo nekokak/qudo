@@ -11,6 +11,7 @@ inc/Module/Install/Fetch.pm
 inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
+inc/Module/Install/Repository.pm
 inc/Module/Install/Share.pm
 inc/Module/Install/TestBase.pm
 inc/Module/Install/Win32.pm
@@ -73,7 +74,6 @@ t/004worker/reenqueue.t
 t/004worker/retry_delay.t
 t/004worker/run_after.t
 t/010hook/hook_post_work.t
-t/010hook/hook_post_work_from_worker_hook.t
 t/010hook/hook_pre_enqueue.t
 t/010hook/hook_pre_work.t
 t/010hook/serialize_json.t
