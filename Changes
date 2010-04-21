@@ -1,5 +1,8 @@
 Revision history for Perl extension Qudo
 
+0.0204
+   2010-04-XX
+        - MOD: remove Qudo::HookLoader.
 0.0203
    2010-03-29
         - MOD: The Hook function in worker was deleted. [INCOMPATIBLE CHANGE]
