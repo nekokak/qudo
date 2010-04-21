@@ -1,5 +1,9 @@
 Revision history for Perl extension Qudo
 
+0.0205
+   2010-04-21
+        - MOD: oops remove use Qudo::HookLoader.
+
 0.0204
    2010-04-21
         - MOD: unexport Carp functions.

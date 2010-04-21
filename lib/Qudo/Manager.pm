@@ -4,7 +4,6 @@ use warnings;
 use Qudo::Job;
 use Carp ();
 use UNIVERSAL::require;
-use Qudo::HookLoader;
 use Scalar::Util qw/weaken/;
 
 sub new {
