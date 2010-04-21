@@ -25,17 +25,12 @@ inc/Test/More.pm
 inc/Test/Output.pm
 inc/Test/Requires.pm
 lib/Qudo.pm
-lib/Qudo/Driver/DBI.pm
-lib/Qudo/Driver/DBI/DBD.pm
-lib/Qudo/Driver/DBI/DBD/mysql.pm
-lib/Qudo/Driver/DBI/DBD/SQLite.pm
 lib/Qudo/Driver/Skinny.pm
 lib/Qudo/Driver/Skinny/Schema.pm
 lib/Qudo/Hook.pm
 lib/Qudo/Hook/Serialize/JSON.pm
 lib/Qudo/Hook/Serialize/MessagePack.pm
 lib/Qudo/Hook/Serialize/Storable.pm
-lib/Qudo/HookLoader.pm
 lib/Qudo/Job.pm
 lib/Qudo/Manager.pm
 lib/Qudo/Manual/JA/Functions.pod
@@ -81,7 +76,6 @@ t/010hook/serialize_MessagePack.t
 t/010hook/serialize_storable.t
 t/011plugin/coderef.t
 t/011plugin/obj.t
-t/021dbi/inner_method.t
 t/lib/Mock/Hook/Enqueue.pm
 t/lib/Mock/Hook/PostWork.pm
 t/lib/Mock/Hook/PreWork.pm

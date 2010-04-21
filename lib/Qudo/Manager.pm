@@ -2,7 +2,7 @@ package Qudo::Manager;
 use strict;
 use warnings;
 use Qudo::Job;
-use Carp;
+use Carp ();
 use UNIVERSAL::require;
 use Qudo::HookLoader;
 use Scalar::Util qw/weaken/;
@@ -110,7 +110,7 @@ sub enqueue {
     my $func_id = $self->funcname_to_id($funcname, $db);
 
     unless ($func_id) {
-        croak "$funcname can't get";
+        Carp::croak "$funcname can't get";
     }
 
     my $args = +{

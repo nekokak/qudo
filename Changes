@@ -2,7 +2,10 @@ Revision history for Perl extension Qudo
 
 0.0204
    2010-04-XX
+        - MOD: unexport Carp functions.
         - MOD: remove Qudo::HookLoader.
+        - MOD: Qudo::Driver::DBI move to other distribution. (http://github.com/nekokak/p5-qudo-driver-dbi)
+
 0.0203
    2010-03-29
         - MOD: The Hook function in worker was deleted. [INCOMPATIBLE CHANGE]
