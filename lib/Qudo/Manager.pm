@@ -72,13 +72,18 @@ sub hooks { $_[0]->{hooks} }
 sub global_register_hooks {
     my ($self, @hook_modules) = @_;
 
-    Qudo::HookLoader->register_hooks($self, \@hook_modules);
+    for my $module (@hook_modules) {
+        $module->require or Carp::croak $@;
+        $module->load($self);
+    }
 }
 
 sub global_unregister_hooks {
     my ($self, @hook_modules) = @_;
 
-    Qudo::HookLoader->unregister_hooks($self, \@hook_modules);
+    for my $module (@hook_modules) {
+        $module->unload($self);
+    }
 }
 
 sub can_do {
