@@ -160,7 +160,7 @@ sub job_status_list {
 
 =head1 NAME
 
-Qudo - simple job queue manager
+Qudo - simple and extensible job queue manager
 
 =head1 SYNOPSIS
 
@@ -192,7 +192,7 @@ Qudo - simple job queue manager
 
 =head1 DESCRIPTION
 
-Qudo is simple job queue manager system.
+Qudo is simple and extensible job queue manager system.
 
 Your application can insert job into DB ,that is managed by Qudo.
 And Your application can get & execute job by Qudo worker.

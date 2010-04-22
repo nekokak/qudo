@@ -269,3 +269,83 @@ sub enqueue_from_failed_job {
 
 1;
 
+=head1 NAME
+
+Qudo::Manager - qudo manager class.
+
+=head1 DESCRIPTION
+
+Qudo::Manager is job managiment base class.
+It the job enqueue, dequeue, lookup and more.
+
+=head1 METHODS
+
+=head2 new
+
+get Qudo::Manager instance.
+It is called from L<Qudo> usually.
+
+=head2 driver_for
+
+get database driver from some databases.
+
+=head2 shuffled_databases
+
+get shuffled databases.
+
+=head2 plugin
+
+get plugin instances.
+
+=head2 register_abilities
+
+The function that this manager is processing is registered. 
+
+=head2 register_plugins
+
+Plugin is set for manager.
+
+=head2 global_register_hooks
+
+Hooks are set for manager.
+
+=head2 global_unregister_hooks
+
+Hooks are unset from manager.
+
+=head2 C<Qudo-E<gt>enqueue( $funcname, $args )>
+
+enqueue the job.
+
+=over 4
+
+=item * C<$funcname>
+
+=item * C<$args>
+
+=over 4
+
+=item * C<arg>
+
+job argments.
+
+=item * C<uniqkey>
+
+job unique key.
+
+=item * C<run_after>
+
+the value you want to check <= against on the run_after column
+require int value.
+
+=item * C<priority>
+
+job priority.
+require int value.
+
+=back
+
+=back
+
+=cut
+
