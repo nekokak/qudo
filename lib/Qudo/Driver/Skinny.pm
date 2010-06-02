@@ -145,18 +145,26 @@ sub lookup_job {
 }
 
 sub find_job {
-    my ($class, $limit, $func_map) = @_;
+    my ($self, $limit, $func_ids) = @_;
 
-    my $rs = $class->_search_job_rs(limit => $limit);
-    $rs->add_where('func.name' => [keys %$func_map]);
+    my $rs = $self->resultset(
+        {
+            select => [qw/job.id job.arg job.uniqkey job.func_id job.grabbed_until job.retry_cnt job.priority/],
+            from   => 'job',
+            limit  => $limit,
+        }
+    );
+    $rs->order({column => 'job.priority', desc => 'DESC'});
 
-    my $servertime = $class->get_server_time;
+    $rs->add_where('job.func_id' => $func_ids);
+
+    my $servertime = $self->get_server_time;
     $rs->add_where('job.grabbed_until' => { '<=', => $servertime});
     $rs->add_where('job.run_after'     => { '<=', => $servertime});
 
-    my $itr = $rs->retrieve;
+    my $itr = $rs->retrieve('job');
 
-    return $class->_get_job_data($itr);
+    return $self->_get_job_data($itr);
 }
 
 sub _search_job_rs {
@@ -193,7 +201,6 @@ sub _get_job_data {
             job_retry_cnt     => $job->retry_cnt,
             job_priority      => $job->priority,
             func_id           => $job->func_id,
-            func_name         => $job->funcname,
         };
     };
 }

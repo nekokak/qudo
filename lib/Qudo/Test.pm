@@ -8,7 +8,7 @@ use YAML;
 use DBI;
 use Test::More;
 
-our @SUPPORT_DRIVER = qw/Skinny DBI/;
+our @SUPPORT_DRIVER = qw/Skinny/;
 
 sub import {
     my $caller = caller(0);

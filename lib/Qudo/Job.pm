@@ -10,7 +10,12 @@ sub new {
 sub id       { $_[0]->{job_data}->{job_id}       }
 sub uniqkey  { $_[0]->{job_data}->{job_uniqkey}  }
 sub func_id  { $_[0]->{job_data}->{func_id}      }
-sub funcname { $_[0]->{job_data}->{func_name}    }
+
+sub funcname {
+    my $self = shift;
+    $self->manager->funcid_to_name($self->func_id, $self->db);
+}
+
 sub retry_cnt     { $_[0]->{job_data}->{job_retry_cnt}     }
 sub grabbed_until { $_[0]->{job_data}->{job_grabbed_until} }
 sub priority { $_[0]->{job_data}->{job_priority} }

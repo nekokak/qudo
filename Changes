@@ -1,5 +1,9 @@
 Revision history for Perl extension Qudo
 
+0.0206
+   2010-XX-XX
+        - tuning find_job method.
+
 0.0205
    2010-04-21
         - MOD: oops remove use Qudo::HookLoader.

@@ -11,16 +11,16 @@ run_tests(2, sub {
     $master->enqueue("Worker::Test2", { arg => 'arg2', uniqkey => 'uniqkey2'});
     my $lists = $master->job_list;
 
-    my @result = map { +{ func_name => $_->{func_name}, job_arg => $_->{job_arg} } } @$lists;
+    my @result = map { +{job_arg => $_->{job_arg} } } @$lists;
     is_deeply \@result, [
-        +{func_name => 'Worker::Test1', job_arg => 'arg1'},
-        +{func_name => 'Worker::Test2', job_arg => 'arg2'},
+        +{job_arg => 'arg1'},
+        +{job_arg => 'arg2'},
     ];
 
     $lists = $master->job_list([qw/Worker::Test1/]);
-    @result = map { +{ func_name => $_->{func_name}, job_arg => $_->{job_arg} } } @$lists;
+    @result = map { +{ job_arg => $_->{job_arg} } } @$lists;
     is_deeply \@result, [
-        +{func_name => 'Worker::Test1', job_arg => 'arg1'},
+        +{job_arg => 'arg1'},
     ];
 
     teardown_dbs;

@@ -97,6 +97,15 @@ sub funcname_to_id {
     $self->{_func_cache}->{$db}->{funcname2id}->{$funcname} ||= $self->driver_for($db)->get_func_id( $funcname );
 }
 
+sub funcnames_to_ids {
+    my ($self, $db) = @_;
+    [
+        map {
+            $self->funcname_to_id($_, $db)
+        } keys %{$self->{func_map}}
+    ];
+}
+
 sub funcid_to_name {
     my ($self, $funcid, $db) = @_;
     $self->{_func_cache}->{$db}->{funcid2name}->{$funcid} ||= $self->driver_for($db)->get_func_name( $funcid );
@@ -179,7 +188,8 @@ sub find_job {
 
     for my $db ($self->shuffled_databases) {
         return unless keys %{$self->{func_map}};
-        my $callback = $self->driver_for($db)->find_job($self->{find_job_limit_size}, $self->{func_map});
+        my $func_ids = $self->funcnames_to_ids($db);
+        my $callback = $self->driver_for($db)->find_job($self->{find_job_limit_size}, $func_ids);
 
         return $self->_grab_a_job($callback, $db);
     }
@@ -206,7 +216,7 @@ sub _grab_a_job {
         my $server_time = $self->driver_for($db)->get_server_time
             or die "expected a server time";
 
-        my $worker_class = $job_data->{func_name};
+        my $worker_class = $self->funcid_to_name($job_data->{func_id}, $db);
         my $grab_job = $self->driver_for($db)->grab_a_job(
             grabbed_until     => ($server_time + $worker_class->grab_for),
             job_id            => $job_data->{job_id},
