@@ -94,7 +94,14 @@ sub can_do {
 
 sub funcname_to_id {
     my ($self, $funcname, $db) = @_;
-    $self->{_func_cache}->{$db}->{funcname2id}->{$funcname} ||= $self->driver_for($db)->get_func_id( $funcname );
+
+    $self->{_func_cache}->{$db}->{funcname2id}->{$funcname} or do {
+        my $func = $self->driver_for($db)->func_from_name($funcname);
+        $self->{_func_cache}->{$db}->{funcname2id}->{$funcname} = $func->id;
+        $self->{_func_cache}->{$db}->{funcid2name}->{$func->id} = $func->name;
+
+    };
+    $self->{_func_cache}->{$db}->{funcname2id}->{$funcname};
 }
 
 sub funcnames_to_ids {
@@ -108,7 +115,13 @@ sub funcnames_to_ids {
 
 sub funcid_to_name {
     my ($self, $funcid, $db) = @_;
-    $self->{_func_cache}->{$db}->{funcid2name}->{$funcid} ||= $self->driver_for($db)->get_func_name( $funcid );
+
+    $self->{_func_cache}->{$db}->{funcid2name}->{$funcid} or do {
+        my $func = $self->driver_for($db)->func_from_id($funcid);
+        $self->{_func_cache}->{$db}->{funcname2id}->{$func->name} = $func->id;
+        $self->{_func_cache}->{$db}->{funcidename}->{$funcid} = $func->name;
+    };
+    $self->{_func_cache}->{$db}->{funcid2name}->{$funcid};
 }
 
 sub enqueue {
@@ -116,10 +129,6 @@ sub enqueue {
 
     my $db = $self->shuffled_databases;
     my $func_id = $self->funcname_to_id($funcname, $db);
-
-    unless ($func_id) {
-        Carp::croak "$funcname can't get";
-    }
 
     my $args = +{
         func_id   => $func_id,
