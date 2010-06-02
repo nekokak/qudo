@@ -34,6 +34,7 @@ sub completed {
 }
 
 sub is_completed { $_[0]->{_complete} }
+sub is_aborted   { $_[0]->{_abort}    }
 
 sub reenqueue {
     my ($self, $args) = @_;
@@ -49,6 +50,18 @@ sub failed {
     my ($self, $error) = @_;
     if ($self->funcname->set_job_status) {
         $self->manager->set_job_status($self, 'failed');
+    }
+    $self->manager->job_failed($self, $error);
+}
+
+sub abort {
+    my ($self, $error) = @_;
+
+    $self->{_abort} = 1;
+    $error ||= 'abort!!';
+
+    if ($self->funcname->set_job_status) {
+        $self->manager->set_job_status($self, 'abort');
     }
     $self->manager->job_failed($self, $error);
 }

@@ -19,6 +19,11 @@ sub work_safely {
         $res = $class->work($job);
     };
 
+    if ($job->is_aborted) {
+        $job->dequeue;
+        return $res;
+    }
+
     if ( my $e = $@ || ! $job->is_completed ) {
         if ( $job->retry_cnt < $class->max_retries ) {
             $job->reenqueue(
@@ -54,7 +59,7 @@ Qudo::Worker - superclass for defining task behavior of Qudo's work
         my $job_arg = $job->arg();
         print "This is Myworker's work. job has argument == $job_arg \n";
 
-        $job->completed();
+        $job->completed(); # or $job->abort
     }
     1;
 

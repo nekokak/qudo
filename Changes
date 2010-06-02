@@ -1,5 +1,9 @@
 Revision history for Perl extension Qudo
 
+0.0208
+   2010-06-XX
+        - ADD: Job#abort method.
+
 0.0207
    2010-06-02
         - REMOVE: Qudo#job_list method. [INCOMPATIBLE CHANGE]
