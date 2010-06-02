@@ -47,6 +47,9 @@ sub dequeue {
 
 sub failed {
     my ($self, $error) = @_;
+    if ($self->funcname->set_job_status) {
+        $self->manager->set_job_status($self, 'failed');
+    }
     $self->manager->job_failed($self, $error);
 }
 

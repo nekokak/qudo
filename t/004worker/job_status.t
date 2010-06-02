@@ -12,7 +12,7 @@ run_tests(7, sub {
     {
         $manager->can_do('Worker::Test');
         $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
-        $manager->work_once; # logging job_status
+        $manager->work_once; # not logging job_status
 
         my $job_status = $master->job_status_list;
         my ($dsn, $rows)  = each %$job_status;
@@ -39,6 +39,16 @@ run_tests(7, sub {
         my $job_status = $master->job_status_list({ funcs => ['Worker::Test2','Worker::Test3'] });
         my ($dsn, $rows)  = each %$job_status;
         is scalar(@$rows), 2;
+
+    }
+    {
+        $manager->can_do('Worker::Test4');
+        $manager->enqueue("Worker::Test4", { arg => 'arg', uniqkey => 'uniqkey'});
+        my $job = $manager->work_once; # logging failed job_status
+
+        my $job_status = $master->job_status_list({ funcs => ['Worker::Test2','Worker::Test3','Worker::Test4'] });
+        my ($dsn, $rows)  = each %$job_status;
+        is scalar(@$rows), 3;
 
     }
     teardown_dbs;
@@ -69,5 +79,14 @@ sub set_job_status { 1 }
 sub work {
     my ($class, $job) = @_;
     $job->completed;
+}
+
+package Worker::Test4;
+use base 'Qudo::Worker';
+
+sub set_job_status { 1 }
+sub work {
+    my ($class, $job) = @_;
+    die 'ooops worker::test4 is failed';
 }
 
