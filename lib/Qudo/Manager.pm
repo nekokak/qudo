@@ -163,7 +163,7 @@ sub reenqueue {
     my $db = $self->shuffled_databases;
     $self->driver_for($db)->reenqueue($job->id, $args);
 
-    return $self->lookup_job($job->id);
+    return $self->lookup_job($job->id, $db);
 }
 
 sub dequeue {
@@ -192,8 +192,6 @@ sub work_once {
 
 sub lookup_job {
     my ($self, $job_id, $db) = @_;
-
-    $db ||= $self->shuffled_databases;
 
     my $callback = $self->driver_for($db)->lookup_job($job_id);
     my $job_data = $callback->();

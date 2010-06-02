@@ -7,6 +7,7 @@ Revision history for Perl extension Qudo
         - MOD: do not use by Manager#can_do method [INCOMPATIBLE CHANGE]
         - MOD: Manager#global_(un)register_hook method is deprecated. Use (un)register_hook method instead. [INCOMPATIBLE CHANGE]
         - MOD: Worker#work_safly is not necessary manager instance.
+        - FIXED: Manager#lookup method require db argument.
 
 0.0206
    2010-06-02
