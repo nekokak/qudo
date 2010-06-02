@@ -16,7 +16,6 @@ auto_include;
 
 install_share 'doc';
 
-use_test_base;
 tests 't/*.t t/*/*.t t/*/*/*.t';
 author_tests('xt');
 

@@ -5,7 +5,7 @@ use warnings;
 our $VERSION = '0.0206';
 
 use Qudo::Manager;
-use Carp;
+use Carp ();
 use UNIVERSAL::require;
 use List::Util qw/shuffle/;
 
@@ -16,6 +16,7 @@ our $EXCEPTION_LIMIT_SIZE = 10;
 our $EXCEPTION_OFFSET_SIZE = 0;
 our $JOB_STATUS_LIMIT_SIZE = 10;
 our $JOB_STATUS_OFFSET_SIZE = 0;
+our $WORK_DELAY = 5;
 
 sub new {
     my $class = shift;
@@ -35,7 +36,7 @@ sub new {
 
     $self->_setup_driver;
 
-    return $self;
+    $self;
 }
 
 sub _setup_driver {
@@ -92,7 +93,7 @@ sub enqueue {
 
 sub work {
     my ($self, $work_delay) = @_;
-    $work_delay ||= 5;
+    $work_delay ||= $WORK_DELAY;
 
     my $manager = $self->manager;
     unless ($manager->has_abilities) {
@@ -102,12 +103,6 @@ sub work {
     while (1) {
         sleep $work_delay unless $manager->work_once;
     }
-}
-
-sub job_list {
-    my ($self, $funcs) = @_;
-
-    return $self->driver->job_list($self->{find_job_limit_size}, $funcs);
 }
 
 sub job_count {
@@ -285,19 +280,6 @@ see L<Qudo::Manager> enqueue method.
 Find and perform any jobs $manager can do, forever.
 
 When no job is available, the working process will sleep for $delay  seconds (or 5, if not specified) before looking again.
-
-=head2 C<Qudo-E<gt>job_list( $funcname )>
-
-Returns a list of Qudo::Job objects matching the given arguments.
-The required arguments of $funcname are:
-
-=over 4
-
-=item * C<funcname>
-
-the name of the function or a reference to an array of functions.
-
-=back
 
 =head2 C<Qudo-E<gt>job_count( $funcname, $dsn )>
 

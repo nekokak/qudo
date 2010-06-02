@@ -113,26 +113,6 @@ sub job_count {
     return $rs->retrieve->first->count;
 }
 
-sub job_list {
-    my ($class, $limit, $funcs) = @_;
-
-    my $rs = $class->_search_job_rs(limit => $limit);
-    if ($funcs) {
-        $rs->add_where('func.name' => $funcs)
-    }
-
-    my $itr = $rs->retrieve;
-    my $code = $class->_get_job_data($itr);
-
-    my @jobs;
-    while (1) {
-        my $row = $code->();
-        last unless $row;
-        push @jobs, $row;
-    }
-    return \@jobs;
-}
-
 sub lookup_job {
     my ($class, $job_id) = @_;
 
