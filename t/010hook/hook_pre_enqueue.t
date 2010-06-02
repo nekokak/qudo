@@ -9,7 +9,7 @@ run_tests(6, sub {
 
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
-    $manager->global_register_hooks(qw/Mock::Hook::Enqueue/);
+    $manager->register_hooks(qw/Mock::Hook::Enqueue/);
 
     my $job = $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey1'});
 
@@ -17,7 +17,7 @@ run_tests(6, sub {
     is $job->arg, 'hooook';
     is $job->uniqkey, 'uniqkey1';
 
-    $manager->global_unregister_hooks(qw/Mock::Hook::Enqueue/);
+    $manager->unregister_hooks(qw/Mock::Hook::Enqueue/);
 
     $job = $master->manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey2'});
 

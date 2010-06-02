@@ -13,7 +13,7 @@ run_tests(7, sub {
     $manager->can_do('Worker::Test2');
 
     { # load Qudo::Hook::Serialize::Storable
-        $manager->global_register_hooks(qw/Qudo::Hook::Serialize::Storable/);
+        $manager->register_hooks(qw/Qudo::Hook::Serialize::Storable/);
 
         my $job = $manager->enqueue("Worker::Test", { arg => \%hash , uniqkey => 'uniqkey1'});
 
@@ -28,7 +28,7 @@ run_tests(7, sub {
     }
 
     { # unload Qudo::Hook::Serialize::Storable
-        $manager->global_unregister_hooks(qw/Qudo::Hook::Serialize::Storable/);
+        $manager->unregister_hooks(qw/Qudo::Hook::Serialize::Storable/);
 
         my $job = $master->manager->enqueue("Worker::Test", { arg => 'arg' , uniqkey => 'uniqkey2'});
 

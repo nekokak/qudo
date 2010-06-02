@@ -9,7 +9,7 @@ run_tests(1, sub {
 
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
-    $manager->global_register_hooks(qw/Mock::Hook::PostWork/);
+    $manager->register_hooks(qw/Mock::Hook::PostWork/);
 
     $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey1'});
     stdout_is( sub { $manager->work_once } , "Worker::Test: post worked!\n");

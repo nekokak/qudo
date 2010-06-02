@@ -24,7 +24,7 @@ sub new {
     }, $class;
     weaken($self->{qudo});
 
-    $self->global_register_hooks(@{$self->{default_hooks}});
+    $self->register_hooks(@{$self->{default_hooks}});
     $self->register_plugins(@{$self->{default_plugins}});
     $self->register_abilities(@{$self->{abilities}});
 
@@ -73,7 +73,7 @@ sub call_hook {
     }
 }
 
-sub global_register_hooks {
+sub register_hooks {
     my ($self, @hook_modules) = @_;
 
     for my $module (@hook_modules) {
@@ -82,12 +82,22 @@ sub global_register_hooks {
     }
 }
 
-sub global_unregister_hooks {
+sub global_register_hooks {
+    warn q{global_register_hooks method is deprecated. Use 'register_hooks' instead.};
+    shift->register_hooks(@_);
+}
+
+sub unregister_hooks {
     my ($self, @hook_modules) = @_;
 
     for my $module (@hook_modules) {
         $module->unload($self);
     }
+}
+
+sub global_unregister_hooks {
+    warn q{global_unregister_hooks method is deprecated. Use 'unregister_hooks' instead.};
+    shift->unregister_hooks(@_);
 }
 
 sub funcname_to_id {

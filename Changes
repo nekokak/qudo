@@ -3,8 +3,9 @@ Revision history for Perl extension Qudo
 0.0207
    2010-06-XX
         - REMOVE: Qudo#job_list method. [INCOMPATIBLE CHANGE]
-        - MOD: Skinny#find_job and Skinny#lookup_job method logic for dry.
+        - MOD: Driver::Skinny#find_job and Driver::Skinny#lookup_job method logic for dry.
         - MOD: do not use by Manager#can_do method [INCOMPATIBLE CHANGE]
+        - MOD: Manager#global_(un)register_hook method is deprecated. Use (un)register_hook method instead. [INCOMPATIBLE CHANGE]
 
 0.0206
    2010-06-02
