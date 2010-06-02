@@ -14,9 +14,10 @@ sub lookup_job {
     my ($self, $job_id) = @_;
 
     my $rs = $self->_search_job_rs(limit => 1);
+
     $rs->add_where('job.id' => $job_id);
 
-    my $itr = $rs->retrieve;
+    my $itr = $rs->retrieve('job');
 
     return $self->_get_job_data($itr);
 }
@@ -24,14 +25,7 @@ sub lookup_job {
 sub find_job {
     my ($self, $limit, $func_ids) = @_;
 
-    my $rs = $self->resultset(
-        {
-            select => [qw/job.id job.arg job.uniqkey job.func_id job.grabbed_until job.retry_cnt job.priority/],
-            from   => 'job',
-            limit  => $limit,
-        }
-    );
-    $rs->order({column => 'job.priority', desc => 'DESC'});
+    my $rs = $self->_search_job_rs(limit => $limit);
 
     $rs->add_where('job.func_id' => $func_ids);
 
@@ -50,15 +44,8 @@ sub _search_job_rs {
     my $rs = $self->resultset(
         {
             select => [qw/job.id job.arg job.uniqkey job.func_id job.grabbed_until job.retry_cnt job.priority/],
+            from   => 'job',
             limit  => $args{limit},
-        }
-    );
-    $rs->add_select('func.name' => 'funcname');
-    $rs->add_join(
-        job => {
-            type      => 'inner',
-            table     => 'func',
-            condition => 'job.func_id = func.id',
         }
     );
     $rs->order({column => 'job.priority', desc => 'DESC'});
