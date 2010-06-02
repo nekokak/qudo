@@ -28,12 +28,19 @@ sub new {
     $self->register_plugins(@{$self->{default_plugins}});
     $self->register_abilities(@{$self->{abilities}});
 
-    return $self;
+    $self;
 }
 
-sub driver_for { $_[0]->{qudo}->driver_for($_[1]) }
+sub driver_for         { $_[0]->{qudo}->driver_for($_[1])    }
 sub shuffled_databases { $_[0]->{qudo}->shuffled_databases() }
+
 sub plugin { $_[0]->{plugin} }
+sub hooks  { $_[0]->{hooks}  }
+
+sub can_do {
+    my ($self, $funcname) = @_;
+    $self->{func_map}->{$funcname} = 1;
+}
 
 sub register_abilities {
     my ($self, @abilities) = @_;
@@ -58,15 +65,13 @@ sub register_plugins {
 }
 
 sub call_hook {
-    my ($self, $hook_point, $worker_class, $args) = @_;
+    my ($self, $hook_point, $args) = @_;
 
     for my $module (keys %{$self->hooks->{$hook_point}}) {
         my $code = $self->hooks->{$hook_point}->{$module};
         $code->($args);
     }
 }
-
-sub hooks { $_[0]->{hooks} }
 
 sub global_register_hooks {
     my ($self, @hook_modules) = @_;
@@ -83,13 +88,6 @@ sub global_unregister_hooks {
     for my $module (@hook_modules) {
         $module->unload($self);
     }
-}
-
-sub can_do {
-    my ($self, $funcname) = @_;
-
-    $funcname->use;
-    $self->{func_map}->{$funcname} = 1;
 }
 
 sub funcname_to_id {
@@ -138,13 +136,13 @@ sub enqueue {
         priority  => $arg->{priority} ||0,
     };
 
-    $self->call_hook('pre_enqueue', $funcname, $args);
-    $self->call_hook('serialize',   $funcname, $args);
+    $self->call_hook('pre_enqueue', $args);
+    $self->call_hook('serialize',   $args);
 
     my $job_id = $self->driver_for($db)->enqueue($args);
     my $job = $self->lookup_job($job_id, $db);
 
-    $self->call_hook('post_enqueue', $funcname, $job);
+    $self->call_hook('post_enqueue', $job);
 
     return $job;
 }
@@ -172,12 +170,12 @@ sub work_once {
     my $worker_class = $job->funcname;
     return unless $worker_class;
 
-    $self->call_hook('deserialize', $worker_class, $job);
-    $self->call_hook('pre_work',    $worker_class, $job);
+    $self->call_hook('deserialize', $job);
+    $self->call_hook('pre_work',    $job);
 
     my $res = $worker_class->work_safely($self, $job);
 
-    $self->call_hook('post_work', $worker_class, $job);
+    $self->call_hook('post_work',   $job);
 
     return $res;
 }
