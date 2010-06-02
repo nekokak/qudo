@@ -40,5 +40,15 @@ sub reenqueue {
     $self->manager->reenqueue($self, $args);
 }
 
+sub dequeue {
+    my $self = shift;
+    $self->manager->dequeue($self);
+}
+
+sub failed {
+    my ($self, $error) = @_;
+    $self->manager->job_failed($self, $error);
+}
+
 1;
 

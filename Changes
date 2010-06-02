@@ -6,6 +6,7 @@ Revision history for Perl extension Qudo
         - MOD: Driver::Skinny#find_job and Driver::Skinny#lookup_job method logic for dry.
         - MOD: do not use by Manager#can_do method [INCOMPATIBLE CHANGE]
         - MOD: Manager#global_(un)register_hook method is deprecated. Use (un)register_hook method instead. [INCOMPATIBLE CHANGE]
+        - MOD: Worker#work_safly is not necessary manager instance.
 
 0.0206
    2010-06-02

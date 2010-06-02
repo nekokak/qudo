@@ -183,7 +183,7 @@ sub work_once {
     $self->call_hook('deserialize', $job);
     $self->call_hook('pre_work',    $job);
 
-    my $res = $worker_class->work_safely($self, $job);
+    my $res = $worker_class->work_safely($job);
 
     $self->call_hook('post_work',   $job);
 

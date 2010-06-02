@@ -8,12 +8,13 @@ sub grab_for    { 60*60 } # default setting 1 hour
 sub set_job_status { 0 }  # job process status store for job_status table.
 
 sub work_safely {
-    my ($class, $manager, $job) = @_;
-    my $res;
+    my ($class, $job) = @_;
 
     if ($job->funcname->set_job_status) {
         $job->job_start_time = time;
     }
+
+    my $res;
     eval {
         $res = $class->work($job);
     };
@@ -28,11 +29,11 @@ sub work_safely {
                 }
             );
         } else {
-            $manager->dequeue($job);
+            $job->dequeue;
         }
-        $manager->job_failed($job, $e || 'Job did not explicitly complete or fail');
+        $job->failed($e || 'Job did not explicitly complete or fail');
     } else {
-        $manager->dequeue($job);
+        $job->dequeue;
     }
 
     return $res;
