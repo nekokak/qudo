@@ -1,7 +1,7 @@
 Revision history for Perl extension Qudo
 
 0.0207
-   2010-06-XX
+   2010-06-02
         - REMOVE: Qudo#job_list method. [INCOMPATIBLE CHANGE]
         - MOD: Driver::Skinny#find_job and Driver::Skinny#lookup_job method logic for dry.
         - MOD: do not use by Manager#can_do method [INCOMPATIBLE CHANGE]
