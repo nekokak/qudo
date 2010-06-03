@@ -58,8 +58,20 @@ sub register_plugins {
     my ($self, @plugins) = @_;
 
     for my $plugin (@plugins) {
-        $plugin->require or Carp::croak $@;
-        my ($plugin_name, $code) = $plugin->load();
+
+        my ($plugin_name, $code);
+
+        if (ref $plugin eq 'HASH') {
+            my $klass = $plugin->{name};
+            $klass->require or Carp::croak $@;
+            ($plugin_name, $code) = $klass->load($plugin->{option});
+        } elsif (not ref $plugin) {
+            $plugin->require or Carp::croak $@;
+            ($plugin_name, $code) = $plugin->load();
+        } else {
+            Carp::croak 'register_plugins require HASH or SCALAR.';
+        }
+
         $self->{plugin}->{$plugin_name} = $code;
     }
 }
