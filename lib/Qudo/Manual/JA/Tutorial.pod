@@ -15,11 +15,7 @@ QudoでJobを処理するためには、ClientとWorkerを作成する必要が�
 Qudoを使うにはデータをストアするためにQudo用のデータベースを設定する必要があります。
 現在対応しているRDBMSは「MySQL」,「SQLite」,「PostgreSQL」です。
 
-スキーマはそれぞれ
-doc/schema-mysql.sql    … MySQL用
-doc/schema-sqlite.sql   … SQLite用
-doc/schema-postgres.sql … PostgreSQL用
-を用意してありますのでこれを基にデータベースを作成してください。
+スキーマのsetupでは付属のqudoコマンドで行ってください
 
 =head1 client
 
