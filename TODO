@@ -1,10 +1,4 @@
 ----
 - 複数のJobをまとめて実行させる機能
-- logger plugin
--- 別パッケージでもよい
--- メールも飛ばしたいよ
--- hookでjobが何回失敗したかわかるからメールとばせるように
 - more document.
-- 初期schemaをセットアップするスクリプト
-- Qudo::Testでschemaファイルを読み込むのをかしこく
--- Qudo::Plugin系をだれかが書くときにQudo::Testをつかいやすいように
+
