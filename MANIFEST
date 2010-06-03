@@ -1,8 +1,5 @@
+bin/qudo
 Changes
-doc/schema-mysql.sql
-doc/schema-postgres.sql
-doc/schema-sqlite.sql
-inc/ExtUtils/MakeMaker.pm
 inc/Module/Install.pm
 inc/Module/Install/AuthorTests.pm
 inc/Module/Install/Base.pm
@@ -12,7 +9,7 @@ inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Repository.pm
-inc/Module/Install/Share.pm
+inc/Module/Install/Scripts.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 inc/Test/More.pm
@@ -58,6 +55,7 @@ t/003manager/funcname.t
 t/003manager/grab_a_job.t
 t/003manager/has_abilities.t
 t/003manager/priority.t
+t/004worker/abort_worker.t
 t/004worker/basic.t
 t/004worker/failed_worker.t
 t/004worker/job_status.t
@@ -73,11 +71,13 @@ t/010hook/serialize_MessagePack.t
 t/010hook/serialize_storable.t
 t/011plugin/coderef.t
 t/011plugin/obj.t
+t/011plugin/option.t
 t/lib/Mock/Hook/Enqueue.pm
 t/lib/Mock/Hook/PostWork.pm
 t/lib/Mock/Hook/PreWork.pm
 t/lib/Mock/Plugin/Coderef.pm
 t/lib/Mock/Plugin/Object.pm
+t/lib/Mock/Plugin/Object2.pm
 xt/perlcritic.t
 xt/perlcriticrc
 xt/synopsis.t

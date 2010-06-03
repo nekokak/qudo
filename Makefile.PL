@@ -14,7 +14,7 @@ build_requires 'Test::Output';
 build_requires 'Test::Requires';
 auto_include;
 
-install_share 'doc';
+install_script 'bin/qudo';
 
 tests 't/*.t t/*/*.t t/*/*/*.t';
 author_tests('xt');

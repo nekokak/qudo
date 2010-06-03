@@ -107,7 +107,7 @@ sub setup_dbs {
             { RaiseError => 1, PrintError => 0 }
         ) or die "Couldn't connect: $!\n";
 
-        for my $sql (@{ $ENV{USE_MYSQL} ? $schema->{mysql} : $schema->{sqlite} }) {
+        for my $sql (@{ $ENV{USE_MYSQL} ? $schema->{mysql} : $schema->{SQLite} }) {
             $sql =~ s!^\s*create\s+table\s+(\w+)!CREATE TABLE $1!i;
             $sql .= " ENGINE=INNODB\n" if $ENV{USE_MYSQL};
             $dbh->do($sql);
@@ -119,9 +119,7 @@ sub setup_dbs {
 
 my $schema_data;
 sub load_schema {
-    $schema_data->{mysql}  = load_sql('doc/schema-mysql.sql');
-    $schema_data->{sqlite} = load_sql('doc/schema-sqlite.sql');
-    $schema_data;
+    $schema_data ||= YAML::Load(join "", <DATA>);
 }
 
 sub load_sql {
@@ -152,13 +150,13 @@ sub dsn_for {
 }
 
 sub db_filename {
-    my($dbname) = @_;
-    return 'test_qudo_' . $dbname . '.db';
+    my $dbname = shift;
+    'test_qudo_' . $dbname . '.db';
 }
 
 sub mysql_dbname {
-    my($dbname) = @_;
-    return 'test_qudo_' . $dbname;
+    my $dbname = shift;
+    'test_qudo_' . $dbname;
 }
 
 sub create_mysql_db {
@@ -198,4 +196,132 @@ sub has_innodb {
 }
 
 1;
+
+__DATA__
+SQLite:
+  - |-
+    CREATE TABLE func (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        name       VARCHAR(255) NOT NULL,
+        UNIQUE(name)
+    )
+  - |-
+    CREATE TABLE job (
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        func_id         INTEGER UNSIGNED NOT NULL,
+        arg             MEDIUMBLOB,
+        uniqkey         VARCHAR(255) NULL,
+        enqueue_time    INTEGER UNSIGNED,
+        grabbed_until   INTEGER UNSIGNED NOT NULL,
+        run_after       INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        retry_cnt       INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        priority        INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        UNIQUE(func_id,uniqkey)
+    )
+  - |-
+    CREATE TABLE exception_log (
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        func_id         INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        exception_time  INTEGER UNSIGNED NOT NULL,
+        message         MEDIUMBLOB NOT NULL,
+        uniqkey         VARCHAR(255) NULL,
+        arg             MEDIUMBLOB,
+        retried         TINYINT(1) NOT NULL DEFAULT 0
+    );
+  - |-
+    CREATE TABLE job_status (
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        func_id         INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        arg             MEDIUMBLOB,
+        uniqkey         VARCHAR(255) NULL,
+        status          VARCHAR(10),
+        job_start_time  INTEGER UNSIGNED NOT NULL,
+        job_end_time    INTEGER UNSIGNED NOT NULL
+    );
+mysql:
+  - |-
+    CREATE TABLE func (
+        id         INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+        name       VARCHAR(255) NOT NULL,
+        UNIQUE(name)
+    )
+  - |-
+    CREATE TABLE job (
+        id              BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+        func_id         INTEGER UNSIGNED NOT NULL,
+        arg             MEDIUMBLOB,
+        uniqkey         VARCHAR(255) NULL,
+        enqueue_time    INTEGER UNSIGNED,
+        grabbed_until   INTEGER UNSIGNED NOT NULL,
+        run_after       INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        retry_cnt       INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        priority        INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        UNIQUE(func_id, uniqkey)
+    )
+  - |-
+    CREATE TABLE exception_log (
+        id              BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+        func_id         INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        exception_time  INTEGER UNSIGNED NOT NULL,
+        message         MEDIUMBLOB NOT NULL,
+        uniqkey         VARCHAR(255) NULL,
+        arg             MEDIUMBLOB,
+        retried         TINYINT(1) NOT NULL DEFAULT 0,
+        INDEX (func_id),
+        INDEX (exception_time)
+    )
+  - |-
+    CREATE TABLE job_status (
+        id              BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+        func_id         INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        arg             MEDIUMBLOB NOT NULL,
+        uniqkey         VARCHAR(255) NULL,
+        status          VARCHAR(10),
+        job_start_time  INTEGER UNSIGNED NOT NULL,
+        job_end_time    INTEGER UNSIGNED NOT NULL
+    )
+postgres:
+  - |-
+    CREATE TABLE func (
+        id         SERIAL,
+        name       VARCHAR(255) NOT NULL,
+        UNIQUE(name)
+    );
+  - |-
+    CREATE TABLE job (
+        id              SERIAL,
+        func_id         INT NOT NULL,
+        arg             BYTEA,
+        uniqkey         VARCHAR(255) NULL,
+        enqueue_time    INTEGER,
+        grabbed_until   INTEGER  NOT NULL,
+        run_after       INTEGER  NOT NULL DEFAULT 0,
+        retry_cnt       INTEGER  NOT NULL DEFAULT 0,
+        priority        INTEGER  NOT NULL DEFAULT 0,
+        UNIQUE(func_id, uniqkey)
+    );
+  - |-
+    CREATE TABLE exception_log (
+        id              SERIAL,
+        func_id         INTEGER NOT NULL DEFAULT 0,
+        exception_time  INTEGER NOT NULL,
+        message         BYTEA,
+        uniqkey         VARCHAR(255) NULL,
+        arg             BYTEA,
+        retried         SMALLINT,
+    );
+  - |-
+    CREATE INDEX exception_log_func_id ON exception_log (func_id);
+  - |-
+    CREATE INDEX exception_log_exception_time ON exception_log (exception_time);
+  - |-
+    CREATE TABLE job_status (
+        id              SERIAL,
+        func_id         INTEGER NOT NULL DEFAULT 0,
+        arg             BYTEA,
+        uniqkey         VARCHAR(255) NULL,
+        status          VARCHAR(10),
+        job_start_time  INTEGER NOT NULL,
+        job_end_time    INTEGER NOT NULL
+    );
 
