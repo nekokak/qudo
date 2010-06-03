@@ -28,13 +28,16 @@ sub job_start_time : lvalue { $_[0]->{job_start_time} }
 
 sub completed {
     my $self = shift;
+
     $self->{_complete} = 1;
+
     return unless $self->funcname->set_job_status;
     $self->manager->set_job_status($self, 'completed');
 }
 
 sub is_completed { $_[0]->{_complete} }
 sub is_aborted   { $_[0]->{_abort}    }
+sub is_failed    { $_[0]->{_faile}    }
 
 sub reenqueue {
     my ($self, $args) = @_;
@@ -48,6 +51,9 @@ sub dequeue {
 
 sub failed {
     my ($self, $error) = @_;
+
+    $self->{_faile} = 1;
+
     if ($self->funcname->set_job_status) {
         $self->manager->set_job_status($self, 'failed');
     }

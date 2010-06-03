@@ -2,7 +2,7 @@ package Qudo;
 use strict;
 use warnings;
 
-our $VERSION = '0.0208';
+our $VERSION = '0.0209';
 
 use Qudo::Manager;
 use Carp ();

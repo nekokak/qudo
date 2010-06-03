@@ -1,5 +1,9 @@
 Revision history for Perl extension Qudo
 
+0.0209
+   2010-06-03
+        - ADD: Job#is_failed method.
+
 0.0208
    2010-06-03
         - ADD: Job#abort method.
