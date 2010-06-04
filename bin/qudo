@@ -1,7 +1,6 @@
 #! /usr/bin/env perl
 use strict;
 use Getopt::Long;
-use Pod::Usage;
 use Qudo::Test;
 use DBI;
 
@@ -12,10 +11,9 @@ Getopt::Long::GetOptions(
     '--user=s'  => \my $user,
     '--pass=s'  => \my $pass,
     '--rdbms=s' => \my $rdbms,
-) or pod2usage(2);
-Getopt::Long::Configure("bundling");
-pod2usage() if $help;
-pod2usage() unless $db and $user and $rdbms;
+) or usage();
+usage() if $help;
+usage() unless $db and $user and $rdbms;
 
 if ($rdbms eq 'mysql') {
     my $dbh = DBI->connect('dbi:mysql:mysql', $user, $pass) or die 'can not connect mysqld';
@@ -32,13 +30,18 @@ for my $sql (@{$schema->{$rdbms}}) {
     }
 }
 
-__END__
-=head1 SYNOPSIS
+sub usage {
+    die <<USAGE;
+Usage: qudo [opts]
 
-    --db    database name. ex) qudo_test
-    --user  db user        ex) root
-    --pass  db password.
-    --rdbms database kind  ex) mysql SQLite
-    --help  disp help.
+Options:
 
-=cut
+    --db      database name. ex) qudo_test
+    --user    db user        ex) root
+    --pass    db password.
+    --rdbms   database kind  ex) mysql SQLite
+    --help    disp help.
+    --dry_run
+
+USAGE
+}
