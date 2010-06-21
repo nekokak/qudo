@@ -162,7 +162,7 @@ Qudo - simple and extensible job queue manager
     # enqueue job:
     use Qudo;
     my $qudo = Qudo->new(
-        driver_class => 'Skinny',
+        driver_class => 'Skinny', # optional.
         databases => [+{
             dsn      => 'dbi:SQLite:/tmp/qudo.db',
             username => '',
@@ -174,7 +174,7 @@ Qudo - simple and extensible job queue manager
     # do work:
     use Qudo;
     my $qudo2 = Qudo->new(
-        driver_class => 'Skinny',
+        driver_class => 'Skinny', # optional.
         databases => [+{
             dsn      => 'dbi:SQLite:/tmp/qudo.db',
             username => '',
