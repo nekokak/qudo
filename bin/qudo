@@ -5,12 +5,13 @@ use Qudo::Test;
 use DBI;
 
 Getopt::Long::GetOptions(
-    '--dry_run' => \my $dry_run,
-    '--help'    => \my $help,
-    '--db=s'    => \my $db,
-    '--user=s'  => \my $user,
-    '--pass=s'  => \my $pass,
-    '--rdbms=s' => \my $rdbms,
+    '--dry_run'    => \my $dry_run,
+    '--help'       => \my $help,
+    '--db=s'       => \my $db,
+    '--user=s'     => \my $user,
+    '--pass=s'     => \my $pass,
+    '--rdbms=s'    => \my $rdbms,
+    '--use_innodb' => \my $use_innodb,
 ) or usage();
 usage() if $help;
 usage() unless $db and $user and $rdbms;
@@ -23,6 +24,9 @@ if ($rdbms eq 'mysql') {
 my $dbh = DBI->connect('dbi:'.$rdbms.':'.$db, $user, $pass) or die 'can not connect database';
 my $schema = Qudo::Test::load_schema;
 for my $sql (@{$schema->{$rdbms}}) {
+    if ($rdbms eq 'mysql' && $use_innodb) {
+        $sql .= " ENGINE=INNODB\n";
+    }
     if ($dry_run) {
         print $sql,"\n";
     } else {
@@ -36,12 +40,13 @@ Usage: qudo [opts]
 
 Options:
 
-    --db      database name. ex) qudo_test
-    --user    db user        ex) root
-    --pass    db password.
-    --rdbms   database kind  ex) mysql SQLite
-    --help    disp help.
+    --db         database name. ex) qudo_test
+    --user       db user        ex) root
+    --pass       db password.
+    --rdbms      database kind  ex) mysql SQLite
+    --help       disp help.
     --dry_run
+    --use_innodb using innodb (optional)
 
 USAGE
 }
