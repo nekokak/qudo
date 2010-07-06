@@ -31,6 +31,7 @@ sub new {
         manager_abilities   => [],
         databases           => [],
         connections         => +{},
+        work_delay          => $WORK_DELAY,
         @_,
     }, $class;
 
@@ -93,7 +94,7 @@ sub enqueue {
 
 sub work {
     my ($self, $work_delay) = @_;
-    $work_delay ||= $WORK_DELAY;
+    $work_delay ||= $self->{work_delay};
 
     my $manager = $self->manager;
     unless ($manager->has_abilities) {
