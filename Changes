@@ -1,7 +1,7 @@
 Revision history for Perl extension Qudo
 
 0.0210
-   2010-07-XX
+   2010-07-06
         - MOD: qudo command do'nt use pod2usage.
         - MOD: qudo command create innodb table for mysql.
         - MOD: some docs.
