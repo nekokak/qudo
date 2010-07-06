@@ -2,6 +2,7 @@ use Qudo::Test;
 use Test::More;
 
 my %hash = ( key => 'arg' );
+my $RESULT;
 run_tests(7, sub {
     my $driver = shift;
     my $master = test_master(
@@ -22,8 +23,8 @@ run_tests(7, sub {
 
         sleep(1);
 
-        my $res = $manager->work_once;
-        is_deeply $res, \%hash ;
+        $manager->work_once;
+        is_deeply $RESULT, \%hash ;
 
     }
 
@@ -38,8 +39,8 @@ run_tests(7, sub {
 
         sleep(1);
 
-        my $res = $manager->work_once;
-        is $res , 'arg';
+        $manager->work_once;
+        is $RESULT , 'arg';
     }
 
     teardown_dbs;
@@ -52,7 +53,7 @@ sub grab_for { 0 }
 sub work {
     my ($class, $job) = @_;
     $job->completed;
-    return $job->arg;
+    $RESULT = $job->arg;
 }
 
 package Worker::Test2;
@@ -63,3 +64,4 @@ sub work {
     my ($class, $job) = @_;
     die 'failed worker';
 }
+

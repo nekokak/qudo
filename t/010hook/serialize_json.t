@@ -6,6 +6,7 @@ BEGIN {
   plan skip_all => 'needs JSON::XS for testing' if $@;
 }
 
+my $RESULT;
 run_tests(12, sub {
     my $driver = shift;
     my $master = test_master(
@@ -27,8 +28,8 @@ run_tests(12, sub {
 
         sleep(1);
 
-        my $res = $manager->work_once;
-        is_deeply $res, {key => 'arg'};
+        $manager->work_once;
+        is_deeply $RESULT, {key => 'arg'};
 
     }
 
@@ -58,8 +59,8 @@ run_tests(12, sub {
 
         sleep(1);
 
-        my $res = $manager->work_once;
-        is $res, 'arg';
+        $manager->work_once;
+        is $RESULT, 'arg';
     }
 
     teardown_dbs;
@@ -72,7 +73,7 @@ sub grab_for { 0 }
 sub work {
     my ($class, $job) = @_;
     $job->completed;
-    return $job->arg;
+    $RESULT = $job->arg;
 }
 
 package Worker::Test2;
