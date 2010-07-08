@@ -1,5 +1,9 @@
 Revision history for Perl extension Qudo
 
+0.0211
+   2010-07-08
+        - ADD: replace method for Qudo::Job.
+
 0.0210
    2010-07-06
         - MOD: qudo command do'nt use pod2usage.

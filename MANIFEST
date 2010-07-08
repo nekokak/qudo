@@ -61,6 +61,7 @@ t/004worker/failed_worker.t
 t/004worker/job_status.t
 t/004worker/memory_leak.t
 t/004worker/reenqueue.t
+t/004worker/replace.t
 t/004worker/retry_delay.t
 t/004worker/run_after.t
 t/010hook/hook_post_work.t
