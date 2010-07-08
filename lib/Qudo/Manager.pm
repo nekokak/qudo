@@ -145,9 +145,9 @@ sub funcid_to_name {
 }
 
 sub enqueue {
-    my ($self, $funcname, $arg) = @_;
+    my ($self, $funcname, $arg, $db) = @_;
 
-    my $db = $self->shuffled_databases;
+    $db ||= $self->shuffled_databases;
     my $func_id = $self->funcname_to_id($funcname, $db);
 
     my $args = +{

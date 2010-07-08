@@ -72,5 +72,20 @@ sub abort {
     $self->manager->job_failed($self, $error);
 }
 
+sub replace {
+    my ($self, @jobs) = @_;
+
+    my $db = $self->manager->driver_for($self->db);
+    $db->dbh->begin_work;
+
+        for my $job (@jobs) {
+            $self->manager->enqueue(@$job, $self->db);
+        }
+
+        $self->completed;
+
+    $db->dbh->commit;
+}
+
 1;
 
