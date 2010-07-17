@@ -1,5 +1,8 @@
 Revision history for Perl extension Qudo
 
+0.0212
+   2010-07-17
+        - MOD: driver's func_from_id, func_from_name return not DBIx::Skinny::Row object but HashRef
 0.0211
    2010-07-08
         - ADD: replace method for Qudo::Job.
