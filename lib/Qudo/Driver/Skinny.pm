@@ -120,12 +120,14 @@ sub dequeue {
 
 sub func_from_name {
     my ($self, $funcname) = @_;
-    $self->find_or_create('func',{ name => $funcname });
+    my $row = $self->find_or_create('func',{ name => $funcname });
+    $row->get_columns;
 }
 
 sub func_from_id {
     my ($self, $funcid) = @_;
-    $self->single('func',{ id => $funcid });
+    my $row = $self->single('func',{ id => $funcid });
+    $row->get_columns;
 }
 
 sub retry_from_exception_log {
