@@ -36,7 +36,7 @@ sub work_safely {
         } else {
             $job->dequeue;
         }
-        $job->failed($e || 'Job did not explicitly complete or fail');
+        $job->failed("$e" || 'Job did not explicitly complete or fail');
     } else {
         $job->dequeue;
     }
