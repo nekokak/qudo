@@ -24,7 +24,7 @@ sub work_safely {
         return $res;
     }
 
-    if ( my $e = $@ || ! $job->is_completed ) {
+    if ( (my $e = $@) || ! $job->is_completed ) {
         if ( $job->retry_cnt < $class->max_retries ) {
             $job->reenqueue(
                 {
