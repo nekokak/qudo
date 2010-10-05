@@ -79,6 +79,7 @@ t/lib/Mock/Hook/PreWork.pm
 t/lib/Mock/Plugin/Coderef.pm
 t/lib/Mock/Plugin/Object.pm
 t/lib/Mock/Plugin/Object2.pm
+t/regression/failed_worker.t
 xt/perlcritic.t
 xt/perlcriticrc
 xt/synopsis.t
