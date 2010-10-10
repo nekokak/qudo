@@ -101,7 +101,7 @@ By default,return 0 seconds
 
     package Your::Worker;
     use base 'Qudo::Worker';
-    sub retry_delay { 60 }
+    sub grab_for { 3600 }
     sub work { ... }
 
 Returns the number of seconds workers of this class will claim a grabbed a job.
