@@ -1,5 +1,7 @@
 + ლ(╹◡╹ლ) 
 + coalesce的に実行するJOBセットを選択できるように
 + worker毎にHookはやっぱり買えられたほうが柔軟だなぁ
+++ http://gist.github.com/638205
+++ こんなかんじでどうだろ
 + funcname_to_idなどのキャッシュ部分をもっとかしこくしたい
 + 外部PluginやHookなんかでDBにアクセスしたいケースに以下に対応するか
