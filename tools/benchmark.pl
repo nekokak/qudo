@@ -3,20 +3,14 @@ use strict;
 use warnings;
 use Benchmark qw/countit timethese timeit timestr/;
 use Qudo;
-use Qudo::Test;
 
-my $schema = Qudo::Test::load_schema->{SQLite};
-
+my $driver = shift || 'Skinny';
 my $qudo = Qudo->new(
-    driver_class => 'Skinny',
+    driver_class => $driver,
     databases    => [+{
-        dsn      => 'dbi:SQLite:',
+        dsn      => 'dbi:SQLite:./tools/prof.db',
     }],
 );
-my $driver = $qudo->driver;
-for (@$schema) {
-    $driver->do($_);
-}
 
 my $t = countit 2 => sub {
     $qudo->enqueue('Worker::Test', { arg => 'test' });;
