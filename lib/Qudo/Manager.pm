@@ -162,6 +162,8 @@ sub enqueue {
     $self->call_hook('serialize',   $args);
 
     my $job_id = $self->driver_for($db)->enqueue($args);
+    return if $arg->{suppress_job};
+
     my $job = $self->lookup_job($job_id, $db);
 
     $self->call_hook('post_enqueue', $job);
