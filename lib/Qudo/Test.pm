@@ -311,8 +311,8 @@ Pg:
         message         BYTEA,
         uniqkey         VARCHAR(255) NULL,
         arg             BYTEA,
-        retried         SMALLINT
-        PRIMARY KEY (id),
+        retried         SMALLINT,
+        PRIMARY KEY (id)
     );
   - |-
     CREATE INDEX exception_log_func_id ON exception_log (func_id);
@@ -326,6 +326,6 @@ Pg:
         uniqkey         VARCHAR(255) NULL,
         status          VARCHAR(10),
         job_start_time  INTEGER NOT NULL,
-        job_end_time    INTEGER NOT NULL
-        PRIMARY KEY (id),
+        job_end_time    INTEGER NOT NULL,
+        PRIMARY KEY (id)
     );
