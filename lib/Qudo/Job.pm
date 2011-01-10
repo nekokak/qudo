@@ -49,10 +49,16 @@ sub dequeue {
     $self->manager->dequeue($self);
 }
 
+sub error {
+    my ($self, ) = @_;
+    return $self->{_error}
+}
+
 sub failed {
     my ($self, $error) = @_;
 
     $self->{_fail} = 1;
+    $self->{_error} = $error;
 
     if ($self->funcname->set_job_status) {
         $self->manager->set_job_status($self, 'failed');
@@ -65,6 +71,7 @@ sub abort {
 
     $self->{_abort} = 1;
     $error ||= 'abort!!';
+    $self->{_error} = $error;
 
     if ($self->funcname->set_job_status) {
         $self->manager->set_job_status($self, 'abort');
