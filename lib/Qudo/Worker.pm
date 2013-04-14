@@ -59,7 +59,7 @@ Qudo::Worker - superclass for defining task behavior of Qudo's work
         my $job_arg = $job->arg();
         print "This is Myworker's work. job has argument == $job_arg \n";
 
-        $job->completed(); # or $job->abort
+        $job->completed(); # or die or $job->abort
     }
     1;
 
