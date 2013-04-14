@@ -83,6 +83,10 @@ queueingされたJobを処理していくworkerを作成します
         
         # send mail process...
         
+        if ($cannot_send_mail) {
+            die "cannot send mail: reason"; # the message is logged to exception_log
+        }
+
         $job->completed; # finished job!
     }
     1;
