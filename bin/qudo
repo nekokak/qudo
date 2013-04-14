@@ -49,14 +49,14 @@ qudo - command to create database scheme
 
   qudo [opts]
 
- Options:
+=head1 OPTIONS
 
     --db         database name. ex) qudo_test
     --user       db user        ex) root
     --pass       db password.
     --rdbms      database kind  ex) mysql SQLite
     --help       disp help.
-    --dry_run
+    --dry_run    disp schema only.
     --use_innodb using innodb (optional)
 
 =cut
