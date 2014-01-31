@@ -16,11 +16,10 @@ Job を enqueueする時に引数をシリアライズしたりなどです。
 
 たとえば、enqueueする引数の情報をJSONでシリアライズしたい場合は
 
-    my $client = Qudo->new(...);
-    $client->register_hooks('Qudo::Hook::Serialize::JSON');
+    my $client = Qudo->new(... , default_hooks => ["Qudo::Hook::Serialize::JSON"]);
     $client->enqueue('Test::Worker', { arg => {name => 'nekokak'}, uniqkey => 'uniq'});
 
-このようにHookモジュールをregister_hooksに渡す事で設定でき、
+このようにHookモジュールをnewの引数に渡す事で設定でき、
 設定した引数がJSONでシリアライズされて保存されます。
 
 Hookは利用者が好きに書く事ができるので、Qudoが持っていない機能も簡単に書く事ができます。
