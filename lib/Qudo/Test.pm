@@ -132,12 +132,12 @@ sub load_sql {
 }
 
 sub mysql_dbh {
-    return DBI->connect(
+    return(DBI->connect(
         "DBI:mysql:mysql",
         "root",
         "",
         { RaiseError => 1 }
-    ) or die "Couldn't connect to database";
+    ) or die "Couldn't connect to database");
 }
 
 sub dsn_for {
