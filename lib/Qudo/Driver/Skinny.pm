@@ -1,4 +1,8 @@
 package Qudo::Driver::Skinny;
+
+use strict;
+use warnings;
+
 use DBIx::Skinny;
 
 sub init_driver {
