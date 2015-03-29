@@ -9,6 +9,9 @@ requires 'DBI';
 requires 'YAML';
 requires 'Class::Data::Inheritable';
 
+recommends 'JSON::XS';
+recommends 'Data::MessagePack';
+
 build_requires 'Test::More';
 build_requires 'Test::Output';
 build_requires 'Test::Requires';
