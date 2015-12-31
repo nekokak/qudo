@@ -94,5 +94,111 @@ sub replace {
     $db->dbh->commit;
 }
 
-1;
+=head1 NAME
 
+Qudo::Job - Qudo job class
+
+=head1 SYNOPSIS
+
+  # You don't need to create job object by yourself.
+
+=head1 DESCRIPTION
+
+Qudo::Job object is passed to your worker and some hook points.
+
+=head1 METHODS
+
+=head2  id
+
+Returns job id.
+
+=head2  uniqkey
+
+Returns the job unique key.
+
+=head2  func_id
+
+Returns the function id of the job.
+
+=head2  funcname
+
+Returns the function name of the job.
+
+=head2 retry_cnt
+
+Returns how many times the job is retried.
+
+=head2 grabbed_until
+
+Returns time when job is grabbed.
+
+=head2  priority
+
+Returns the priority of the job.
+
+=head2  arg
+
+Returns the job argument.
+
+=head2  arg_origin
+
+Returns the original argument before a serializer change.
+
+=head2  db
+
+Returns the database the job belonging.
+
+=head2  manager
+
+Returns Qudo manager.
+
+=head2  job_start_time
+
+Returns time when job started.
+
+=head2  completed
+
+Set job as completed successfully.
+
+=head2  is_completed
+
+If job is completed, returns true.
+
+=head2  is_aborted
+
+If job is aborted, returns true.
+
+=head2  is_failed
+
+If job is failed, returns true.
+
+=head2  error
+
+Returns error message set in failed or abort
+
+=head2  failed
+
+ $job->failed($reason);
+
+Don't use this method in your worker class.
+Use die instead of this.
+$reason is set as error and logged in exception_log.
+
+=head2  abort
+
+ $job->abort($reason);
+
+This aborts job.
+When this method is called, the job never retried even if you set retry_cnt is set.
+But, if you override work_safely in Qudo::Worker, it is depends on your implementation.
+$reason is set as error and  logged in exception_log.
+
+=head2  replace
+
+ $job->replace(['Worker::One', {arg => 'arg1'}], ['Worker::Another', {arg => 'arg2'}]);
+
+This enqueue new job(s) and current job itself is completed.
+
+=cut
+
+1;
