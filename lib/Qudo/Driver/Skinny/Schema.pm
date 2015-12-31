@@ -1,4 +1,8 @@
 package Qudo::Driver::Skinny::Schema;
+
+use strict;
+use warnings;
+
 use DBIx::Skinny::Schema;
 
 install_table job => schema {
