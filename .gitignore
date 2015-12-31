@@ -10,3 +10,11 @@ Makefile.old
 old/
 *.swp
 test.*
+/qudo-*
+/.build
+/_build_params
+/Build
+/Build.bat
+!Build/
+!META.json
+!LICENSE

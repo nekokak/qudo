@@ -1,0 +1,6 @@
+name = "Qudo"
+# badges = ["travis"]
+authority = "cpan:NEKOKAK"
+
+module_maker="ModuleBuildTiny"
+

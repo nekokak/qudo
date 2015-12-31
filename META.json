@@ -1,0 +1,102 @@
+{
+   "abstract" : "simple and extensible job queue manager",
+   "author" : [
+      "Atsushi Kobayashi <nekokak _at_ gmail dot com>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Minilla/v3.0.1, CPAN::Meta::Converter version 2.150001",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Qudo",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples",
+         "author",
+         "builder"
+      ]
+   },
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "Module::Build::Tiny" : "0.035",
+            "perl" : "5.008_001"
+         }
+      },
+      "develop" : {
+         "requires" : {
+            "Test::CPAN::Meta" : "0",
+            "Test::MinimumVersion::Fast" : "0.04",
+            "Test::PAUSE::Permissions" : "0.04",
+            "Test::Perl::Critic" : "0",
+            "Test::Pod" : "1.41",
+            "Test::Spellunker" : "v0.2.7"
+         }
+      },
+      "runtime" : {
+         "recommends" : {
+            "Data::MessagePack" : "0",
+            "JSON::XS" : "0"
+         },
+         "requires" : {
+            "DBI" : "0",
+            "DBIx::Skinny" : "0",
+            "Getopt::Long" : "0",
+            "List::Util" : "0",
+            "Pod::Usage" : "0",
+            "Scalar::Util" : "0",
+            "UNIVERSAL::require" : "0",
+            "YAML" : "0"
+         }
+      },
+      "test" : {
+         "recommends" : {
+            "Test::Memory::Cycle" : "0"
+         },
+         "requires" : {
+            "Test::More" : "0",
+            "Test::Output" : "0",
+            "Test::Requires" : "0"
+         }
+      }
+   },
+   "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/nekokak/qudo/issues"
+      },
+      "homepage" : "https://github.com/nekokak/qudo",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/nekokak/qudo.git",
+         "web" : "https://github.com/nekokak/qudo"
+      }
+   },
+   "version" : "0.0213",
+   "x_authority" : "cpan:NEKOKAK",
+   "x_contributors" : [
+      "小林 篤 <nekokak@snow.local>",
+      "Kobayashi <atsushi@atsushi.dev.intra>",
+      "User <filsturas@www1487.sakura.ne.jp>",
+      "tokuhirom <tokuhirom@gmail.com>",
+      "Masaru Hoshino <masartz@gmail.com>",
+      "makamaka <makamaka.donzoko@gmail.com>",
+      "Keiji, Yoshimi <walf443@gmail.com>",
+      "Atsushi Kobayashi <nekokak@gmail.com>",
+      "memememomo <memememomo@gmail.com>",
+      "ktat <ktat.is@gmail.com>",
+      "dokechin <user@user-PC.(none)>",
+      "Tim Retout <tim@retout.co.uk>",
+      "Daniel Green <ddgreen@gmail.com>",
+      "karupanerura <karupa@cpan.org>"
+   ]
+}
