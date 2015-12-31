@@ -11,20 +11,27 @@ Getopt::Long::GetOptions(
     '--db=s'       => \my $db,
     '--user=s'     => \my $user,
     '--pass=s'     => \my $pass,
+    '--host=s'     => \my $host,
     '--rdbms=s'    => \my $rdbms,
     '--use_innodb' => \my $use_innodb,
 ) or usage();
 usage() if $help;
 usage() unless $db and $user and $rdbms;
 
+my %attr = (
+    defined $host ? (
+        host => $host
+    ) : (),
+);
+
 if (not $dry_run and $rdbms eq 'mysql') {
-    my $dbh = DBI->connect('dbi:mysql:mysql', $user, $pass) or die 'can not connect mysqld';
+    my $dbh = DBI->connect('dbi:mysql:mysql', $user, $pass, \%attr) or die 'can not connect mysqld';
     $dbh->do('create database '.$db);
 }
 
 my $dbh;
 if (not $dry_run) {
-    $dbh = DBI->connect('dbi:'.$rdbms.':'.$db, $user, $pass) or die 'can not connect database';
+    $dbh = DBI->connect('dbi:'.$rdbms.':'.$db, $user, $pass, \%attr) or die 'can not connect database';
 }
 
 my $schema = Qudo::Test::load_schema;
@@ -58,6 +65,7 @@ qudo - command to create database scheme
     --db         database name. ex) qudo_test
     --user       db user        ex) root
     --pass       db password.
+    --host       db host.
     --rdbms      database kind  ex) mysql SQLite
     --help       disp help.
     --dry_run    disp schema only.
