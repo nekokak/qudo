@@ -220,7 +220,8 @@ sub find_job {
         my $func_ids = $self->funcnames_to_ids($db);
         my $callback = $self->driver_for($db)->find_job($self->{find_job_limit_size}, $func_ids);
 
-        return $self->_grab_a_job($callback, $db);
+        my $job = $self->_grab_a_job($callback, $db);
+        return $job if defined $job;
     }
 }
 
