@@ -137,7 +137,7 @@ sub mysql_dbh {
         "root",
         "",
         { RaiseError => 1 }
-    ) or die "Couldn't connect to database";
+    ) || die "Couldn't connect to database";
 }
 
 sub dsn_for {
