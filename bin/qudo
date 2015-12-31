@@ -3,6 +3,7 @@ use strict;
 use Getopt::Long;
 use Qudo::Test;
 use DBI;
+use Pod::Usage;
 
 Getopt::Long::GetOptions(
     '--dry_run'    => \my $dry_run,
@@ -39,18 +40,27 @@ for my $sql (@{$schema->{$rdbms}}) {
 }
 
 sub usage {
-    die <<USAGE;
-Usage: qudo [opts]
+    pod2usage(1);
+}
 
-Options:
+=pod
+
+=head1 NAME
+
+qudo - command to create database scheme
+
+=head1 USAGE
+
+  qudo [opts]
+
+=head1 OPTIONS
 
     --db         database name. ex) qudo_test
     --user       db user        ex) root
     --pass       db password.
     --rdbms      database kind  ex) mysql SQLite
     --help       disp help.
-    --dry_run
+    --dry_run    disp schema only.
     --use_innodb using innodb (optional)
 
-USAGE
-}
+=cut
