@@ -14,24 +14,28 @@ Getopt::Long::GetOptions(
     '--host=s'     => \my $host,
     '--rdbms=s'    => \my $rdbms,
     '--use_innodb' => \my $use_innodb,
-) or usage();
+) || usage();
 usage() if $help;
-usage() unless $db and $user and $rdbms;
+usage() if !defined $rdbms;
+usage() if $rdbms eq 'SQLite' && !defined $db;
+usage() if $rdbms ne 'SQLite' && (!defined $db || !defined $user);
 
 my %attr = (
     defined $host ? (
         host => $host
     ) : (),
+    RaiseError => 1,
+    PrintError => 0,
 );
 
-if (not $dry_run and $rdbms eq 'mysql') {
-    my $dbh = DBI->connect('dbi:mysql:mysql', $user, $pass, \%attr) or die 'can not connect mysqld';
+if (!$dry_run && $rdbms ne 'SQLite') {
+    my $dbh = DBI->connect('dbi:'.$rdbms.':', $user, $pass, \%attr);
     $dbh->do('create database '.$db);
 }
 
 my $dbh;
-if (not $dry_run) {
-    $dbh = DBI->connect('dbi:'.$rdbms.':'.$db, $user, $pass, \%attr) or die 'can not connect database';
+if (!$dry_run) {
+    $dbh = DBI->connect('dbi:'.$rdbms.':'.$db, $user, $pass, \%attr);
 }
 
 my $schema = Qudo::Test::load_schema;
