@@ -29,13 +29,15 @@ my %attr = (
 );
 
 if (!$dry_run && $rdbms ne 'SQLite') {
-    my $dbh = DBI->connect('dbi:'.$rdbms.':', $user, $pass, \%attr);
+    my $dsn = 'dbi:'.$rdbms.':';
+    $dsn .= 'dbname=postgres' if $rdbms eq 'Pg';
+    my $dbh = DBI->connect($dsn, $user, $pass, \%attr);
     $dbh->do('create database '.$db);
 }
 
 my $dbh;
 if (!$dry_run) {
-    $dbh = DBI->connect('dbi:'.$rdbms.':'.$db, $user, $pass, \%attr);
+    $dbh = DBI->connect('dbi:'.$rdbms.':dbname='.$db, $user, $pass, \%attr);
 }
 
 my $schema = Qudo::Test::load_schema;
