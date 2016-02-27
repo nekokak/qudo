@@ -1,91 +1,93 @@
 Revision history for Perl extension Qudo
 
-0.0213
-   2011-01-17
-        - FIXED: modified schema for postgres (thanks makamaka)
-        - MOD:   job object has error message (thanks walf443)
+{{$NEXT}}
 
-0.0212
-   2010-10-05
-        - MOD: driver's func_from_id, func_from_name return not DBIx::Skinny::Row object but HashRef
-        - FIXED: failed exception message bug. (thnks hiroyuki akabane)
+0.0213 2011-01-17
 
-0.0211
-   2010-07-08
-        - ADD: replace method for Qudo::Job.
+   - FIXED: modified schema for postgres (thanks makamaka)
+   - MOD:   job object has error message (thanks walf443)
 
-0.0210
-   2010-07-06
-        - MOD: qudo command do'nt use pod2usage.
-        - MOD: qudo command create innodb table for mysql.
-        - MOD: some docs.
-        - MOD: when generate the instance, can specify work_delay.
-        - MOD: return true when work_once method processes workers. [INCOMPATIBLE CHANGE]
+0.0212 2010-10-05
 
-0.0209
-   2010-06-03
-        - ADD: Job#is_failed method.
+   - MOD: driver's func_from_id, func_from_name return not DBIx::Skinny::Row object but HashRef
+   - FIXED: failed exception message bug. (thnks hiroyuki akabane)
 
-0.0208
-   2010-06-03
-        - ADD: Job#abort method.
-        - MOD: can pass the option for plugins.
-        - MOD: remove doc/ dir qudo schema written for Qudo::Test's DATA section.
-        - ADD: qudo initial setup script.
+0.0211 2010-07-08
 
-0.0207
-   2010-06-02
-        - REMOVE: Qudo#job_list method. [INCOMPATIBLE CHANGE]
-        - MOD: Driver::Skinny#find_job and Driver::Skinny#lookup_job method logic for dry.
-        - MOD: do not use by Manager#can_do method [INCOMPATIBLE CHANGE]
-        - MOD: Manager#global_(un)register_hook method is deprecated. Use (un)register_hook method instead. [INCOMPATIBLE CHANGE]
-        - MOD: Worker#work_safly is not necessary manager instance.
-        - FIXED: Manager#lookup method require db argument.
-        - MOD: set job_status by job failed case.
+   - ADD: replace method for Qudo::Job.
 
-0.0206
-   2010-06-02
-        - tuning find_job method.
+0.0210 2010-07-06
 
-0.0205
-   2010-04-21
-        - MOD: oops remove use Qudo::HookLoader.
+   - MOD: qudo command do'nt use pod2usage.
+   - MOD: qudo command create innodb table for mysql.
+   - MOD: some docs.
+   - MOD: when generate the instance, can specify work_delay.
+   - MOD: return true when work_once method processes workers. [INCOMPATIBLE CHANGE]
 
-0.0204
-   2010-04-21
-        - MOD: unexport Carp functions.
-        - MOD: remove Qudo::HookLoader.
-        - MOD: Qudo::Driver::DBI move to other distribution. (http://github.com/nekokak/p5-qudo-driver-dbi)
+0.0209 2010-06-03
 
-0.0203
-   2010-03-29
-        - MOD: The Hook function in worker was deleted. [INCOMPATIBLE CHANGE]
+   - ADD: Job#is_failed method.
 
-0.0202
-   2010-03-16
-        - FIXED: cycle reference.(thanks id:tokuhirom)
+0.0208 2010-06-03
 
-0.0201
-   2010-03-10
-        - FIXED: reset grabbed_until for reenqueue (thanks id:lamanotrama)
+   - ADD: Job#abort method.
+   - MOD: can pass the option for plugins.
+   - MOD: remove doc/ dir qudo schema written for Qudo::Test's DATA section.
+   - ADD: qudo initial setup script.
 
-0.02
-   2009-12-09
-        - no change. stable version.
+0.0207 2010-06-02
 
-0.01_03
-   2009-11-21
-        - FIXED: Makefile.pl (add:Class::Data::Inheritable. thanks Andreas J. Koenig)
+   - REMOVE: Qudo#job_list method. [INCOMPATIBLE CHANGE]
+   - MOD: Driver::Skinny#find_job and Driver::Skinny#lookup_job method logic for dry.
+   - MOD: do not use by Manager#can_do method [INCOMPATIBLE CHANGE]
+   - MOD: Manager#global_(un)register_hook method is deprecated. Use (un)register_hook method instead. [INCOMPATIBLE CHANGE]
+   - MOD: Worker#work_safly is not necessary manager instance.
+   - FIXED: Manager#lookup method require db argument.
+   - MOD: set job_status by job failed case.
 
-0.01_02
-   2009-11-12
-        - ADD: Job status Table for MySQL.
-        - ADD: Job priotiry option.
-        - ADD: PostgreSQL support.( thanks sagehachi)
-        - ADD: Multi Database support.
-        - ADD: Documents( Intro,Tutorial,Functions ).
-        - FIXED: tests.
+0.0206 2010-06-02
 
-0.01_01
-  2009-09-05
-    - original version
+   - tuning find_job method.
+
+0.0205 2010-04-21
+
+   - MOD: oops remove use Qudo::HookLoader.
+
+0.0204 2010-04-21
+
+   - MOD: unexport Carp functions.
+   - MOD: remove Qudo::HookLoader.
+   - MOD: Qudo::Driver::DBI move to other distribution. (http://github.com/nekokak/p5-qudo-driver-dbi)
+
+0.0203 2010-03-29
+
+   - MOD: The Hook function in worker was deleted. [INCOMPATIBLE CHANGE]
+
+0.0202 2010-03-16
+
+   - FIXED: cycle reference.(thanks id:tokuhirom)
+
+0.0201 2010-03-10
+
+   - FIXED: reset grabbed_until for reenqueue (thanks id:lamanotrama)
+
+0.02 2009-12-09
+
+   - no change. stable version.
+
+0.01_03 2009-11-21
+
+   - FIXED: Makefile.pl (add:Class::Data::Inheritable. thanks Andreas J. Koenig)
+
+0.01_02 2009-11-12
+
+   - ADD: Job status Table for MySQL.
+   - ADD: Job priotiry option.
+   - ADD: PostgreSQL support.( thanks sagehachi)
+   - ADD: Multi Database support.
+   - ADD: Documents( Intro,Tutorial,Functions ).
+   - FIXED: tests.
+
+0.01_01 2009-09-05
+
+   - original version
