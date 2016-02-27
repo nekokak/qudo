@@ -30,7 +30,7 @@ sub work_safely {
                 {
                     grabbed_until => 0,
                     retry_cnt     => $job->retry_cnt + 1,
-                    retry_delay   => $class->retry_delay,
+                    retry_delay   => $class->retry_delay($job),
                 }
             );
         } else {

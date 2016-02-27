@@ -10,7 +10,7 @@ run_tests(3, sub {
 
     my $manager = $master->manager;
     $manager->can_do('Worker::Test');
-    $manager->enqueue("Worker::Test", { arg => 'arg', uniqkey => 'uniqkey'});
+    $manager->enqueue("Worker::Test", { arg => 5, uniqkey => 'uniqkey'});
 
     stdout_is( sub {$manager->work_once}, 0 ); # fail job
 
@@ -27,7 +27,7 @@ package Worker::Test;
 use base 'Qudo::Worker';
 
 sub max_retries { 1 }
-sub retry_delay { 5 } # 5 sec retry wait.
+sub retry_delay { $_[1]->arg }
 sub grab_for    { 0 }
 sub work {
     my ($class, $job) = @_;
