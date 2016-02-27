@@ -2,6 +2,25 @@ Revision history for Perl extension Qudo
 
 {{$NEXT}}
 
+0.0214 2016-02-27T15:05:07Z
+
+   - fixed Changes format
+   - Merge pull request #14 from spiritloose/dynamic-retry_delay-setting
+   - Pass the job object to retry_delay method
+   - supports postgre sql (fixed #1)
+   - write a document for the required options (#1)
+   - qudo command supports SQLite
+   - switch to minilla (fixed #10)
+   - Merge pull request #4 from ktat/notify-die-when-job-failed
+   - Merge remote-tracking branch 'pull/3/head'
+   - Merge pull request #5 from ktat/qudo-job-pod
+   - Merge pull request #6 from ktat/qudo-usage
+   - Merge pull request #7 from ktat/fix-dry_run-create_db
+   - Merge pull request #8 from dokechin/fix-manual
+   - Merge pull request #11 from diocles/core-kwalitee
+   - Merge pull request #12 from karupanerura/retry-find-job-on-another-database-when-failure
+   - Merge pull request #13 from MasterDuke17/master
+
 0.0213 2011-01-17
 
    - FIXED: modified schema for postgres (thanks makamaka)

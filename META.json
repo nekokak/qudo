@@ -81,7 +81,7 @@
          "web" : "https://github.com/nekokak/qudo"
       }
    },
-   "version" : "0.0213",
+   "version" : "0.0214",
    "x_authority" : "cpan:NEKOKAK",
    "x_contributors" : [
       "小林 篤 <nekokak@snow.local>",
@@ -97,6 +97,7 @@
       "dokechin <user@user-PC.(none)>",
       "Tim Retout <tim@retout.co.uk>",
       "Daniel Green <ddgreen@gmail.com>",
+      "Jiro Nishiguchi <jiro@cpan.org>",
       "karupanerura <karupa@cpan.org>"
    ]
 }
