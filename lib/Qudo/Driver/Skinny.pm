@@ -52,7 +52,8 @@ sub _search_job_rs {
             limit  => $args{limit},
         }
     );
-    $rs->order({column => 'job.priority', desc => 'DESC'});
+    $rs->order([{column => 'job.priority', desc => 'DESC'},
+                {column => 'job.id', desc => 'ASC'}]);
 
     return $rs;
 }
