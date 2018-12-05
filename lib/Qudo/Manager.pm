@@ -138,7 +138,7 @@ sub funcid_to_name {
 
     $self->{_func_cache}->{$db}->{funcid2name}->{$funcid} or do {
         my $func = $self->driver_for($db)->func_from_id($funcid);
-        $self->{_func_cache}->{$db}->{funcname2id}->{$func->name} = $func->{id};
+        $self->{_func_cache}->{$db}->{funcname2id}->{$func->{name}} = $func->{id};
         $self->{_func_cache}->{$db}->{funcidename}->{$funcid} = $func->{name};
     };
     $self->{_func_cache}->{$db}->{funcid2name}->{$funcid};
